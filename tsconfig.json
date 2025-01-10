@@ -16,7 +16,7 @@
 
     /* JSX / React 설정 */
     "jsx": "react-jsx", // React 17+ JSX 자동 변환
-    "types": ["react", "react-dom"], // React와 React-DOM 타입 추가
+    "types": ["react", "react-dom", "node"], // React와 React-DOM 타입 추가
 
     /* 타입 검사 */
     "strict": true, // 엄격한 타입 검사 활성화

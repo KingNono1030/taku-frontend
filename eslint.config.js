@@ -32,6 +32,7 @@ export default [
       ],
       '@typescript-eslint/no-explicit-any': 'warn',
       'react/react-in-jsx-scope': 'off', // React 17+ JSX 자동 변환
+      'no-undef': 'off',
     },
   },
 ];
