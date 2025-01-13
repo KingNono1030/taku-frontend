@@ -4,6 +4,9 @@ import { Outlet } from 'react-router-dom';
 
 import LoadingScreen from '@/components/loading';
 import DefaultLayout from '@/layout/DefaultLayout';
+import MarketListPage from '@/pages/market/tabs/MarketListPage';
+import MarketPricePage from '@/pages/market/tabs/MarketPricePage';
+import MarketRankingPage from '@/pages/market/tabs/MarketRankingPage';
 
 // Lazy imports for components
 const MainPage = lazy(() => import('@/pages/MainPage'));
@@ -53,7 +56,15 @@ export const routes = [
         path: '/community/:category/:id/edit',
         element: <UpdateCommunityPage />,
       },
-      { path: '/market', element: <MarketPage /> },
+      {
+        path: '/market',
+        element: <MarketPage />,
+        children: [
+          { path: '', element: <MarketListPage /> },
+          { path: 'price', element: <MarketPricePage /> },
+          { path: 'ranking', element: <MarketRankingPage /> },
+        ],
+      },
       { path: '/market/add', element: <CreateMarketPage /> },
       { path: '/market/:id', element: <MarketDetailPage /> },
       { path: '/market/:id/edit', element: <UpdateMarketPage /> },

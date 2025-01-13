@@ -28,8 +28,9 @@ export default {
           DEFAULT: 'hsl(var(--popover))',
           foreground: 'hsl(var(--popover-foreground))',
         },
+        //primary color 변경
         primary: {
-          DEFAULT: 'hsl(var(--primary))',
+          DEFAULT: '#EAB308',
           foreground: 'hsl(var(--primary-foreground))',
         },
         secondary: {

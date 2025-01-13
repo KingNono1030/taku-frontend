@@ -1,10 +1,11 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronDown, Search, Star } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { RHFUpload } from '@/components/hook-form/rhf-upload';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -35,12 +36,23 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Textarea } from '@/components/ui/textarea';
 import SectionLayout from '@/layout/SectionLayout';
 
 const TEST_TOKEN = import.meta.env.ACCESS_TOKEN;
 
 const addPostsSchema = z.object({
-  title: z.string().min(1, '제목을 입력해주세요.'),
+  title: z.string().nonempty('제목을 입력해주세요.'),
+  categoryId: z.number().int().nonnegative('카테고리를 선택해주세요.'),
+  content: z.string().nonempty('내용을 입력해주세요.'),
+  multiUpload: z.array(
+    z.object({
+      preview: z.string(),
+      name: z.string(),
+      size: z.number(),
+      type: z.string(),
+    }),
+  ),
 });
 
 const CommunityPage = () => {
@@ -68,7 +80,7 @@ const CommunityPage = () => {
   const getPosts = () => {
     // http://api-duckwho.xyz/api/posts?filter=latest&lastValue=0&limit=20&keyword=string&categoryId=0&asc=true
 
-    const url = 'https://api-duckwho.xyz/api/posts';
+    const url = 'https://api-duckwho.xyz/api/community/posts';
     const params: any = {
       filter: 'LATEST',
       lastValue: 0,
@@ -99,16 +111,35 @@ const CommunityPage = () => {
     resolver: zodResolver(addPostsSchema),
     defaultValues: {
       title: '',
+      categoryId: 0,
+      content: '',
+      multiUpload: [],
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof addPostsSchema>) => {
-    try {
-      console.log(values);
-    } catch (error) {
-      console.error(error);
-    }
+  const onSubmit = (data: z.infer<typeof addPostsSchema>) => {
+    console.log('123', data);
   };
+
+  const { setValue, watch } = form;
+  const values = watch();
+
+  const handleDropMultiFile = useCallback(
+    (acceptedFiles: File[]) => {
+      const files = values.multiUpload || [];
+
+      const newFiles = acceptedFiles.map((file) =>
+        Object.assign(file, {
+          preview: URL.createObjectURL(file),
+        }),
+      );
+
+      setValue('multiUpload', [...files, ...newFiles], {
+        shouldValidate: true,
+      });
+    },
+    [setValue, values.multiUpload],
+  );
 
   useEffect(() => {
     getPosts();
@@ -125,18 +156,20 @@ const CommunityPage = () => {
               {/* 버튼 색상 1E3A8A */}
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="outline">커뮤니티 만들기</Button>
+                  <Button variant="outline" onClick={() => form.reset()}>
+                    커뮤니티 만들기
+                  </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                  <DialogHeader>
-                    <DialogTitle>커뮤니티 만들기</DialogTitle>
-                  </DialogHeader>
+                <DialogContent className="">
                   <Form {...form}>
                     <form
                       id="loginForm"
                       onSubmit={form.handleSubmit(onSubmit)}
                       className="space-y-6"
                     >
+                      <DialogHeader>
+                        <DialogTitle>커뮤니티 만들기</DialogTitle>
+                      </DialogHeader>
                       <FormField
                         control={form.control}
                         name="title"
@@ -145,18 +178,68 @@ const CommunityPage = () => {
                             <FormLabel className="text-base text-[#767676]">
                               제목
                             </FormLabel>
-                            <FormControl className="h-14 p-4 text-[#767676] md:text-base">
+                            <FormControl className="text-[#767676] md:text-base">
                               <Input placeholder="제목" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
+                      <FormField
+                        control={form.control}
+                        name="categoryId"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-base text-[#767676]">
+                              카테고리
+                            </FormLabel>
+                            <FormControl className="text-[#767676] md:text-base">
+                              <Input placeholder="카테고리" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="content"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-base text-[#767676]">
+                              내용
+                            </FormLabel>
+                            <FormControl className="text-[#767676] md:text-base">
+                              <Textarea placeholder="내용" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <RHFUpload
+                        multiple
+                        thumbnail
+                        name="multiUpload"
+                        maxSize={3145728}
+                        onDrop={handleDropMultiFile}
+                        onRemove={(inputFile) =>
+                          setValue(
+                            'multiUpload',
+                            values.multiUpload &&
+                              values.multiUpload?.filter(
+                                (file) => file !== inputFile,
+                              ),
+                            { shouldValidate: true },
+                          )
+                        }
+                        onRemoveAll={() =>
+                          setValue('multiUpload', [], { shouldValidate: true })
+                        }
+                      />
+                      <DialogFooter>
+                        <Button type="submit">저장하기</Button>
+                      </DialogFooter>
                     </form>
                   </Form>
-                  <DialogFooter>
-                    <Button type="submit">저장하기</Button>
-                  </DialogFooter>
                 </DialogContent>
               </Dialog>
             </div>
@@ -221,8 +304,8 @@ const CommunityPage = () => {
           {/* Search Results */}
           <section>
             <h2 className="mb-6 text-xl font-medium">
-              <span className="font-bold text-[#EAB308]">N</span> 개의
-              커뮤니티가 검색됐덕!
+              <span className="font-bold text-primary">N</span> 개의 커뮤니티가
+              검색됐덕!
             </h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
               {Array.from({ length: 4 }).map((_, i) => (
