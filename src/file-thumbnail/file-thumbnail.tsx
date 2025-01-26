@@ -17,6 +17,16 @@ type FileIconProps = {
   onDownload?: VoidFunction;
 };
 
+/**
+ * 파일 썸네일 컴포넌트를 렌더링합니다.
+ *
+ * @param {FileIconProps} props - 파일 썸네일 컴포넌트의 속성
+ * @param {Object} props.file - 파일 데이터 객체
+ * @param {string} [props.tooltip] - 툴팁 텍스트
+ * @param {boolean} [props.imageView] - 이미지 뷰 모드 여부
+ * @param {Function} [props.onDownload] - 다운로드 버튼 클릭 시 호출되는 함수
+ * @returns {JSX.Element} 파일 썸네일 컴포넌트
+ */
 export default function FileThumbnail({
   file,
   tooltip,

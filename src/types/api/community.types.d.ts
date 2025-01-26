@@ -1,7 +1,7 @@
 import { operations } from './apiSchema.types';
 
 /**
- * path: '/api/posts'
+ * path: '/api/community/posts'
  */
 
 /**
@@ -51,14 +51,14 @@ export type FindAllPostSuccessResponse =
  */
 
 type CreatePostQuery = operations['createPost']['parameters']['query'];
-type FindAllPostRequest = NonNullable<
+type CreatePostRequest = NonNullable<
   operations['createPost']['requestBody']
 >['content']['application/json'];
 type CreatePostSuccessResponse =
   operations['createPost']['responses'][200]['content']['*/*'];
 
 /**
- * path: '/api/posts/{postId}'
+ * path: '/api/community/posts/{postId}'
  * postId: number
  */
 
@@ -103,3 +103,41 @@ export type DeletePostDetailQuery =
   operations['deletePost']['parameters']['query'];
 export type DeletePostDetailSuccessResponse =
   operations['deletePost']['responses'][200]['content']['*/*'];
+
+/**
+ * path: '/api/community/comments'
+ */
+
+/**
+ * 커뮤니티 댓글 작성
+ * @description 커뮤니티 댓글 쓰기, 부모아이디가 null이면 댓글, 부모아이디가 있으면 해당 댓글의 대댓글
+ */
+
+export type CreateCommentsRequest = NonNullable<
+  operations['createComments']['requestBody']
+>['content']['application/json'];
+export type CreateCommentsSuccessResponse =
+  operations['createComments']['responses'][201]['content']['*/*'];
+
+/**
+ * path: '/api/community/comments/{commentsId}'
+ */
+
+/**
+ * 커뮤니티 댓글 수정
+ * @description 커뮤니티 댓글 수정
+ */
+
+export type UpdateCommentsRequest = NonNullable<
+  operations['updateComments']['requestBody']
+>['content']['application/json'];
+export type UpdateCommentsSuccessResponse =
+  operations['updateComments']['responses'][200]['content']['*/*'];
+
+/**
+ * 커뮤니티 댓글 삭제
+ * @description 커뮤니티 댓글 삭제
+ */
+
+export type DeleteCommentsSuccessResponse =
+  operations['deleteComments']['responses'][200]['content']['*/*'];

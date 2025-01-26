@@ -10,6 +10,16 @@ import { UploadProps } from './types';
 
 // ----------------------------------------------------------------------
 
+/**
+ * 여러 파일의 미리보기를 제공하는 컴포넌트입니다.
+ *
+ * @param {Object} props - 컴포넌트의 props
+ * @param {boolean} props.thumbnail - 썸네일을 표시할지 여부
+ * @param {Array} props.files - 미리보기할 파일 목록
+ * @param {Function} [props.onRemove] - 파일을 제거할 때 호출되는 콜백 함수
+ *
+ * @returns {JSX.Element} 여러 파일의 미리보기를 렌더링하는 JSX 요소
+ */
 export default function MultiFilePreview({
   thumbnail,
   files,

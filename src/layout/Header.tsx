@@ -92,13 +92,9 @@ export default function Header() {
 
           <Drawer>
             <DrawerTrigger>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="hidden rounded-full md:inline-flex"
-              >
-                <Bell className="h-10 w-10" />
-              </Button>
+              <div className="hidden h-10 w-10 items-center justify-center rounded-full hover:bg-accent hover:text-accent-foreground md:inline-flex">
+                <Bell className="h-4 w-4" />
+              </div>
             </DrawerTrigger>
             <DrawerContent className="flex w-[640px] flex-col gap-10 py-10 pl-5 pr-[100px]">
               <DrawerHeader className="flex items-end justify-between">

@@ -4,7 +4,40 @@
  */
 
 export interface paths {
-  '/api/posts/{postId}': {
+  '/api/jangter/{productId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * 판매글 상세 조회
+     * @description 덕후 장터 판매글 상세 조회
+     */
+    get: operations['findProductDetail'];
+    /**
+     * 판매글 수정
+     * @description 덕후 장터 판매글 수정, 기존 이미지를 삭제하거나 추가 할수 있음(스웨거 오류로 여기다 설명)
+     *
+     *     deleteImageUrl - 기존 글에서 삭제된 이미지 Url 리스트(문자열)
+     *
+     *     imageList - 추가된 이미지 리스트(이미지 파일)
+     *
+     */
+    put: operations['updateProduct'];
+    post?: never;
+    /**
+     * 판매글 삭제
+     * @description 덕후 장터 판매글 삭제
+     */
+    delete: operations['deleteProduct'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/community/posts/{postId}': {
     parameters: {
       query?: never;
       header?: never;
@@ -13,29 +46,49 @@ export interface paths {
     };
     /**
      * 커뮤니티 게시글 상세 조회
-     * @description 1. 게시글 상세 조회(댓글은 나중에 작업)
-     *
+     * @description 댓글 미개발
      */
     get: operations['findPostDetail'];
     /**
      * 커뮤니티 게시글 수정
-     * @description updatePost(type: application/json)
-     *     1. categoryId: 접속한 카테고리 ID
-     *     2. title: 작성한 제목
-     *     3. content: 작성한 내용
-     *     4. imageList: 업로드한 이미지 정보(List)
-     *         1) originalFileName: 업로드 파일명
-     *         2) fileType: 파일 타입
-     *         3) fileSize: 크기
+     * @description 게시글 수정, 기존 이미지를 삭제하거나 추가할 수 있음(스웨거 오류로 여기다 설명)
      *
-     *     postImage(type: multipartFile)
-     *     - 이미지데이터
+     *     deleteImageUrl - 기존 글에서 삭제된 이미지 Url 리스트(문자열)
+     *
+     *     imageList - 추가된 이미지 리스트(이미지 파일)
      *
      */
     put: operations['updatePost'];
     post?: never;
-    /** 커뮤니티 게시글 삭제 */
+    /**
+     * 커뮤니티 게시글 삭제
+     * @description 커뮤니티 게시글 삭제
+     */
     delete: operations['deletePost'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/community/comments/{commentsId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /**
+     * 커뮤니티 댓글 수정
+     * @description 커뮤니티 댓글 수정
+     */
+    put: operations['updateComments'];
+    post?: never;
+    /**
+     * 커뮤니티 댓글 삭제
+     * @description 커뮤니티 댓글 삭제
+     */
+    delete: operations['deleteComments'];
     options?: never;
     head?: never;
     patch?: never;
@@ -116,7 +169,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/posts': {
+  '/api/shorts': {
     parameters: {
       query?: never;
       header?: never;
@@ -124,48 +177,266 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * 커뮤니티 게시글 조회(정렬, 검색)
-     * @description 필터 조건, 검색어, 정렬 순서에 따라 카테고리 별 게시글 목록을 조회
-     *     1. filter: 정렬 기준 선택
-     *         - latest: 최신순  (기준 값: 게시글 Id)
-     *         - likes : 좋아요순 (기준 값: 좋아요 수)
-     *         - views : 조회수순 (기준 값: 조회수)
+     * 테스트
+     * @description 배포 테스트용 api
+     */
+    get: operations['aaa'];
+    put?: never;
+    /**
+     * 쇼츠 업로드
+     * @description 파일을 스토리지에 업로드합니다.
+     */
+    post: operations['uploadFile_1'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/shorts/{shortsId}/view': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Shorts 시청 기록
+     * @description 사용자가 쇼츠를 시청한 데이터 추가. 다음 쇼츠로 넘어가거나 페이지를 벗어날 때 사용.
+     */
+    post: operations['createView'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/shorts/{shortsId}/likes': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Shorts 좋아요
+     * @description 쇼츠 동영상에 로그인 한 유저가 좋아요를 누름
+     */
+    post: operations['addLike'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/shorts/{shortsId}/likes/cancel': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Shorts 좋아요 취소
+     * @description 쇼츠 동영상에 좋아요한 유저가 취소를 누름
+     */
+    post: operations['cancelLike'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/shorts/{shortsId}/dislikes': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Shorts 싫어요
+     * @description 쇼츠 동영상에 로그인 한 유저가 싫어요를 누름
+     */
+    post: operations['addDislike'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/shorts/{shortsId}/dislikes/cancel': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Shorts 싫어요 취소
+     * @description 쇼츠 동영상에 싫어요한 유저가 취소를 누름
+     */
+    post: operations['cancelDislike'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/shorts/{shortsId}/comment': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * 쇼츠 댓글 조회
+     * @description 쇼츠 댓글을 조회합니다.
+     */
+    get: operations['findShortsComment'];
+    put?: never;
+    /**
+     * 쇼츠 댓글 생성
+     * @description 쇼츠 댓글을 생성합니다.
+     */
+    post: operations['createShortsComment'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/shorts/{shortsId}/comment/{commentId}/reply': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * 쇼츠 댓글 대댓글 생성
+     * @description 쇼츠 댓글 대댓글을 생성합니다.
+     */
+    post: operations['createShortsReply'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/jangter': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * 판매글 생성 생성
+     * @description 덕후 장터 판매글 생성
      *
-     *     2. lastValue: 선택 된 정렬 기준의 마지막 정수 값, 타입 Long
-     *         - 정렬 기준이 최신 순이면 현재 데이터의 마지막 Id 값
-     *         - 정렬 기준이 좋아요 순이면 현재 데이터의 마지막 좋아요 값
-     *         - 정렬 기준이 조회수 순이면 현재 데이터의 마지막 조회수 값
-     *
-     *     3. isAsc: 내림차순, 오름차순 여부
-     *         - false: 기본값, 내림차순
-     *         - true: 오름차순
-     *
-     *     4. limit: 출력 페이지 개수
-     *         - 20개 (피그마에서는 5개였으나 확인이 필요함)
-     *
-     *     5. keyword: 게시글 제목 + 내용 검색어
-     *
-     *     6. categoryId: 게시글이 속한 카테고리 ID
+     *     imageList - 추가할 이미지 리스트(이미지 파일)
      *
      */
-    get: operations['findAllPost'];
+    post: operations['createProduct'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/community/posts': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * 커뮤니티글 전체 조회
+     * @description 검색어와 정렬필터 기능이 포함된 게시글 조회
+     */
+    get: operations['findAllPostList'];
     put?: never;
     /**
      * 커뮤니티 게시글 생성
-     * @description createPost(type: application/json)
-     *     1. categoryId: 접속한 카테고리 ID
-     *     2. title: 작성한 제목
-     *     3. content: 작성한 내용
-     *     4. imageList: 업로드한 이미지 정보(List)
-     *         1) originalFileName: 업로드 파일명
-     *         2) fileType: 파일 타입
-     *         3) fileSize: 크기
+     * @description 커뮤티니 게시글을 생성하는 기능(스웨거 오류로 여기다 설명)
      *
-     *     postImage(type: multipartFile)
-     *     - 이미지데이터
+     *     imageList - 추가할 이미지 리스트(이미지 파일)
      *
      */
     post: operations['createPost'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/community/posts/{postId}/like': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * 커뮤니티 게시글 좋아요
+     * @description 게시글의 좋아요/좋아요 취소 기능, 동일한 토큰으로 3번 연속 반복 입력 시 10초간 lock 설정이 됨
+     */
+    post: operations['postLikeInteraction'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/community/comments': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * 커뮤니티 댓글 작성
+     * @description 커뮤니티 댓글 쓰기, 부모아이디가 null이면 댓글, 부모아이디가 있으면 부모아이디의 대댓글
+     */
+    post: operations['createComments'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/chat/rooms': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['getChatRoomList'];
+    put?: never;
+    post: operations['createChatRoom'];
     delete?: never;
     options?: never;
     head?: never;
@@ -205,6 +476,10 @@ export interface paths {
     };
     get?: never;
     put?: never;
+    /**
+     * 유저 로그아웃
+     * @description 해당 API 호출되면 로그아웃
+     */
     post: operations['logout'];
     delete?: never;
     options?: never;
@@ -254,6 +529,54 @@ export interface paths {
      * @description 유저 프로필, 닉네임 정보 수정
      */
     patch: operations['editUserDetail'];
+    trace?: never;
+  };
+  '/api/shorts/{shortsId}/comment/{commentId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * 쇼츠 댓글 삭제
+     * @description 쇼츠 댓글을 삭제합니다.
+     */
+    delete: operations['deleteShortsComment'];
+    options?: never;
+    head?: never;
+    /**
+     * 쇼츠 댓글 수정
+     * @description 쇼츠 댓글을 수정합니다.
+     */
+    patch: operations['updateShortsComment'];
+    trace?: never;
+  };
+  '/api/shorts/{shortsId}/comment/{commentId}/reply/{replyId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * 쇼츠 댓글 대댓글 삭제
+     * @description 쇼츠 댓글 대댓글을 삭제합니다.
+     */
+    delete: operations['deleteShortsReply'];
+    options?: never;
+    head?: never;
+    /**
+     * 쇼츠 댓글 대댓글 수정
+     * @description 쇼츠 댓글 대댓글을 수정합니다.
+     */
+    patch: operations['updateShortsReply'];
     trace?: never;
   };
   '/file/download/{fileName}': {
@@ -330,6 +653,177 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/user-janger/{userId}/purchase': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * 유저 장터 상품 구매 목록
+     * @description 유저가 장터에서 구매한 물품의 목록들을 보여줍니다.
+     */
+    get: operations['findUserPurchases'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/shorts/{shortsId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Shorts 상세 정보 조회
+     * @description 쇼츠 동영상에 필요한 정보 반환
+     */
+    get: operations['findShortsInfo'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/shorts/recommend': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * 쇼츠 추천
+     * @description 쇼츠를 추천합니다.
+     */
+    get: operations['getRecommendShorts'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/market-price/weekly-stats': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** 주간 통계 조회 */
+    get: operations['getWeeklyStats'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/market-price/similar': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** 유사 상품 조회 */
+    get: operations['findSimilarProducts'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/market-price/search': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * 시세 조회
+     * @description 키워드로 상품 시세를 조회합니다.
+     */
+    get: operations['searchMarketPrice'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/market-price/graph': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** 시세 그래프 조회 */
+    get: operations['getPriceGraph'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/jangter/{productId}/recommend': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * 판매글 추천
+     * @description 판매글 추천 API (로그인/비로그인 모두 가능)
+     */
+    get: operations['recommendProduct'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/itemCategory': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * 덕후장터 아이템 카테고리 전체 조회
+     * @description API로 GET요청시 덕후장터 아이템 카테고리 ID와 NAME이 List로 반환됨
+     */
+    get: operations['getAllItemCategories'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/category/{id}': {
     parameters: {
       query?: never;
@@ -354,6 +848,1097 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
+    /** @description 게시글 업데이트 요청 DTO */
+    ProductUpdateRequestDTO: {
+      /**
+       * Format: int64
+       * @description 카테고리 ID (필수값, 현재 1 ~ 4까지 있음)
+       * @example 1
+       */
+      categoryId: number;
+      /**
+       * @description 판매글 제목 (필수값)
+       * @example 편하게 테스트 제목 수정
+       */
+      title: string;
+      /**
+       * @description 판매글 본문
+       * @example 편하게 테스트 본문 수정
+       */
+      description: string;
+      /**
+       * @description 가격
+       * @example 50000
+       */
+      price: number;
+      deleteImageUrl?: string[];
+      imageList?: string[];
+    };
+    /** @description 공통 응답 */
+    CommonResponseLong: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success?: boolean;
+      /**
+       * Format: int64
+       * @description 응답 데이터
+       */
+      data?: number;
+      error?: components['schemas']['ExceptionDto'];
+    };
+    ExceptionDto: {
+      /** Format: int32 */
+      code: number;
+      message: string;
+    };
+    PostUpdateRequestDTO: {
+      /**
+       * Format: int64
+       * @description 카테고리Id(필수값, 테스트시 69나 70으로 입력)
+       * @example 69
+       */
+      categoryId: number;
+      /**
+       * @description 제목(필수값)
+       * @example 편하게 테스트 제목 수정!
+       */
+      title: string;
+      /**
+       * @description 내용(필수값)
+       * @example 편하게 테스트 내용 수정!
+       */
+      content: string;
+      deleteImageUrl?: string[];
+      imageList?: string[];
+    };
+    CommentsUpdateRequestDTO: {
+      /**
+       * Format: int64
+       * @description 게시글 ID
+       * @example 17
+       */
+      postId: number;
+      /**
+       * @description 댓글 내용
+       * @example 편하게 테스트 댓글 달기
+       */
+      content: string;
+    };
+    RequestUpdateProfanityDTO: {
+      keyword?: string;
+      explaination?: string;
+      /** @enum {string} */
+      status: 'ACTIVE' | 'INACTIVE';
+    };
+    /** @description 공통 응답 */
+    CommonResponseVoid: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success?: boolean;
+      /**
+       * @description 응답 데이터
+       * @example 응답 데이터
+       */
+      data?: Record<string, never>;
+      error?: components['schemas']['ExceptionDto'];
+    };
+    /** @description 예제 생성 요청 */
+    ExampleCreateRequest: {
+      /**
+       * @description 예제 제목
+       * @example 예제 제목입니다.
+       */
+      exampleTitle: string;
+      /**
+       * @description 예제 내용
+       * @example 예제 내용입니다.
+       */
+      exampleContent: string;
+    };
+    /** @description 공통 응답 */
+    CommonResponseString: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success?: boolean;
+      /**
+       * @description 응답 데이터
+       * @example 응답 데이터
+       */
+      data?: string;
+      error?: components['schemas']['ExceptionDto'];
+    };
+    /** @description 유저 정보 (<code>RequestRegisterUser</code> 스키마 참고) <code>Content-Type : application/json</code> */
+    RequestRegisterUser: {
+      /**
+       * @description 유저 닉네임
+       * @example looco
+       */
+      nickname?: string;
+      /**
+       * @description 유저 프로바이더 타입
+       * @example {kakao , google}
+       * @enum {string}
+       */
+      provider_type?: 'KAKAO' | 'NAVER' | 'GOOGLE';
+    };
+    /** @description 쇼츠 정보 */
+    ShortsCreateReqDTO: {
+      /** Format: binary */
+      file: string;
+      /**
+       * @description 제목
+       * @example 나의 첫 쇼츠
+       */
+      title: string;
+      /**
+       * @description 한 줄 설명
+       * @example 재미있는 쇼츠입니다
+       */
+      description: string;
+      /**
+       * @description 해시태그 목록
+       * @example [
+       *       "애니",
+       *       "재미있다",
+       *       "쇼츠"
+       *     ]
+       */
+      tags?: string[];
+    };
+    /** @description 쇼츠 재생 기록 생성에 필요한 객체. */
+    '\uC1FC\uCE20 \uC7AC\uC0DD \uAE30\uB85D \uC694\uCCAD \uAC1D\uCCB4': {
+      /**
+       * @description 사용자가 쇼츠를 시청한 시간. 60초 짜리 동영상을 모두 보고 추가로 10초를 보면 시청 시간은 70초가 됨.
+       * @example PT1M30S
+       */
+      viewTime: {
+        /** Format: int64 */
+        seconds?: number;
+        zero?: boolean;
+        /** Format: int32 */
+        nano?: number;
+        negative?: boolean;
+        units?: {
+          durationEstimated?: boolean;
+          duration?: {
+            /** Format: int64 */
+            seconds?: number;
+            zero?: boolean;
+            /** Format: int32 */
+            nano?: number;
+            negative?: boolean;
+          };
+          timeBased?: boolean;
+          dateBased?: boolean;
+        }[];
+      };
+      /**
+       * @description 해당 쇼츠의 총 재생 시간.
+       * @example PT30S
+       */
+      playTime: {
+        /** Format: int64 */
+        seconds?: number;
+        zero?: boolean;
+        /** Format: int32 */
+        nano?: number;
+        negative?: boolean;
+        units?: {
+          durationEstimated?: boolean;
+          duration?: {
+            /** Format: int64 */
+            seconds?: number;
+            zero?: boolean;
+            /** Format: int32 */
+            nano?: number;
+            negative?: boolean;
+          };
+          timeBased?: boolean;
+          dateBased?: boolean;
+        }[];
+      };
+    };
+    /** @description 대댓글 내용 */
+    ShortsCommentCreateReqDTO: {
+      /**
+       * @description 쇼츠 댓글 내용
+       * @example 쇼츠 댓글 내용
+       */
+      comment?: string;
+    };
+    /** @description 쇼츠 댓글 대댓글 정보 */
+    CommentReplyDTO: {
+      /**
+       * @description 쇼츠 댓글 대댓글 아이디
+       * @example 쇼츠 댓글 대댓글 아이디
+       */
+      id?: string;
+      /**
+       * @description 쇼츠 댓글 대댓글 내용
+       * @example 쇼츠 댓글 대댓글 내용
+       */
+      reply_text?: string;
+      /**
+       * Format: int64
+       * @description 쇼츠 댓글 대댓글 작성자 아이디
+       */
+      user_id?: number;
+      /**
+       * @description 쇼츠 댓글 대댓글 작성자 닉네임
+       * @example 쇼츠 댓글 대댓글 작성자 닉네임
+       */
+      nickname?: string;
+      /**
+       * @description 쇼츠 댓글 대댓글 작성자 프로필 이미지
+       * @example 쇼츠 댓글 대댓글 작성자 프로필 이미지
+       */
+      profile_image?: string;
+      /**
+       * Format: date-time
+       * @description 쇼츠 댓글 대댓글 생성 시간
+       */
+      created_at?: string;
+    };
+    /** @description 쇼츠 댓글 작성자 정보 */
+    CommentUserDTO: {
+      /**
+       * Format: int64
+       * @description 쇼츠 댓글 작성자 아이디
+       */
+      id?: number;
+      /**
+       * @description 쇼츠 댓글 작성자 닉네임
+       * @example 쇼츠 댓글 작성자 닉네임
+       */
+      nickname?: string;
+      /**
+       * @description 쇼츠 댓글 작성자 프로필 이미지
+       * @example 쇼츠 댓글 작성자 프로필 이미지
+       */
+      profile_image?: string;
+    };
+    /** @description 공통 응답 */
+    CommonResponseListShortsCommentDTO: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success?: boolean;
+      /**
+       * @description 응답 데이터
+       * @example 응답 데이터
+       */
+      data?: components['schemas']['ShortsCommentDTO'][];
+      error?: components['schemas']['ExceptionDto'];
+    };
+    /** @description 쇼츠 댓글 응답 DTO */
+    ShortsCommentDTO: {
+      /**
+       * @description 쇼츠 댓글 아이디
+       * @example 쇼츠 댓글 아이디
+       */
+      id?: string;
+      /**
+       * @description 쇼츠 댓글 내용
+       * @example 쇼츠 댓글 내용
+       */
+      comment?: string;
+      /**
+       * @description 쇼츠 아이디
+       * @example 쇼츠 아이디
+       */
+      shorts_id?: string;
+      /**
+       * Format: date-time
+       * @description 쇼츠 댓글 생성 시간
+       */
+      created_at?: string;
+      user_info?: components['schemas']['CommentUserDTO'];
+      /**
+       * @description 쇼츠 댓글 대댓글 목록
+       * @example 쇼츠 댓글 대댓글 목록
+       */
+      replies?: components['schemas']['CommentReplyDTO'][];
+    };
+    /** @description 덕후 장터 게시글 생성 요청 DTO */
+    ProductCreateRequestDTO: {
+      /**
+       * Format: int64
+       * @description 카테고리 ID (필수값, 현재 1 ~ 4까지 있음)
+       * @example 1
+       */
+      categoryId: number;
+      /**
+       * @description 판매글 제목 (필수값)
+       * @example 편하게 테스트 제목 입력
+       */
+      title: string;
+      /**
+       * @description 판매글 본문
+       * @example 편하게 테스트 본문 입력
+       */
+      description: string;
+      /**
+       * @description 가격
+       * @example 50000
+       */
+      price: number;
+      imageList?: string[];
+    };
+    PostCreateRequestDTO: {
+      /**
+       * Format: int64
+       * @description 카테고리Id(필수값, 테스트시 69나 70으로 입력)
+       * @example 69
+       */
+      categoryId: number;
+      /**
+       * @description 제목(필수값)
+       * @example 편하게 테스트 제목!
+       */
+      title: string;
+      /**
+       * @description 내용(필수값)
+       * @example 편하게 테스트 내용!
+       */
+      content: string;
+      imageList?: string[];
+    };
+    CommentsCreateRequestDTO: {
+      /**
+       * Format: int64
+       * @description 게시글 ID
+       * @example 17
+       */
+      postId: number;
+      /**
+       * @description 댓글 내용
+       * @example 편하게 테스트 댓글 달기
+       */
+      content: string;
+      /**
+       * Format: int64
+       * @description 부모 댓글 ID (null: 댓글, 댓글Id: 해당 댓글Id의 대댓글)
+       */
+      parentCommentId?: number;
+    };
+    ChatRoomRequestDTO: {
+      /** Format: int64 */
+      articleId: number;
+      /** Format: int64 */
+      buyerId: number;
+      /** Format: int64 */
+      sellerId: number;
+    };
+    /** @description 응답 데이터 */
+    ChatRoomResponseDTO: {
+      /** Format: int64 */
+      id?: number;
+      roomId?: string;
+      /** Format: int64 */
+      articleId?: number;
+      /** Format: int64 */
+      buyerId?: number;
+      /** Format: int64 */
+      sellerId?: number;
+      /** Format: int64 */
+      lastMessageId?: number;
+      /** Format: int64 */
+      unreadCount?: number;
+      /** Format: date-time */
+      createdAt?: string;
+    };
+    /** @description 공통 응답 */
+    CommonResponseChatRoomResponseDTO: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success?: boolean;
+      data?: components['schemas']['ChatRoomResponseDTO'];
+      error?: components['schemas']['ExceptionDto'];
+    };
+    /** @description 카테고리 정보 <code>RequestCategoryCreateDTO</code> 스키마 참고 <code>Content-Type: application/json</code> */
+    RequestCategoryCreateDTO: {
+      category_name?: string;
+      ani_genre_id?: number[];
+    };
+    CategoryGenreDTO: {
+      /** Format: int64 */
+      id?: number;
+      name?: string;
+    };
+    CategoryImageDTO: {
+      /** Format: int64 */
+      id?: number;
+      imageUrl?: string;
+      fileName?: string;
+      originalFileName?: string;
+    };
+    ResponseCategoryDTO: {
+      /** Format: int64 */
+      id?: number;
+      name?: string;
+      status?: string;
+      createdType?: string;
+      /** Format: int64 */
+      viewCount?: number;
+      categoryImages?: components['schemas']['CategoryImageDTO'][];
+      categoryGenres?: components['schemas']['CategoryGenreDTO'][];
+    };
+    RequestCreateProfanityDTO: {
+      keyword: string;
+      explaination: string;
+    };
+    /** @description 공통 응답 */
+    CommonResponseResponseCreateProfanityDTO: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success?: boolean;
+      data?: components['schemas']['ResponseCreateProfanityDTO'];
+      error?: components['schemas']['ExceptionDto'];
+    };
+    /** @description 응답 데이터 */
+    ResponseCreateProfanityDTO: {
+      /** Format: int64 */
+      id?: number;
+      /** Format: int64 */
+      userId?: number;
+      keyword?: string;
+      explaination?: string;
+      /** @enum {string} */
+      status?: 'ACTIVE' | 'INACTIVE';
+      /** Format: date-time */
+      createdAt?: string;
+    };
+    /** @description 예제 생성 요청 */
+    ExampleUpdateRequest: {
+      /**
+       * Format: uuid
+       * @description 예제 ID
+       */
+      exampleId?: string;
+      /**
+       * @description 예제 제목수정
+       * @example 예제 제목수정.
+       */
+      exampleTitle: string;
+      /**
+       * @description 예제 내용 수정
+       * @example 예제 내용수정.
+       */
+      exampleContent: string;
+    };
+    /** @description 대댓글 내용 */
+    ShortsCommentUpdateReqDTO: {
+      /**
+       * @description 쇼츠 댓글 내용
+       * @example 쇼츠 댓글 내용
+       */
+      comment: string;
+    };
+    /** @description 공통 응답 */
+    CommonResponseListExampleDetailResponse: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success?: boolean;
+      /**
+       * @description 응답 데이터
+       * @example 응답 데이터
+       */
+      data?: components['schemas']['ExampleDetailResponse'][];
+      error?: components['schemas']['ExceptionDto'];
+    };
+    /** @description 예제 상세 응답 */
+    ExampleDetailResponse: {
+      /**
+       * Format: uuid
+       * @description 예제 ID
+       * @example 2be8119a-b655-419c-92c9-7db023432041
+       */
+      exampleId?: string;
+      /**
+       * @description 예제 제목
+       * @example 예제 제목입니다.
+       */
+      exampleTitle?: string;
+      /**
+       * @description 예제 내용
+       * @example 예제 내용입니다.
+       */
+      exampleContent?: string;
+    };
+    /** @description 공통 응답 */
+    CommonResponseExampleDetailResponse: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success?: boolean;
+      data?: components['schemas']['ExampleDetailResponse'];
+      error?: components['schemas']['ExceptionDto'];
+    };
+    /** @description 공통 응답 */
+    CommonResponseUserDetailDto: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success?: boolean;
+      data?: components['schemas']['UserDetailDto'];
+      error?: components['schemas']['ExceptionDto'];
+    };
+    /** @description 응답 데이터 */
+    UserDetailDto: {
+      nickname?: string;
+      profileImg?: string;
+      gender?: string;
+      ageRange?: string;
+    };
+    /** @description 공통 응답 */
+    CommonResponseBoolean: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success?: boolean;
+      /**
+       * @description 응답 데이터
+       * @example false
+       */
+      data?: boolean;
+      error?: components['schemas']['ExceptionDto'];
+    };
+    /** @description 공통 응답 */
+    CommonResponsePageImplUserPurchaseResponseDTO: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success?: boolean;
+      data?: components['schemas']['PageImplUserPurchaseResponseDTO'];
+      error?: components['schemas']['ExceptionDto'];
+    };
+    /** @description 응답 데이터 */
+    PageImplUserPurchaseResponseDTO: {
+      content?: components['schemas']['UserPurchaseResponseDTO'][];
+      pageable?: components['schemas']['PageableObject'];
+      last?: boolean;
+      /** Format: int64 */
+      totalElements?: number;
+      /** Format: int32 */
+      totalPages?: number;
+      /** Format: int32 */
+      size?: number;
+      /** Format: int32 */
+      number?: number;
+      sort?: components['schemas']['SortObject'];
+      first?: boolean;
+      /** Format: int32 */
+      numberOfElements?: number;
+      empty?: boolean;
+    };
+    PageableObject: {
+      /** Format: int64 */
+      offset?: number;
+      sort?: components['schemas']['SortObject'];
+      paged?: boolean;
+      /** Format: int32 */
+      pageNumber?: number;
+      /** Format: int32 */
+      pageSize?: number;
+      unpaged?: boolean;
+    };
+    SortObject: {
+      empty?: boolean;
+      sorted?: boolean;
+      unsorted?: boolean;
+    };
+    /** @description 유저 구매 목록 응답 객체 */
+    UserPurchaseResponseDTO: {
+      /**
+       * Format: int64
+       * @description 거래 완료 ID
+       */
+      id?: number;
+      /**
+       * Format: int64
+       * @description 장터 글 ID
+       */
+      jangterId?: number;
+      /**
+       * @description 제목
+       * @example 제목
+       */
+      title?: string;
+      /** @description 구매가격 */
+      price?: number;
+      /**
+       * @description 상품 카테고리 이름
+       * @example 상품 카테고리 이름
+       */
+      categoryName?: string;
+    };
+    /** @description 공통 응답 */
+    CommonResponseShortsResponseDTO: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success?: boolean;
+      data?: components['schemas']['ShortsResponseDTO'];
+      error?: components['schemas']['ExceptionDto'];
+    };
+    /** @description Shorts의 인기 지표 */
+    PopularityMaticResDTO: {
+      /**
+       * Format: int32
+       * @description 조회수
+       * @example 1200
+       */
+      views?: number;
+      /**
+       * Format: int32
+       * @description 댓글 수
+       * @example 35
+       */
+      commentsCount?: number;
+      /**
+       * Format: int32
+       * @description 좋아요 수
+       * @example 300
+       */
+      likes?: number;
+      /**
+       * Format: int32
+       * @description 싫어요 수
+       * @example 15
+       */
+      dislikes?: number;
+    };
+    /** @description 사용자의 상호작용 정보 */
+    ShortsLikeInteractionResponseDTO: {
+      /**
+       * @description 사용자가 좋아요를 눌렀는지 여부
+       * @example true
+       */
+      userLike?: boolean;
+      /**
+       * @description 사용자가 싫어요를 눌렀는지 여부
+       * @example false
+       */
+      userDislike?: boolean;
+    };
+    /** @description Shorts 정보에 대한 응답 DTO */
+    ShortsResponseDTO: {
+      /**
+       * @description Shorts의 고유 ID
+       * @example 6775805e1a08421aac32df42
+       */
+      shorts_id?: string;
+      /**
+       * @description M3U8 파일 URL
+       * @example https://example.com/video.m3u8
+       */
+      m3u8_url?: string;
+      /**
+       * @description 사용자의 프로필 이미지 URL
+       * @example https://example.com/user/profile.jpg
+       */
+      profile_img_url?: string;
+      /**
+       * @description 쇼츠 대한 한 줄 설명
+       * @example 이 동영상은 애니메이션에 관한 내용입니다.
+       */
+      description?: string;
+      user_like_interaction?: components['schemas']['ShortsLikeInteractionResponseDTO'];
+      popularity_matic?: components['schemas']['PopularityMaticResDTO'];
+    };
+    /** @description 공통 응답 */
+    CommonResponseListShortsInfoResDTO: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success?: boolean;
+      /**
+       * @description 응답 데이터
+       * @example 응답 데이터
+       */
+      data?: components['schemas']['ShortsInfoResDTO'][];
+      error?: components['schemas']['ExceptionDto'];
+    };
+    FileInfoDTO: {
+      /** Format: int32 */
+      duration?: number;
+      play_url?: string;
+    };
+    PopularityMaticDTO: {
+      /** Format: int32 */
+      views?: number;
+      /** Format: int32 */
+      likes?: number;
+      /** Format: int32 */
+      comments?: number;
+      /** Format: int32 */
+      dislikes?: number;
+    };
+    /** @description 응답 데이터 */
+    ShortsInfoResDTO: {
+      id?: string;
+      title?: string;
+      description?: string;
+      tags?: string[];
+      file_info?: components['schemas']['FileInfoDTO'];
+      popularity_matic?: components['schemas']['PopularityMaticDTO'];
+      /** Format: date-time */
+      created_at?: string;
+    };
+    /** @description 공통 응답 */
+    CommonResponseWeeklyStatsResponseDTO: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success?: boolean;
+      data?: components['schemas']['WeeklyStatsResponseDTO'];
+      error?: components['schemas']['ExceptionDto'];
+    };
+    /** @description 최근 일주일 판매 통계 DTO */
+    WeeklyStatsResponseDTO: {
+      /**
+       * @description 평균 판매가
+       * @example 81750
+       */
+      averagePrice?: number;
+      /**
+       * @description 최고 판매가
+       * @example 490000
+       */
+      highestPrice?: number;
+      /**
+       * @description 최저 판매가
+       * @example 14000
+       */
+      lowestPrice?: number;
+      /**
+       * Format: int64
+       * @description 거래 건수
+       * @example 42
+       */
+      totalDeals?: number;
+    };
+    Pageable: {
+      /** Format: int32 */
+      page?: number;
+      /** Format: int32 */
+      size?: number;
+      sort?: string[];
+    };
+    /** @description 공통 응답 */
+    CommonResponseListSimilarProductResponseDTO: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success?: boolean;
+      /**
+       * @description 응답 데이터
+       * @example 응답 데이터
+       */
+      data?: components['schemas']['SimilarProductResponseDTO'][];
+      error?: components['schemas']['ExceptionDto'];
+    };
+    /** @description 유사 상품 정보 DTO */
+    SimilarProductResponseDTO: {
+      /**
+       * Format: int64
+       * @description 상품 ID
+       * @example 123
+       */
+      productId?: number;
+      /**
+       * @description 상품 제목
+       * @example 원피스 루피 피규어
+       */
+      title?: string;
+      /**
+       * @description 등록 가격
+       * @example 21000
+       */
+      price?: number;
+      /**
+       * @description TF-IDF 벡터 값
+       * @example 0.5,0.3,0.2
+       */
+      tfidfVector?: string;
+      /**
+       * @description 대표 썸네일 URL
+       * @example https://example.com/image.jpg
+       */
+      imageUrl?: string;
+    };
+    /** @description 공통 응답 */
+    CommonResponseMarketPriceSearchResponseDTO: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success?: boolean;
+      data?: components['schemas']['MarketPriceSearchResponseDTO'];
+      error?: components['schemas']['ExceptionDto'];
+    };
+    /** @description 시세 검색 응답 DTO */
+    MarketPriceSearchResponseDTO: {
+      /**
+       * @description 검색 키워드
+       * @example 원피스 루피 피규어
+       */
+      keyword?: string;
+      priceGraph?: components['schemas']['PriceGraphResponseDTO'];
+      weeklyStats?: components['schemas']['WeeklyStatsResponseDTO'];
+      /**
+       * @description 유사 상품 목록
+       * @example 유사 상품 목록
+       */
+      similarProducts?: components['schemas']['SimilarProductResponseDTO'][];
+    };
+    /** @description 시세 데이터 포인트 */
+    PriceDataPoint: {
+      /**
+       * Format: date
+       * @description 날짜
+       * @example 2024-01-01
+       */
+      date?: string;
+      /**
+       * Format: int64
+       * @description 상품 ID
+       * @example 1
+       */
+      productId?: number;
+      /**
+       * @description 상품 제목
+       * @example 원피스 루피 피규어
+       */
+      title?: string;
+      /**
+       * @description 등록 가격
+       * @example 50000
+       */
+      registeredPrice?: number;
+      /**
+       * @description 판매 가격
+       * @example 45000
+       */
+      soldPrice?: number;
+      /**
+       * Format: int32
+       * @description 거래 건수
+       * @example 3
+       */
+      dealCount?: number;
+    };
+    /** @description 시세 그래프 응답 DTO */
+    PriceGraphResponseDTO: {
+      /**
+       * @description 날짜별 데이터
+       * @example 날짜별 데이터
+       */
+      dataPoints?: components['schemas']['PriceDataPoint'][];
+    };
+    /** @description 공통 응답 */
+    CommonResponsePriceGraphResponseDTO: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success?: boolean;
+      data?: components['schemas']['PriceGraphResponseDTO'];
+      error?: components['schemas']['ExceptionDto'];
+    };
+    /** @description 공통 응답 */
+    CommonResponseProductFindDetailResponseDTO: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success?: boolean;
+      data?: components['schemas']['ProductFindDetailResponseDTO'];
+      error?: components['schemas']['ExceptionDto'];
+    };
+    /** @description 게시글 상세 조회 응답 DTO */
+    ProductFindDetailResponseDTO: {
+      /**
+       * @description 장터글 제목
+       * @example 장터글 제목
+       */
+      title?: string;
+      /**
+       * @description 장터글 내용
+       * @example 장터글 내용
+       */
+      description?: string;
+      /** @description 장터글 가격 */
+      price?: number;
+      /**
+       * @description 판매 상태
+       * @example ACTIVE == 판매중
+       * @enum {string}
+       */
+      status?: 'ACTIVE' | 'INACTIVE';
+      /**
+       * Format: date-time
+       * @description 생성일
+       */
+      createdAt?: string;
+      /**
+       * Format: int64
+       * @description 조회수
+       */
+      viewCount?: number;
+      /**
+       * Format: int64
+       * @description 장터 카테고리 ID
+       */
+      itemCategoryId?: number;
+      /**
+       * Format: int64
+       * @description 판매자 Id
+       */
+      userId?: number;
+      /**
+       * @description 이미지 리스트
+       * @example 이미지 리스트
+       */
+      imageUrlList?: string[];
+    };
+    /** @description 공통 응답 */
+    CommonResponseProductRecommendResponseDTO: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success?: boolean;
+      data?: components['schemas']['ProductRecommendResponseDTO'];
+      error?: components['schemas']['ExceptionDto'];
+    };
+    /** @description 응답 데이터 */
+    ProductRecommendResponseDTO: {
+      recommendProducts?: components['schemas']['RecommendProduct'][];
+    };
+    RecommendProduct: {
+      /** Format: int64 */
+      product_id?: number;
+      title?: string;
+      /** Format: int64 */
+      view_count?: number;
+      price?: number;
+      /** Format: int64 */
+      item_category_id?: number;
+      thumbnail_url?: string;
+      /** Format: date-time */
+      created_at?: string;
+    };
+    /** @description 공통 응답 */
+    CommonResponseItemCategoriesResponseDTO: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success?: boolean;
+      data?: components['schemas']['ItemCategoriesResponseDTO'];
+      error?: components['schemas']['ExceptionDto'];
+    };
+    /** @description 응답 데이터 */
+    ItemCategoriesResponseDTO: {
+      /**
+       * @description 아이템 카테고리 id 전체 반환
+       * @example 아이템 카테고리 id 전체 반환
+       */
+      itemCategoryIdList?: number[];
+      /**
+       * @description 아이템 카테고리 이름 전체 반환
+       * @example 아이템 카테고리 이름 전체 반환
+       */
+      itemCategoryNameList?: string[];
+    };
+    /** @description 공통 응답 */
+    CommonResponsePostListResponseDTO: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success?: boolean;
+      data?: components['schemas']['PostListResponseDTO'];
+      error?: components['schemas']['ExceptionDto'];
+    };
+    /** @description 게시글 정보 */
+    FindAllPostQuerydslDTO: {
+      /**
+       * Format: int64
+       * @description 게시글 ID
+       */
+      id?: number;
+      /**
+       * Format: int64
+       * @description 유저 ID
+       */
+      userId?: number;
+      /**
+       * Format: int64
+       * @description 카테고리 ID
+       */
+      categoryId?: number;
+      /**
+       * @description 게시글 제목
+       * @example 게시글 제목
+       */
+      title?: string;
+      /**
+       * @description 게시글 본문
+       * @example 게시글 본문
+       */
+      content?: string;
+      /**
+       * @description 저장된 이미지 URL
+       * @example 저장된 이미지 URL
+       */
+      imageUrl?: string;
+      /**
+       * Format: date-time
+       * @description 저장된 게시글 시간(update되면 update된 시간 반영)
+       */
+      updatedAt?: string;
+      /**
+       * Format: int64
+       * @description 조회수
+       */
+      views?: number;
+    };
+    /** @description 응답 데이터 */
+    PostListResponseDTO: {
+      /**
+       * Format: int64
+       * @description 해당 카테고리에 접속된 게시글 수(삭제된 글 제외)
+       */
+      postCount?: number;
+      /**
+       * @description 게시글 정보
+       * @example 게시글 정보
+       */
+      responsePostList?: components['schemas']['FindAllPostQuerydslDTO'][];
+    };
     AnimationGenre: {
       /** Format: date-time */
       createdAt?: string;
@@ -372,12 +1957,14 @@ export interface components {
       /** Format: int64 */
       id?: number;
       name?: string;
-      createdType?: string;
-      status?: string;
+      /** @enum {string} */
+      createdType?: 'USER' | 'ADMIN' | 'BLACKLIST' | 'ANONYMOUS';
+      /** @enum {string} */
+      status?: 'ACTIVE' | 'INACTIVE' | 'PENDING';
       /** Format: int64 */
       viewCount?: number;
       user?: components['schemas']['User'];
-      categoryImages?: components['schemas']['CategoryImage'][];
+      categoryImage?: components['schemas']['CategoryImage'];
       categoryGenres?: components['schemas']['CategoryGenre'][];
     };
     CategoryGenre: {
@@ -435,21 +2022,19 @@ export interface components {
       content?: string;
       /** Format: int64 */
       views?: number;
-      /** Format: int64 */
-      likes?: number;
       /** Format: date-time */
       deletedAt?: string;
-      userInternal?: components['schemas']['User'];
     };
     PrincipalUser: {
       user?: components['schemas']['User'];
       enabled?: boolean;
-      accountNonExpired?: boolean;
       password?: string;
       username?: string;
       /** Format: int64 */
       userId?: number;
+      anonymous?: boolean;
       authorities?: components['schemas']['GrantedAuthority'][];
+      accountNonExpired?: boolean;
       accountNonLocked?: boolean;
       credentialsNonExpired?: boolean;
     };
@@ -459,7 +2044,8 @@ export interface components {
       nickname?: string;
       providerType?: string;
       profileImg?: string;
-      status?: string;
+      /** @enum {string} */
+      status?: 'ACTIVE' | 'INACTIVE';
       domesticId?: string;
       gender?: string;
       ageRange?: string;
@@ -467,315 +2053,106 @@ export interface components {
       createdAt?: string;
       /** Format: date-time */
       updatedAt?: string;
-      role?: string;
+      /** @enum {string} */
+      role?: 'USER' | 'ADMIN' | 'BLACKLIST' | 'ANONYMOUS';
       email?: string;
       posts?: components['schemas']['Post'][];
     };
-    /** @description 첨부파일 이미지 */
-    ImageCreateRequestDTO: {
-      /** @description 업로드된 파일명 */
-      originalFileName?: string;
-      /** @description 파일 타입 */
-      fileType?: string;
-      /**
-       * Format: int32
-       * @description 파일용량
-       */
-      fileSize?: number;
-    };
-    PostCreateUpdateRequestDTO: {
-      /**
-       * Format: int64
-       * @description 카테고리Id
-       */
-      categoryId?: number;
-      /** @description 제목 */
-      title?: string;
-      /** @description 내용 */
-      content?: string;
-      /** @description 첨부파일 이미지 */
-      imagelist?: components['schemas']['ImageCreateRequestDTO'][];
-    };
-    CommonResponseLong: {
-      success?: boolean;
-      /** Format: int64 */
-      data?: number;
-      error?: components['schemas']['ExceptionDto'];
-    };
-    ExceptionDto: {
-      /** Format: int32 */
-      code: number;
-      message: string;
-    };
-    RequestUpdateProfanityDTO: {
-      keyword?: string;
-      explaination?: string;
-      /** @enum {string} */
-      status: 'ACTIVE' | 'INACTIVE';
-    };
-    CommonResponseVoid: {
-      success?: boolean;
-      data?: Record<string, never>;
-      error?: components['schemas']['ExceptionDto'];
-    };
-    /** @description 예제 생성 요청 */
-    ExampleCreateRequest: {
-      /**
-       * @description 예제 제목
-       * @example 예제 제목입니다.
-       */
-      exampleTitle: string;
-      /**
-       * @description 예제 내용
-       * @example 예제 내용입니다.
-       */
-      exampleContent: string;
-    };
-    CommonResponseString: {
-      success?: boolean;
-      data?: string;
-      error?: components['schemas']['ExceptionDto'];
-    };
-    /** @description 유저 정보 (<code>RequestRegisterUser</code> 스키마 참고) <code>Content-Type : application/json</code> */
-    RequestRegisterUser: {
-      /**
-       * @description 유저 닉네임
-       * @example looco
-       */
-      nickname?: string;
-      /**
-       * @description 유저 프로바이더 타입
-       * @example {kakao , google}
-       * @enum {string}
-       */
-      provider_type?: 'KAKAO' | 'NAVER' | 'GOOGLE';
-    };
-    /** @description 카테고리 정보 <code>RequestCategoryCreateDTO</code> 스키마 참고 <code>Content-Type: application/json</code> */
-    RequestCategoryCreateDTO: {
-      category_name?: string;
-      ani_genre_id?: number[];
-    };
-    CategoryGenreDTO: {
-      /** Format: int64 */
-      id?: number;
-      name?: string;
-    };
-    CategoryImageDTO: {
-      /** Format: int64 */
-      id?: number;
-      imageUrl?: string;
-      fileName?: string;
-      originalFileName?: string;
-    };
-    ResponseCategoryDTO: {
-      /** Format: int64 */
-      id?: number;
-      name?: string;
-      status?: string;
-      createdType?: string;
-      /** Format: int64 */
-      viewCount?: number;
-      categoryImages?: components['schemas']['CategoryImageDTO'][];
-      categoryGenres?: components['schemas']['CategoryGenreDTO'][];
-    };
-    RequestCreateProfanityDTO: {
-      keyword: string;
-      explaination: string;
-    };
-    CommonResponseResponseCreateProfanityDTO: {
-      success?: boolean;
-      data?: components['schemas']['ResponseCreateProfanityDTO'];
-      error?: components['schemas']['ExceptionDto'];
-    };
-    ResponseCreateProfanityDTO: {
-      /** Format: int64 */
-      id?: number;
-      /** Format: int64 */
-      userId?: number;
-      keyword?: string;
-      explaination?: string;
-      /** @enum {string} */
-      status?: 'ACTIVE' | 'INACTIVE';
-      /** Format: date-time */
-      createdAt?: string;
-    };
-    /** @description 예제 생성 요청 */
-    ExampleUpdateRequest: {
-      /**
-       * Format: uuid
-       * @description 예제 ID
-       */
-      exampleId?: string;
-      /**
-       * @description 예제 제목수정
-       * @example 예제 제목수정.
-       */
-      exampleTitle: string;
-      /**
-       * @description 예제 내용 수정
-       * @example 예제 내용수정.
-       */
-      exampleContent: string;
-    };
-    CommonResponseListExampleDetailResponse: {
-      success?: boolean;
-      data?: components['schemas']['ExampleDetailResponse'][];
-      error?: components['schemas']['ExceptionDto'];
-    };
-    /** @description 예제 상세 응답 */
-    ExampleDetailResponse: {
-      /**
-       * Format: uuid
-       * @description 예제 ID
-       * @example 2be8119a-b655-419c-92c9-7db023432041
-       */
-      exampleId?: string;
-      /**
-       * @description 예제 제목
-       * @example 예제 제목입니다.
-       */
-      exampleTitle?: string;
-      /**
-       * @description 예제 내용
-       * @example 예제 내용입니다.
-       */
-      exampleContent?: string;
-    };
-    CommonResponseExampleDetailResponse: {
-      success?: boolean;
-      data?: components['schemas']['ExampleDetailResponse'];
-      error?: components['schemas']['ExceptionDto'];
-    };
-    CommonResponseUserDetailDto: {
-      success?: boolean;
-      data?: components['schemas']['UserDetailDto'];
-      error?: components['schemas']['ExceptionDto'];
-    };
-    UserDetailDto: {
-      nickname?: string;
-      profileImg?: string;
-      gender?: string;
-      ageRange?: string;
-    };
-    CommonResponseBoolean: {
-      success?: boolean;
-      data?: boolean;
-      error?: components['schemas']['ExceptionDto'];
-    };
-    PostListRequestDTO: {
-      /**
-       * @description 정렬 기준
-       * @default latest
-       * @enum {string}
-       */
-      filter: 'LATEST' | 'VIEWS' | 'LIKES' | 'PRICE_DESC' | 'PRICE_ASC';
-      /**
-       * Format: int64
-       * @description 정렬 기준의 마지막 값
-       */
-      lastValue?: number;
-      /**
-       * Format: int32
-       * @description 페이지당 항목 수
-       * @default 20
-       */
-      limit: number;
-      /** @description 검색어 */
-      keyword?: string;
-      /**
-       * Format: int64
-       * @description 카테고리 ID
-       */
-      categoryId?: number;
-      asc?: boolean;
-    };
-    CommonResponseListPostListResponseDTO: {
-      success?: boolean;
-      data?: components['schemas']['PostListResponseDTO'][];
-      error?: components['schemas']['ExceptionDto'];
-    };
-    PostListResponseDTO: {
-      /** Format: int64 */
-      id?: number;
-      /** Format: int64 */
-      userId?: number;
-      /** Format: int64 */
-      categoryId?: number;
-      title?: string;
-      content?: string;
-      imageUrl?: string;
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
-      /** Format: int64 */
-      views?: number;
-      /** Format: int64 */
-      likes?: number;
-    };
+    /** @description 공통 응답 */
     CommonResponsePostDetailResponseDTO: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
       success?: boolean;
       data?: components['schemas']['PostDetailResponseDTO'];
       error?: components['schemas']['ExceptionDto'];
     };
+    /** @description 응답 데이터 */
     PostDetailResponseDTO: {
-      /** Format: int64 */
+      /**
+       * Format: int64
+       * @description 게시글 ID
+       */
       postId?: number;
+      /**
+       * @description 게시글 제목
+       * @example 게시글 제목
+       */
       title?: string;
+      /**
+       * @description 게시글 본문
+       * @example 게시글 본문
+       */
       content?: string;
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: int64 */
+      /**
+       * Format: date-time
+       * @description 저장된 게시글 시간(update되면 update된 시간 반영)
+       */
+      updateAt?: string;
+      /**
+       * Format: int64
+       * @description 조회수
+       */
       viewCount?: number;
-      /** Format: int64 */
-      likes?: number;
+      /**
+       * @description 봤는지 안봤는지? 윤정님 확인 필요
+       * @example false
+       */
       owner?: boolean;
+      /**
+       * Format: int64
+       * @description 카테고리ID
+       */
+      categoryId?: number;
+      /**
+       * @description 보여줄 이미지 URL
+       * @example 보여줄 이미지 URL
+       */
       imageUrls?: string[];
     };
-    RequestCategorySearch: {
-      name?: string;
-      genreIds?: number[];
+    /** @description 공통 응답 */
+    CommonResponseListChatRoomResponseDTO: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success?: boolean;
+      /**
+       * @description 응답 데이터
+       * @example 응답 데이터
+       */
+      data?: components['schemas']['ChatRoomResponseDTO'][];
+      error?: components['schemas']['ExceptionDto'];
     };
-    Pageable: {
-      /** Format: int32 */
-      page?: number;
-      /** Format: int32 */
-      size?: number;
-      sort?: string[];
-    };
+    /** @description 공통 응답 */
     CommonResponsePageResponseCategorySeachDTO: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
       success?: boolean;
       data?: components['schemas']['PageResponseCategorySeachDTO'];
       error?: components['schemas']['ExceptionDto'];
     };
+    /** @description 응답 데이터 */
     PageResponseCategorySeachDTO: {
-      /** Format: int32 */
-      totalPages?: number;
       /** Format: int64 */
       totalElements?: number;
+      /** Format: int32 */
+      totalPages?: number;
       /** Format: int32 */
       size?: number;
       content?: components['schemas']['ResponseCategorySeachDTO'][];
       /** Format: int32 */
       number?: number;
       sort?: components['schemas']['SortObject'];
+      first?: boolean;
       pageable?: components['schemas']['PageableObject'];
       /** Format: int32 */
       numberOfElements?: number;
-      first?: boolean;
       last?: boolean;
       empty?: boolean;
-    };
-    PageableObject: {
-      /** Format: int64 */
-      offset?: number;
-      sort?: components['schemas']['SortObject'];
-      paged?: boolean;
-      /** Format: int32 */
-      pageNumber?: number;
-      /** Format: int32 */
-      pageSize?: number;
-      unpaged?: boolean;
     };
     ResponseCategorySeachDTO: {
       /** Format: int64 */
@@ -798,12 +2175,12 @@ export interface components {
       genreId?: number[];
       genreName?: string[];
     };
-    SortObject: {
-      empty?: boolean;
-      sorted?: boolean;
-      unsorted?: boolean;
-    };
+    /** @description 공통 응답 */
     CommonResponseResponseCategoryDTO: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
       success?: boolean;
       data?: components['schemas']['ResponseCategoryDTO'];
       error?: components['schemas']['ExceptionDto'];
@@ -813,26 +2190,32 @@ export interface components {
       keyword?: string;
       explaination?: string;
     };
+    /** @description 공통 응답 */
     CommonResponsePageProfannityResponseDTO: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
       success?: boolean;
       data?: components['schemas']['PageProfannityResponseDTO'];
       error?: components['schemas']['ExceptionDto'];
     };
+    /** @description 응답 데이터 */
     PageProfannityResponseDTO: {
-      /** Format: int32 */
-      totalPages?: number;
       /** Format: int64 */
       totalElements?: number;
+      /** Format: int32 */
+      totalPages?: number;
       /** Format: int32 */
       size?: number;
       content?: components['schemas']['ProfannityResponseDTO'][];
       /** Format: int32 */
       number?: number;
       sort?: components['schemas']['SortObject'];
+      first?: boolean;
       pageable?: components['schemas']['PageableObject'];
       /** Format: int32 */
       numberOfElements?: number;
-      first?: boolean;
       last?: boolean;
       empty?: boolean;
     };
@@ -853,21 +2236,171 @@ export interface components {
     };
   };
   responses: never;
-  parameters: never;
+  parameters: {
+    /** @description 페이지 번호 0부터 시작 */
+    page: string;
+    /** @description 한 페이지에 들어갈 항목들의 갯수 */
+    size: string;
+  };
   requestBodies: never;
   headers: never;
   pathItems: never;
 }
 export type $defs = Record<string, never>;
 export interface operations {
+  findProductDetail: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /**
+         * @description 판매글 ID
+         * @example 20
+         */
+        productId: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description 게시글 조회 성공 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseProductFindDetailResponseDTO'];
+        };
+      };
+      /** @description 존재하지 않는 게시글 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseProductFindDetailResponseDTO'];
+        };
+      };
+    };
+  };
+  updateProduct: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /**
+         * @description 게시글 ID(구글 토큰 입력)
+         * @example 74
+         */
+        productId: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        'multipart/form-data': components['schemas']['ProductUpdateRequestDTO'];
+      };
+    };
+    responses: {
+      /** @description 게시글 수정 성공 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseLong'];
+        };
+      };
+      /** @description 인증되지 않은 접근 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseLong'];
+        };
+      };
+      /** @description 존재하지 않는 게시글 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseLong'];
+        };
+      };
+      /** @description 존재하지 않는 카테고리 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseLong'];
+        };
+      };
+    };
+  };
+  deleteProduct: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description 게시글 ID */
+        productId: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description 게시글 삭제 성공 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
+        };
+      };
+      /** @description 인증되지 않은 접근 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
+        };
+      };
+      /** @description 존재하지 않는 게시글 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
+        };
+      };
+      /** @description 존재하지 않는 카테고리 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
+        };
+      };
+    };
+  };
   findPostDetail: {
     parameters: {
       query: {
+        /** @description 조회를 했는지 여부 */
         canAddView: boolean;
+        /** @description 유저 정보?? 윤정님 확인 필요 */
         principalUser: components['schemas']['PrincipalUser'];
       };
       header?: never;
       path: {
+        /** @description 게시글 ID */
         postId: number;
       };
       cookie?: never;
@@ -887,26 +2420,52 @@ export interface operations {
   };
   updatePost: {
     parameters: {
-      query: {
-        principalUser: components['schemas']['PrincipalUser'];
-      };
+      query?: never;
       header?: never;
       path: {
+        /**
+         * @description 게시글 ID(구글 테스트 토큰을 입력하세요)
+         * @example 32
+         */
         postId: number;
       };
       cookie?: never;
     };
     requestBody?: {
       content: {
-        'application/json': {
-          updatePost: components['schemas']['PostCreateUpdateRequestDTO'];
-          postImage?: string[];
-        };
+        'multipart/form-data': components['schemas']['PostUpdateRequestDTO'];
       };
     };
     responses: {
-      /** @description OK */
+      /** @description 게시글 수정 성공 */
       200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseLong'];
+        };
+      };
+      /** @description 인증되지 않은 접근 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseLong'];
+        };
+      };
+      /** @description 존재하지 않는 게시글 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseLong'];
+        };
+      };
+      /** @description 존재하지 않는 카테고리 */
+      404: {
         headers: {
           [name: string]: unknown;
         };
@@ -918,24 +2477,139 @@ export interface operations {
   };
   deletePost: {
     parameters: {
-      query: {
-        principalUser: components['schemas']['PrincipalUser'];
-      };
+      query?: never;
       header?: never;
       path: {
+        /** @description 게시글 ID */
         postId: number;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 게시글 삭제 성공 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
           '*/*': components['schemas']['CommonResponseLong'];
+        };
+      };
+      /** @description 인증되지 않은 접근 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseLong'];
+        };
+      };
+      /** @description 존재하지 않는 게시글 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseLong'];
+        };
+      };
+      /** @description 존재하지 않는 카테고리 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseLong'];
+        };
+      };
+    };
+  };
+  updateComments: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /**
+         * @description 댓글 ID(구글 토큰 입력
+         * @example 6
+         */
+        commentsId: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        'multipart/form-data': components['schemas']['CommentsUpdateRequestDTO'];
+      };
+    };
+    responses: {
+      /** @description 댓글 수정 성공 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseLong'];
+        };
+      };
+      /** @description 인증 되지 않은 접근 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseLong'];
+        };
+      };
+      /** @description 존재하지 않는 댓글 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseLong'];
+        };
+      };
+    };
+  };
+  deleteComments: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description 댓글 ID */
+        commentsId: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description 댓글 수정 성공 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
+        };
+      };
+      /** @description 인증 되지 않은 접근 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
+        };
+      };
+      /** @description 존재하지 않는 댓글 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
         };
       };
     };
@@ -1156,10 +2830,599 @@ export interface operations {
       };
     };
   };
-  findAllPost: {
+  aaa: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseString'];
+        };
+      };
+    };
+  };
+  uploadFile_1: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        'multipart/form-data': components['schemas']['ShortsCreateReqDTO'];
+      };
+    };
+    responses: {
+      /** @description API 요청 성공 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseString'];
+        };
+      };
+      /** @description 입력한 값의 유효성이 올바르지 않을 때 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseString'];
+        };
+      };
+      /** @description 사용자 로그인이 되어있지 않았을 때 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseString'];
+        };
+      };
+    };
+  };
+  createView: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description 쇼츠 아이디 */
+        shortsId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['\uC1FC\uCE20 \uC7AC\uC0DD \uAE30\uB85D \uC694\uCCAD \uAC1D\uCCB4'];
+      };
+    };
+    responses: {
+      /** @description 쇼츠 좋아요 취소간 다 완료. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
+        };
+      };
+      /** @description 회원 인증이 되지 않았습니다. */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
+        };
+      };
+      /** @description 쇼츠 정보를 찾을 수 없습니다. */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
+        };
+      };
+    };
+  };
+  addLike: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description 쇼츠 아이디 */
+        shortsId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description 쇼츠 좋아요 생성 완료. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
+        };
+      };
+      /** @description 회원 인증이 되지 않았습니다. */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
+        };
+      };
+      /** @description 쇼츠 정보를 찾을 수 없습니다. */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
+        };
+      };
+    };
+  };
+  cancelLike: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description 쇼츠 아이디 */
+        shortsId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description 쇼츠 좋아요 취소 완료. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
+        };
+      };
+      /** @description 회원 인증이 되지 않았습니다. */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
+        };
+      };
+      /** @description 쇼츠 정보를 찾을 수 없습니다. */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
+        };
+      };
+    };
+  };
+  addDislike: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description 쇼츠 아이디 */
+        shortsId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description 쇼츠 좋아요 생성 완료. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
+        };
+      };
+      /** @description 회원 인증이 되지 않았습니다. */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
+        };
+      };
+      /** @description 쇼츠 정보를 찾을 수 없습니다. */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
+        };
+      };
+    };
+  };
+  cancelDislike: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description 쇼츠 아이디 */
+        shortsId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description 쇼츠 싫어요 취소 완료. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
+        };
+      };
+      /** @description 회원 인증이 되지 않았습니다. */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
+        };
+      };
+      /** @description 쇼츠 정보를 찾을 수 없습니다. */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
+        };
+      };
+    };
+  };
+  findShortsComment: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description 쇼츠 아이디 */
+        shortsId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Shorts comment : SUCCESS */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseListShortsCommentDTO'];
+        };
+      };
+    };
+  };
+  createShortsComment: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description 쇼츠 아이디 */
+        shortsId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ShortsCommentCreateReqDTO'];
+      };
+    };
+    responses: {
+      /** @description Shorts comment : SUCCESS */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseListShortsCommentDTO'];
+        };
+      };
+      /** @description Not Found: Shorts not found. */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseListShortsCommentDTO'];
+        };
+      };
+      /** @description Internal Server Error: Shorts save error. */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseListShortsCommentDTO'];
+        };
+      };
+    };
+  };
+  createShortsReply: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description 쇼츠 아이디 */
+        shortsId: string;
+        /** @description 댓글 아이디 */
+        commentId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ShortsCommentCreateReqDTO'];
+      };
+    };
+    responses: {
+      /** @description Shorts comment reply : SUCCESS */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseListShortsCommentDTO'];
+        };
+      };
+      /** @description Not Found: Shorts comment not found. */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseListShortsCommentDTO'];
+        };
+      };
+      /** @description Internal Server Error: Shorts comment reply save error. */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseListShortsCommentDTO'];
+        };
+      };
+    };
+  };
+  createProduct: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        'multipart/form-data': components['schemas']['ProductCreateRequestDTO'];
+      };
+    };
+    responses: {
+      /** @description 게시글 생성 성공 */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseLong'];
+        };
+      };
+      /** @description 인증되지 않은 접근 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseLong'];
+        };
+      };
+      /** @description 존재하지 않는 카테고리 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseLong'];
+        };
+      };
+    };
+  };
+  findAllPostList: {
+    parameters: {
+      query?: {
+        /** @description 정렬 기준 id = latest 조회수 = views 좋아요 = likes */
+        sortFilterType?: string;
+        /** @description 정렬 기준(id, 조회수, 좋아요)의 마지막 값 */
+        lastValue?: string;
+        /** @description 정렬 방향(true = 오름차순, false = 내림차순) */
+        asc?: string;
+        /** @description 페이지당 항목 수 */
+        limit?: string;
+        /** @description 검색어 */
+        keyword?: string;
+        /** @description 카테고리 ID(현재 69, 70에 더미데이터 존재) */
+        categoryId?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description 게시글 조회 성공 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponsePostListResponseDTO'];
+        };
+      };
+    };
+  };
+  createPost: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        'multipart/form-data': components['schemas']['PostCreateRequestDTO'];
+      };
+    };
+    responses: {
+      /** @description 게시글 생성 성공 */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseLong'];
+        };
+      };
+      /** @description 인증되지 않은 접근 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseLong'];
+        };
+      };
+      /** @description 존재하지 않는 카테고리 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseLong'];
+        };
+      };
+    };
+  };
+  postLikeInteraction: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /**
+         * @description 게시글 ID
+         * @example 34
+         */
+        postId: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description 좋아요 요청 성공 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseLong'];
+        };
+      };
+      /** @description 인증되지 않는 접근 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseLong'];
+        };
+      };
+      /** @description 존재하지 않는 게시글 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseLong'];
+        };
+      };
+      /** @description 이전 요청 처리 중, 10초간 좋아요 lock */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseLong'];
+        };
+      };
+    };
+  };
+  createComments: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        'multipart/form-data': components['schemas']['CommentsCreateRequestDTO'];
+      };
+    };
+    responses: {
+      /** @description 댓글 작성 성공 */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseLong'];
+        };
+      };
+      /** @description 존재하지 않는 댓글 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseLong'];
+        };
+      };
+    };
+  };
+  getChatRoomList: {
     parameters: {
       query: {
-        requestDTO: components['schemas']['PostListRequestDTO'];
+        userId: number;
       };
       header?: never;
       path?: never;
@@ -1173,26 +3436,21 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['CommonResponseListPostListResponseDTO'];
+          '*/*': components['schemas']['CommonResponseListChatRoomResponseDTO'];
         };
       };
     };
   };
-  createPost: {
+  createChatRoom: {
     parameters: {
-      query: {
-        principalUser: components['schemas']['PrincipalUser'];
-      };
+      query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    requestBody?: {
+    requestBody: {
       content: {
-        'application/json': {
-          createPost: components['schemas']['PostCreateUpdateRequestDTO'];
-          postImage?: string[];
-        };
+        'application/json': components['schemas']['ChatRoomRequestDTO'];
       };
     };
     responses: {
@@ -1202,16 +3460,14 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['CommonResponseLong'];
+          '*/*': components['schemas']['CommonResponseChatRoomResponseDTO'];
         };
       };
     };
   };
   searchCategories: {
     parameters: {
-      query: {
-        requestCategorySearch: components['schemas']['RequestCategorySearch'];
-        pageable: components['schemas']['Pageable'];
+      query?: {
         /** @description 페이지 번호 (0부터 시작) */
         page?: number;
         /** @description 페이지 크기 */
@@ -1306,6 +3562,7 @@ export interface operations {
     parameters: {
       query?: never;
       header: {
+        /** @description 인증 토큰 정보 헤더에 전달 */
         Authorization: string;
       };
       path?: never;
@@ -1313,8 +3570,26 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 로그아웃 성공 */
       200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseString'];
+        };
+      };
+      /** @description 인증되지 않은 접근 */
+      40100: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseString'];
+        };
+      };
+      /** @description 잘못된 토큰 */
+      40103: {
         headers: {
           [name: string]: unknown;
         };
@@ -1461,6 +3736,226 @@ export interface operations {
       };
     };
   };
+  deleteShortsComment: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description 쇼츠 아이디 */
+        shortsId: string;
+        /** @description 댓글 아이디 */
+        commentId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Shorts comment : SUCCESS */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseListShortsCommentDTO'];
+        };
+      };
+      /** @description Unauthorized: User not authenticated. */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseListShortsCommentDTO'];
+        };
+      };
+      /** @description Not Found: Shorts comment not found. */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseListShortsCommentDTO'];
+        };
+      };
+      /** @description Internal Server Error: Shorts comment delete error. */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseListShortsCommentDTO'];
+        };
+      };
+    };
+  };
+  updateShortsComment: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description 쇼츠 아이디 */
+        shortsId: string;
+        /** @description 댓글 아이디 */
+        commentId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ShortsCommentUpdateReqDTO'];
+      };
+    };
+    responses: {
+      /** @description Shorts comment : SUCCESS */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseListShortsCommentDTO'];
+        };
+      };
+      /** @description Unauthorized: User not authenticated. */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseListShortsCommentDTO'];
+        };
+      };
+      /** @description Not Found: Shorts comment not found. */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseListShortsCommentDTO'];
+        };
+      };
+      /** @description Internal Server Error: Shorts comment update error. */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseListShortsCommentDTO'];
+        };
+      };
+    };
+  };
+  deleteShortsReply: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description 쇼츠 아이디 */
+        shortsId: string;
+        /** @description 댓글 아이디 */
+        commentId: string;
+        /** @description 대댓글 아이디 */
+        replyId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Shorts comment reply : SUCCESS */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseListShortsCommentDTO'];
+        };
+      };
+      /** @description Unauthorized: User not authenticated. */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseListShortsCommentDTO'];
+        };
+      };
+      /** @description Not Found: Shorts comment reply not found. */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseListShortsCommentDTO'];
+        };
+      };
+      /** @description Internal Server Error: Shorts comment reply delete error. */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseListShortsCommentDTO'];
+        };
+      };
+    };
+  };
+  updateShortsReply: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description 쇼츠 아이디 */
+        shortsId: string;
+        /** @description 댓글 아이디 */
+        commentId: string;
+        /** @description 대댓글 아이디 */
+        replyId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ShortsCommentUpdateReqDTO'];
+      };
+    };
+    responses: {
+      /** @description Shorts comment reply : SUCCESS */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseListShortsCommentDTO'];
+        };
+      };
+      /** @description Unauthorized: User not authenticated. */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseListShortsCommentDTO'];
+        };
+      };
+      /** @description Not Found: Shorts comment reply not found. */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseListShortsCommentDTO'];
+        };
+      };
+      /** @description Internal Server Error: Shorts comment reply update error. */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseListShortsCommentDTO'];
+        };
+      };
+    };
+  };
   downloadFile: {
     parameters: {
       query?: never;
@@ -1559,6 +4054,261 @@ export interface operations {
         };
         content: {
           '*/*': components['schemas']['CommonResponseBoolean'];
+        };
+      };
+    };
+  };
+  findUserPurchases: {
+    parameters: {
+      query?: {
+        /** @description 페이지 번호 (0부터 시작) */
+        page?: number;
+        /** @description 페이지 크기 */
+        size?: number;
+        /** @description 정렬 기준 ID, TITLE, CATEGORY_NAME, PRICE (예: ID,ASC || TITLE,DESC).  */
+        sort?: string;
+      };
+      header?: never;
+      path: {
+        userId: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description API 요청 성공 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponsePageImplUserPurchaseResponseDTO'];
+        };
+      };
+      /** @description 입력한 값의 유효성이 올바르지 않을 때 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponsePageImplUserPurchaseResponseDTO'];
+        };
+      };
+      /** @description 사용자 로그인이 되어있지 않았을 때 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponsePageImplUserPurchaseResponseDTO'];
+        };
+      };
+    };
+  };
+  findShortsInfo: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description 조회할 쇼츠의 고유 ID */
+        shortsId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description 파일 정보 불러오기에 성공했습니다. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseShortsResponseDTO'];
+        };
+      };
+      /** @description 파일 정보를 찾을 수 없습니다. */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseShortsResponseDTO'];
+        };
+      };
+    };
+  };
+  getRecommendShorts: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Shorts recommend : SUCCESS */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseListShortsInfoResDTO'];
+        };
+      };
+    };
+  };
+  getWeeklyStats: {
+    parameters: {
+      query: {
+        /** @description 검색할 상품 키워드 */
+        keyword: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseWeeklyStatsResponseDTO'];
+        };
+      };
+    };
+  };
+  findSimilarProducts: {
+    parameters: {
+      query: {
+        /** @description 검색할 상품 키워드 */
+        keyword: string;
+        /** @description 페이지네이션 정보 */
+        pageable: components['schemas']['Pageable'];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseListSimilarProductResponseDTO'];
+        };
+      };
+    };
+  };
+  searchMarketPrice: {
+    parameters: {
+      query: {
+        /** @description 검색 키워드 */
+        keyword: string;
+        /** @description 시작 날짜 (yyyy-MM-dd) */
+        startDate: string;
+        /** @description 종료 날짜 (yyyy-MM-dd) */
+        endDate: string;
+        /** @description 그래프 표시 옵션 (기본값: ALL) */
+        displayOption?: 'REGISTERED_PRICE_ONLY' | 'SOLD_PRICE_ONLY' | 'ALL';
+        /** @description 정렬 방향 */
+        direction?: 'ASC' | 'DESC';
+        /** @description Zero-based page index (0..N) */
+        page?: number;
+        /** @description The size of the page to be returned */
+        size?: number;
+        /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+        sort?: string[];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseMarketPriceSearchResponseDTO'];
+        };
+      };
+    };
+  };
+  getPriceGraph: {
+    parameters: {
+      query: {
+        /** @description 검색할 상품 키워드 */
+        keyword: string;
+        /** @description 조회 시작 날짜 */
+        fromDate: string;
+        /** @description 조회 종료 날짜 */
+        toDate: string;
+        /** @description 그래프 표시 옵션 (ALL, REGISTERED_PRICE_ONLY, SOLD_PRICE_ONLY) */
+        option?: 'REGISTERED_PRICE_ONLY' | 'SOLD_PRICE_ONLY' | 'ALL';
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponsePriceGraphResponseDTO'];
+        };
+      };
+    };
+  };
+  recommendProduct: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        productId: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description 게시글 추천 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseProductRecommendResponseDTO'];
+        };
+      };
+    };
+  };
+  getAllItemCategories: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description 아이템 리스트 전송 성공 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseItemCategoriesResponseDTO'];
         };
       };
     };

@@ -12,7 +12,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { signIn } from '@/services/authService';
+import { signIn } from '@/services/auth';
 
 const signinSchema = z.object({
   email: z

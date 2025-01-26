@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { BrowserRouter } from 'react-router-dom';
 
+import ScrollToTop from './layout/ScrollToTop';
 import Router from './routes';
 
 // Create a client
@@ -14,6 +15,7 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Suspense>
+          <ScrollToTop />
           <Router />
         </Suspense>
       </BrowserRouter>

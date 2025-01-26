@@ -53,6 +53,14 @@ const addPostsSchema = z.object({
       type: z.string(),
     }),
   ),
+  avatar: z
+    .object({
+      preview: z.string(),
+      name: z.string(),
+      size: z.number(),
+      type: z.string(),
+    })
+    .nullable(),
 });
 
 const CommunityPage = () => {
@@ -114,6 +122,7 @@ const CommunityPage = () => {
       categoryId: 0,
       content: '',
       multiUpload: [],
+      avatar: null,
     },
   });
 
@@ -235,6 +244,7 @@ const CommunityPage = () => {
                           setValue('multiUpload', [], { shouldValidate: true })
                         }
                       />
+                      {/* <RHFUploadAvatar name="avatar" /> */}
                       <DialogFooter>
                         <Button type="submit">저장하기</Button>
                       </DialogFooter>

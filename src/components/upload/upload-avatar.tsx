@@ -5,7 +5,6 @@ import RejectionFiles from './errors-rejection-files';
 import { UploadProps } from './types';
 
 // ----------------------------------------------------------------------
-
 export default function UploadAvatar({
   error,
   file,
@@ -28,15 +27,15 @@ export default function UploadAvatar({
     ...other,
   });
 
-  const hasFile = !!file;
+  const hasFile = !!file; // 파일이 있는지 여부
 
-  const hasError = isDragReject || !!error;
+  const hasError = isDragReject || !!error; // 에러가 있는지 여부
 
-  const imgUrl = typeof file === 'string' ? file : file?.preview;
+  const imgUrl = typeof file === 'string' ? file : file?.preview; // 파일의 URL
 
   const renderPreview = hasFile && (
     <img alt="avatar" src={imgUrl} className="h-full w-full rounded-full" />
-  );
+  ); // 파일이 있을 때 미리보기 렌더링
 
   const renderPlaceholder = (
     <div
@@ -52,14 +51,14 @@ export default function UploadAvatar({
 
       <span className="text-xs">{file ? 'Update photo' : 'Upload photo'}</span>
     </div>
-  );
+  ); // 파일이 없을 때 플레이스홀더 렌더링
 
   const renderContent = (
     <div className="relative h-full w-full overflow-hidden rounded-full">
       {renderPreview}
       {renderPlaceholder}
     </div>
-  );
+  ); // 미리보기와 플레이스홀더를 포함한 컨텐츠 렌더링
 
   return (
     <>
@@ -75,9 +74,9 @@ export default function UploadAvatar({
 
         {renderContent}
       </div>
-
+      {/* 헬퍼 텍스트 렌더링 */}
       {helperText && helperText}
-
+      {/* 파일 거부 에러 */}
       <RejectionFiles fileRejections={fileRejections} />
     </>
   );

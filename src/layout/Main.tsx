@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { FOOTER, HEADER } from './config-layout';
+
 interface MainProps {
   children: React.ReactNode;
 }
@@ -7,7 +9,12 @@ interface MainProps {
 const Main = ({ children }: MainProps) => {
   return (
     <main className="container mx-auto">
-      <div className="flex flex-col justify-center px-5 py-5 md:px-20">
+      <div
+        className="my-10 flex flex-col px-5 md:my-20 md:px-20"
+        style={{
+          minHeight: `calc(100vh - ${HEADER.H_DESKTOP + FOOTER.H_DESKTOP}px)`,
+        }}
+      >
         {children}
       </div>
     </main>

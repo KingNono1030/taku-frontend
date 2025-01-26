@@ -12,7 +12,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { signUp } from '@/services/authService';
+import { signUp } from '@/services/auth';
 
 const signupSchema = z.object({
   nickname: z

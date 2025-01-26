@@ -4,7 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 
 import LoadingSpinner from '@/components/loading/LoadingSpinner';
 import { KAKAO_REDIRECT_URL } from '@/constants/api/oauth';
-import { kakaoLogin } from '@/services/authService';
+import { kakaoLogin } from '@/services/auth';
 
 const KakaoCallBack = () => {
   const [searchParams] = useSearchParams();

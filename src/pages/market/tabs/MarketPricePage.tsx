@@ -1,102 +1,147 @@
 import { useState } from 'react';
 
-import { TrendingDown, TrendingUp } from 'lucide-react';
-
-import { cn } from '@/lib/utils';
+import { Chart } from '@/components/market-price/Chart';
+import { PriceList } from '@/components/market-price/PriceList';
+import { RecentlyTradedProduct } from '@/components/market-price/RecentlyTradedProduct';
+import { RelatedProduct } from '@/components/market-price/RelatedProduct';
+import {
+  MarketPriceSearchResponse,
+  Period,
+} from '@/types/market-price-type/marketPrice.types';
 
 const MarketPricePage = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState<'1일' | '1주일'>('1일');
+  const [selectedPeriod, setSelectedPeriod] = useState<Period>('1일');
+
+  // Mock 데이터
+  const dailyMockData: MarketPriceSearchResponse = {
+    success: true,
+    data: {
+      keyword: '나루토',
+      priceGraph: {
+        dataPoints: [
+          {
+            date: '2025-01-15 04:00:00',
+            registeredPrice: 41250,
+            soldPrice: 37125,
+            dealCount: 3,
+          },
+          {
+            date: '2025-01-15 08:00:00',
+            registeredPrice: 43000,
+            soldPrice: 38700,
+            dealCount: 5,
+          },
+          {
+            date: '2025-01-15 12:00:00',
+            registeredPrice: 45000,
+            soldPrice: 40500,
+            dealCount: 4,
+          },
+          {
+            date: '2025-01-15 16:00:00',
+            registeredPrice: 47500,
+            soldPrice: 42750,
+            dealCount: 6,
+          },
+          {
+            date: '2025-01-15 20:00:00',
+            registeredPrice: 46000,
+            soldPrice: 41400,
+            dealCount: 4,
+          },
+          {
+            date: '2025-01-15 24:00:00',
+            registeredPrice: 48500,
+            soldPrice: 43650,
+            dealCount: 7,
+          },
+        ],
+      },
+      weeklyStats: {
+        averagePrice: 45208,
+        highestPrice: 48500,
+        lowestPrice: 41250,
+        totalDeals: 29,
+      },
+      similarProducts: [],
+    },
+    error: undefined,
+  };
+
+  const weeklyMockData: MarketPriceSearchResponse = {
+    success: true,
+    data: {
+      keyword: '나루토',
+      priceGraph: {
+        dataPoints: [
+          {
+            date: '2025-01-09',
+            registeredPrice: 41250,
+            soldPrice: 37125,
+            dealCount: 16,
+          },
+          {
+            date: '2025-01-10',
+            registeredPrice: 45000,
+            soldPrice: 40500,
+            dealCount: 12,
+          },
+          {
+            date: '2025-01-11',
+            registeredPrice: 43000,
+            soldPrice: 38700,
+            dealCount: 14,
+          },
+          {
+            date: '2025-01-12',
+            registeredPrice: 47500,
+            soldPrice: 42750,
+            dealCount: 11,
+          },
+          {
+            date: '2025-01-13',
+            registeredPrice: 46000,
+            soldPrice: 41400,
+            dealCount: 13,
+          },
+          {
+            date: '2025-01-14',
+            registeredPrice: 48500,
+            soldPrice: 43650,
+            dealCount: 15,
+          },
+          {
+            date: '2025-01-15',
+            registeredPrice: 50000,
+            soldPrice: 45000,
+            dealCount: 10,
+          },
+        ],
+      },
+      weeklyStats: {
+        averagePrice: 45892,
+        highestPrice: 50000,
+        lowestPrice: 41250,
+        totalDeals: 91,
+      },
+      similarProducts: [],
+    },
+    error: undefined,
+  };
 
   return (
     <div className="flex flex-col space-y-8">
-      {/* 상품 정보 */}
-      <div className="space-y-20">
-        {/* 가격 정보 */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">원피스 루피 피규어</h2>
-          {/* 가격 표시 */}
-          <div className="flex space-x-16">
-            <div className="flex items-end gap-2">
-              <span className="text-[40px] font-bold text-blue-500">
-                100,000
-              </span>
-              <span className="mb-1 text-[28px] text-blue-500">원</span>
-              <div className="mb-2 flex items-center gap-1">
-                <TrendingDown className="h-5 w-5 text-blue-500" />
-                <span className="text-blue-500">3,000 원</span>
-                <span className="text-muted-foreground">(-n.nn%)</span>
-              </div>
-            </div>
-            <div className="flex items-end gap-2">
-              <span className="text-[40px] font-bold text-red-500">
-                100,000
-              </span>
-              <span className="mb-1 text-[28px] text-red-500">원</span>
-              <div className="mb-2 flex items-center gap-1">
-                <TrendingUp className="h-5 w-5 text-red-500" />
-                <span className="text-red-500">3,000 원</span>
-                <span className="text-muted-foreground">(-n.nn%)</span>
-              </div>
-            </div>
-          </div>
-
-          {/* 기간 탭 */}
-          <div className="flex h-[72px] gap-4">
-            {['1일', '1주일'].map((period) => (
-              <button
-                key={period}
-                onClick={() => setSelectedPeriod(period as '1일' | '1주일')}
-                className={cn(
-                  'relative pb-2 text-base transition-colors',
-                  selectedPeriod === period
-                    ? 'border-b font-medium text-foreground'
-                    : 'text-muted-foreground',
-                  selectedPeriod === period &&
-                    'after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-foreground',
-                )}
-              >
-                {period}
-              </button>
-            ))}
-          </div>
-          {/* 차트 영역 */}
-          <div className="aspect-video w-full rounded-lg bg-purple-500" />
-        </div>
-
-        {/* 최근 거래된 상품 */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">
-            최근 거래된 상품 (일주일 내)
-          </h3>
-          <div className="grid grid-cols-3 gap-4">
-            {['평균 거래가', '최고 거래가', '최저 거래가'].map(
-              (label, index) => (
-                <div
-                  key={index}
-                  className="rounded-lg bg-muted p-4 text-center"
-                >
-                  <div className="text-sm text-muted-foreground">{label}</div>
-                  <div className="mt-1 font-semibold">00,000 원</div>
-                </div>
-              ),
-            )}
-          </div>
-        </div>
-
-        {/* 연관 상품 */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">연관 상품</h3>
-          <div className="grid grid-cols-5 gap-4">
-            {Array.from({ length: 5 }).map((_, index) => (
-              <div key={index} className="space-y-2">
-                <div className="aspect-square rounded-lg bg-purple-500" />
-                <div className="line-clamp-2 text-sm">상품명</div>
-                <div className="text-sm font-semibold">00,000 원</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      <PriceList
+        selectedPeriod={selectedPeriod}
+        setSelectedPeriod={(period) => setSelectedPeriod(period as Period)}
+        priceData={selectedPeriod === '1일' ? dailyMockData : weeklyMockData}
+      />
+      <Chart
+        data={selectedPeriod === '1일' ? dailyMockData : weeklyMockData}
+        period={selectedPeriod}
+      />
+      <RecentlyTradedProduct />
+      <RelatedProduct />
     </div>
   );
 };
