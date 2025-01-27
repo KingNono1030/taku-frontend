@@ -29,11 +29,15 @@ export type PriceGraphResponse = CommonResponse<PriceGraph>;
 // 시세 검색 응답 타입
 export type MarketPriceSearchResponse = CommonResponse<MarketPriceSearch>;
 
+// 시세 조회 파라미터 타입
 export interface MarketPriceProps {
   keyword: string;
-  graph: PriceGraph;
-  stats: WeeklyStats;
-  products: SimilarProduct[];
+  startDate: string;
+  endDate: string;
+  displayOption: string;
+  direction: string;
+  page: number;
+  size: number;
 }
 
 export type Period = '1일' | '1주일';

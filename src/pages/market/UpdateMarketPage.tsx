@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { z } from 'zod';
 
-import { RHFUpload } from '@/components/hook-form/rhf-upload';
+import { RHFUpload } from '@/components/hook-form/RhfUpload';
 import LoadingSpinner from '@/components/loading/LoadingSpinner';
 import { Button } from '@/components/ui/button';
 import {
