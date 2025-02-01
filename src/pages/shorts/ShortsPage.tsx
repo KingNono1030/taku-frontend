@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import { AxiosResponse } from 'axios';
 import { X } from 'lucide-react';
 
@@ -8,7 +7,7 @@ import CommentContent from '@/components/comments/CommentList';
 import CommentMainForm from '@/components/comments/CommentMainForm';
 import LoadingSpinner from '@/components/loading/LoadingSpinner';
 import ShortsButtonLayout from '@/components/shorts/ShortsButtonLayout';
-import { Avatar } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -65,7 +64,11 @@ const ShortsPage = () => {
 
   const loadMoreVideos = () => {
     getVedioList().then((res) => {
-      setVideos((prevVideos) => [...prevVideos, ...res.data.data]); // 기존 데이터에 새로운 비디오 추가
+      // 랜덤 데이터 추가시 id 중복이 발생하여 제외하고 추가
+      const newVideos = res.data.data.filter(
+        (video: any) => !videos.some((v) => v.id === video.id),
+      );
+      setVideos([...videos, ...newVideos]);
     });
   };
 
