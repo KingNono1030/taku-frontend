@@ -2,13 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { useParams } from 'react-router-dom';
 
-interface Message {
-  id: string;
-  senderId: string;
-  content: string;
-  timestamp: string;
-  isMine: boolean;
-}
+import { Message } from '@/types/chat-type/chat.types';
 
 const ChatRoom = () => {
   const { roomId } = useParams();

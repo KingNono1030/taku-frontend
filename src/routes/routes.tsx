@@ -78,7 +78,7 @@ export const routes = [
 
       // 채팅 관련 라우트
       {
-        path: '/chat',
+        path: '/market/:id/chat',
         element: <ChatPage />,
         children: [
           {
