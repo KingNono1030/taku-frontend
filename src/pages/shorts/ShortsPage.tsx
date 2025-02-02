@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { useQuery } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 import { X } from 'lucide-react';
 
@@ -7,7 +8,7 @@ import CommentContent from '@/components/comments/CommentList';
 import CommentMainForm from '@/components/comments/CommentMainForm';
 import LoadingSpinner from '@/components/loading/LoadingSpinner';
 import ShortsButtonLayout from '@/components/shorts/ShortsButtonLayout';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import ShortsDetailCarouselItem from '@/components/shorts/ShortsDetailCarouselItem';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -21,8 +22,8 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/ui/carousel';
-import VideoPlayer from '@/components/video-player/VideoPlayer';
 import { testAxios } from '@/lib/axiosInstance';
+import { getShortsDetail } from '@/services/shorts';
 
 const ShortsPage = () => {
   const [openComments, setOpenComments] = useState(true);
@@ -34,7 +35,6 @@ const ShortsPage = () => {
   const carouselRef = useRef<HTMLDivElement>(null);
 
   const [selectedVideo, setSelectedVideo] = useState<any>(null);
-  const [selectedVideoInfo, setSelectedVideoInfo] = useState<any>(null);
 
   const [currentTime, setCurrentTime] = useState(0);
   const logCurrentTime = () => {
@@ -47,10 +47,13 @@ const ShortsPage = () => {
     return await testAxios.get('/api/shorts/recommend');
   };
 
-  // 쇼츠 상세 정보 가져오기
-  const getVedioDetail = async (shartsId: string): Promise<AxiosResponse> => {
-    return await testAxios.get('/api/shorts/' + shartsId);
-  };
+  // 선택된 쇼츠의 상세 정보 가져오기
+  const { data: shortsDetailData, refetch: refetchShortsDetailData } = useQuery(
+    {
+      queryKey: ['shortsDetail', selectedVideo?.id],
+      queryFn: async () => await getShortsDetail(selectedVideo?.id),
+    },
+  );
 
   // 쇼츠 댓글 가져오기
   const getComments = async (shartsId: string): Promise<AxiosResponse> => {
@@ -146,22 +149,13 @@ const ShortsPage = () => {
     });
   }, [api, videos]);
 
-  // 비디오 정보 리셋
-  const resetVideoInfo = () => {
-    getVedioDetail(selectedVideo.id).then((res) => {
-      setSelectedVideoInfo(res.data.data);
-    });
-  };
-
   // 선택된 비디오가 변경되면
   useEffect(() => {
     if (!selectedVideo) {
       return;
     }
 
-    getVedioDetail(selectedVideo.id).then((res) => {
-      setSelectedVideoInfo(res.data.data);
-    });
+    refetchShortsDetailData();
 
     getComments(selectedVideo.id).then((res) => {
       console.log('댓글', res.data.data);
@@ -177,7 +171,7 @@ const ShortsPage = () => {
     if (currentTime > 0) {
       logCurrentTime();
     }
-  }, [selectedVideoInfo]);
+  }, [shortsDetailData]);
 
   return (
     <div className="h-full bg-stone-900">
@@ -195,33 +189,14 @@ const ShortsPage = () => {
               className="w-full"
             >
               <CarouselContent className="flex h-[1000px] flex-col gap-4 rounded-lg">
-                {videos.map((info: any, index: number) => (
-                  <CarouselItem key={index} className="w-full basis-11/12">
-                    <div className="relative h-full w-full overflow-hidden rounded-lg">
-                      <VideoPlayer
-                        currentTime={currentTime}
-                        setCurrentTime={setCurrentTime}
-                        src={
-                          selectedVideoInfo?.m3u8_url
-                            ? selectedVideoInfo?.m3u8_url
-                            : ''
-                        }
-                        type="m3u8"
-                      />
-                      <div className="absolute bottom-20 left-0 z-10 bg-[#00000000] px-4 py-1 text-white [text-shadow:_0_1px_0_rgb(0_0_0_/_40%)]">
-                        <div>
-                          <Avatar className="h-6 w-6">
-                            <AvatarImage
-                              src={selectedVideoInfo?.profile_img_url}
-                            />
-                            <AvatarFallback>aa</AvatarFallback>
-                          </Avatar>
-                        </div>
-                        <p>{info.title}</p>
-                        <p>{info.description}</p>
-                      </div>
-                    </div>
-                  </CarouselItem>
+                {videos.map((info: any) => (
+                  <ShortsDetailCarouselItem
+                    key={info.id}
+                    title={info.title}
+                    shortsDetailData={shortsDetailData?.data}
+                    currentTime={currentTime}
+                    setCurrentTime={setCurrentTime}
+                  />
                 ))}
                 <CarouselItem
                   className="flex h-full w-full items-center justify-center"
@@ -234,9 +209,9 @@ const ShortsPage = () => {
           </div>
           {/* button layout */}
           <ShortsButtonLayout
-            selectedVideoInfo={selectedVideoInfo}
+            selectedVideoInfo={shortsDetailData?.data}
             setOpenComments={setOpenComments}
-            resetVideoInfo={resetVideoInfo}
+            resetVideoInfo={refetchShortsDetailData}
           />
         </section>
         {openComments && (

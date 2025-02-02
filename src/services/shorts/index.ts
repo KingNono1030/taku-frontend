@@ -13,7 +13,7 @@ import { UploadShortsRequest } from '@/types/api/shorts.types';
 export const uploadShorts = async (
   requestBody: UploadShortsRequest,
 ): Promise<AxiosResponse> => {
-  const { data } = await duckuWithAuthFormData.post('api/shorts', requestBody);
+  const { data } = await duckuWithAuthFormData.post('/api/shorts', requestBody);
   return data;
 };
 
@@ -30,8 +30,8 @@ export const getShortsList = async () => {
  * 쇼츠 상세 조회 서비스
  * @param shortsId 쇼츠 ID
  */
-export const getShortsDetail = async (shortsId: number) => {
-  const { data } = await ducku.get(`api/shorts/${shortsId}`);
+export const getShortsDetail = async (shortsId: string) => {
+  const { data } = await ducku.get(`/api/shorts/${shortsId}`);
   return data;
 };
 
@@ -39,8 +39,8 @@ export const getShortsDetail = async (shortsId: number) => {
  * 쇼츠 댓글 목록 조회 서비스
  * @param shortsId 쇼츠 ID
  */
-export const getShortsComments = async (shortsId: number) => {
-  const { data } = await ducku.get(`api/shorts/${shortsId}/comments`);
+export const getShortsComments = async (shortsId: string) => {
+  const { data } = await ducku.get(`/api/shorts/${shortsId}/comments`);
   return data;
 };
 
@@ -50,11 +50,11 @@ export const getShortsComments = async (shortsId: number) => {
  * @param requestBody 댓글 생성 요청 데이터
  */
 export const createShortsComment = async (
-  shortsId: number,
+  shortsId: string,
   requestBody: { content: string },
 ) => {
   const { data } = await duckuWithAuthJSON.post(
-    `api/shorts/${shortsId}/comments`,
+    `/api/shorts/${shortsId}/comments`,
     requestBody,
   );
   return data;
@@ -67,8 +67,8 @@ export const createShortsComment = async (
  * @param requestBody 댓글 수정 요청 데이터
  */
 export const updateShortsComment = async (
-  shortsId: number,
-  commentId: number,
+  shortsId: string,
+  commentId: string,
   requestBody: { content: string },
 ) => {
   const { data } = await duckuWithAuthJSON.patch(
@@ -84,11 +84,11 @@ export const updateShortsComment = async (
  * @param commentId 댓글 ID
  */
 export const deleteShortsComment = async (
-  shortsId: number,
-  commentId: number,
+  shortsId: string,
+  commentId: string,
 ) => {
   const { data } = await duckuWithAuthJSON.delete(
-    `api/shorts/${shortsId}/comments/${commentId}`,
+    `/api/shorts/${shortsId}/comments/${commentId}`,
   );
   return data;
 };
@@ -100,8 +100,8 @@ export const deleteShortsComment = async (
  * @param requestBody 대댓글 생성 요청 데이터
  */
 export const createShortsCommentReply = async (
-  shortsId: number,
-  commentId: number,
+  shortsId: string,
+  commentId: string,
   requestBody: { content: string },
 ) => {
   const { data } = await duckuWithAuthJSON.post(
@@ -119,9 +119,9 @@ export const createShortsCommentReply = async (
  * @param requestBody 대댓글 수정 요청 데이터
  */
 export const updateShortsCommentReply = async (
-  shortsId: number,
-  commentId: number,
-  replyId: number,
+  shortsId: string,
+  commentId: string,
+  replyId: string,
   requestBody: { content: string },
 ) => {
   const { data } = await duckuWithAuthJSON.patch(
@@ -138,9 +138,9 @@ export const updateShortsCommentReply = async (
  * @param replyId 대댓글 ID
  */
 export const deleteShortsCommentReply = async (
-  shortsId: number,
-  commentId: number,
-  replyId: number,
+  shortsId: string,
+  commentId: string,
+  replyId: string,
 ) => {
   const { data } = await duckuWithAuthJSON.delete(
     `/api/shorts/${shortsId}/comment/${commentId}/reply/${replyId}`,
