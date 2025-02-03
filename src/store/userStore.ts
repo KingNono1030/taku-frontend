@@ -32,7 +32,7 @@ const customStorage = {
       return null;
     }
   },
-  setItem: (name: string, value: any) => {
+  setItem: (name: string, value: string) => {
     localStorage.setItem(name, encode(JSON.stringify(value)));
   },
   removeItem: (name: string) => {
