@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import {
   Bell,
   Bookmark,
@@ -30,6 +28,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useLogout } from '@/queries/auth';
+import useUserStore from '@/store/userStore';
 
 const navLists = [
   { title: '커뮤니티', path: '/community' },
@@ -39,12 +39,9 @@ const navLists = [
 ];
 
 export default function Header() {
-  const [isLogin, setIsLogin] = useState(false);
-
-  const handleLogin = () => {
-    setIsLogin((prev) => !prev);
-  };
-
+  const isLoggedIn = useUserStore((state) => state.isLoggedIn);
+  const user = useUserStore((state) => state.user);
+  const { mutate: logout } = useLogout();
   return (
     // 가운데 정렬을 위해 container 클래스 추가
     <header className="flex w-full items-center justify-center border-b">
@@ -136,19 +133,16 @@ export default function Header() {
           </Drawer>
 
           <div className="hidden md:inline-flex">
-            {isLogin ? (
+            {isLoggedIn() ? (
               <DropdownMenu>
                 <DropdownMenuTrigger>
                   <Avatar>
-                    <AvatarImage
-                      src="https://github.com/shadcn.png"
-                      alt="@shadcn"
-                    />
+                    <AvatarImage src={user?.profileImg} alt={user?.nickname} />
                     <AvatarFallback>CN</AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>홍길동</DropdownMenuLabel>
+                  <DropdownMenuLabel>{user?.nickname}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
                     <User className="mr-2 h-6 w-6" />
@@ -159,7 +153,7 @@ export default function Header() {
                     <span>설정</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogin}>
+                  <DropdownMenuItem onClick={() => logout()}>
                     <LogOut className="mr-2 h-6 w-6" />
                     <span>로그아웃</span>
                   </DropdownMenuItem>
@@ -170,7 +164,7 @@ export default function Header() {
                 className="bg-[#FDB813] text-white hover:bg-[#FDB813]/90"
                 asChild
               >
-                <Link to={'/auth/login'}>로그인</Link>
+                <Link to={'/login'}>로그인</Link>
               </Button>
             )}
           </div>
