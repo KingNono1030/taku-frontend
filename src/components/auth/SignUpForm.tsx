@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useRegisterUser } from '@/queries/user';
+import { RegisterUserRequestWithJSON } from '@/services/user';
 import { OAuthProvider } from '@/types/api/user.types';
 
 import { RHFUploadAvatar } from '../hook-form/rhf-upload';
@@ -46,10 +47,10 @@ const signupSchema = z.object({
 });
 
 export const SignUpForm = ({
-  code,
+  token,
   provider,
 }: {
-  code: string;
+  token: string;
   provider: OAuthProvider;
 }) => {
   // const navigate = useNavigate();
@@ -69,9 +70,18 @@ export const SignUpForm = ({
   const { handleSubmit, control, watch, setValue } = form;
   const values = watch();
 
-  const onSubmit = async (requestBody: z.infer<typeof signupSchema>) => {
-    console.log(requestBody);
-    const data = await mutate({ requestBody, code });
+  const onSubmit = async (values: z.infer<typeof signupSchema>) => {
+    // FormData 객체 생성
+    const requestBody: RegisterUserRequestWithJSON = {
+      user: JSON.stringify(values.user),
+    };
+
+    // profileImage가 존재하면 추가
+    if (values.profileImage) {
+      requestBody.profileImage = values.profileImage;
+    }
+
+    const data = await mutate({ requestBody, token });
     console.log(data);
   };
 
