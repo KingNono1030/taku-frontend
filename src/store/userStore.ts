@@ -50,11 +50,13 @@ const useUserStore = create<UserState>()(
 
       setToken: (token: string) => set({ token }),
 
-      clearUser: () =>
+      clearUser: () => {
         set({
           user: null,
           token: null,
-        }),
+        });
+        localStorage.removeItem('user-storage');
+      },
 
       isLoggedIn: () => {
         const state = get();
