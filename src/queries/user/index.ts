@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 // import { useNavigate } from 'react-router-dom';
 
 import { registerUser } from '@/services/user';
-import type { RegisterUserRequest } from '@/types/api/user.types';
+import { RegisterUserRequestWithJSON } from '@/services/user';
 
 export const useRegisterUser = () => {
   // const navigate = useNavigate();
@@ -11,12 +11,12 @@ export const useRegisterUser = () => {
   return useMutation({
     mutationFn: async ({
       requestBody,
-      code,
+      token,
     }: {
-      requestBody: RegisterUserRequest;
-      code: string;
+      requestBody: RegisterUserRequestWithJSON;
+      token: string;
     }) => {
-      return registerUser(requestBody, code);
+      return registerUser(requestBody, token);
     },
     onSuccess: (data) => {
       // 요청 성공 시 실행할 로직
