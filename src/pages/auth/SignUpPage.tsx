@@ -5,15 +5,15 @@ import { OAuthProvider } from '@/types/api/user.types';
 
 const SignUpPage = () => {
   const [searchParams] = useSearchParams();
-  const code = searchParams.get('code') as string;
+  const token = searchParams.get('token') as string;
   const provider = searchParams.get('provider') as OAuthProvider;
-  console.log('code : ', code, 'provider : ', provider);
+  console.log('token : ', token, 'provider : ', provider);
   return (
     <div className="mx-auto mb-[6.25rem] mt-[3.75rem] w-[560px]">
       <h1 className="mb-8 text-[2rem] font-semibold leading-[2.625rem]">
         회원가입
       </h1>
-      <SignUpForm code={code} provider={provider} />
+      <SignUpForm token={token} provider={provider} />
     </div>
   );
 };

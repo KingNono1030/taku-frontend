@@ -32,6 +32,15 @@ const LoginPage = () => {
             Google 계정으로 로그인
           </Button>
         </Link>
+        <Link
+          to={
+            '/oauth/callback?token=eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjIsIm5pY2tuYW1lIjoibG9vY28iLCJwcm92aWRlclR5cGUiOiJLQUtBTyIsInByb2ZpbGVJbWciOiJodHRwczovL2R1Y2t3aG8tdmlkZW8uY2U0MDBhY2YwYThlYzg3MjY1YzhmZGE2ZWM2OGY5NTkucjIuY2xvdWRmbGFyZXN0b3JhZ2UuY29tLzk3OWRlZmRiLTJjZWQtNGM1NS1iNzY3LTA1NjdkYTQ0NjRmZi5wbmciLCJzdGF0dXMiOiJBQ1RJVkUiLCJkb21lc3RpY0lkIjoiMzgzNTM0MTc3NiIsImdlbmRlciI6Ik1BTEUiLCJhZ2VSYW5nZSI6IjIwfjI5Iiwicm9sZSI6IlVTRVIiLCJlbWFpbCI6InNlczk4OTJAbmF2ZXIuY29tIiwicG9zdHMiOltdLCJ0eXBlIjoiQUNDRVNTIiwiaWF0IjoxNzM2MjQwMDM3LCJleHAiOjE3Mzg4MzIwMzd9.d-mA2t2m_SDi6kyKMb-UmM2gwhEZdJ-IA0RcqTz3uhE&user={"nickname":"nono","profileImg":"https://picsum.photos/200/300","gender":"male","ageRange":"20~19"}'
+          }
+        >
+          <Button className="relative h-10 w-full border border-solid border-[#e5e7eb] bg-white py-4 font-semibold text-[#000000/85] hover:bg-white">
+            테스트
+          </Button>
+        </Link>
       </div>
     </div>
   );
