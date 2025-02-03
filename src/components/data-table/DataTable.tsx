@@ -5,7 +5,7 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { ImageOff } from 'lucide-react';
+import { ImageOff, User } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import {
@@ -33,13 +33,16 @@ type Post = {
   imageUrl: string;
   updatedAt: string;
   views: number;
+  likes: number;
+  userNickname: string;
+  userImageUrl: string;
 };
 
 const getCommunityPosts = async (
   sortFilterType = 'latest',
   page: number,
-  asc = 'false',
-  limit = 10,
+  sort = 'id,desc',
+  size = 20,
   keyword: string,
   categoryId: string,
 ) => {
@@ -47,8 +50,8 @@ const getCommunityPosts = async (
     params: {
       sortFilterType,
       page,
-      asc,
-      limit,
+      sort,
+      size,
       keyword,
       categoryId,
     },
@@ -56,7 +59,7 @@ const getCommunityPosts = async (
   return response.data;
 };
 
-const asc = 'false';
+const sort = 'id,desc';
 
 const DataTable = () => {
   const { category } = useParams();
@@ -75,13 +78,13 @@ const DataTable = () => {
       'communityPosts',
       selectedFilter,
       page,
-      asc,
-      10,
+      sort,
+      20,
       search,
       category,
     ],
     queryFn: () =>
-      getCommunityPosts(selectedFilter, page, asc, 10, search, category ?? ''),
+      getCommunityPosts(selectedFilter, page, sort, 20, search, category ?? ''),
     placeholderData: keepPreviousData,
     staleTime: 5000,
   });
@@ -98,7 +101,7 @@ const DataTable = () => {
           'communityPosts',
           selectedFilter,
           page + 1,
-          asc,
+          sort,
           10,
           search,
           category,
@@ -107,7 +110,7 @@ const DataTable = () => {
           getCommunityPosts(
             selectedFilter,
             page + 1,
-            asc,
+            sort,
             10,
             search,
             category ?? '',
@@ -170,7 +173,17 @@ const DataTable = () => {
                   {post.title}
                 </div>
               </TableCell>
-              <TableCell className="font-medium">{post.userId}</TableCell>
+              <TableCell className="font-medium">
+                <div className="flex items-center gap-2">
+                  <Avatar className="h-8 w-8 rounded-full">
+                    <AvatarImage src={post.userImageUrl} alt="@shadcn" />
+                    <AvatarFallback className="rounded-full">
+                      <User />
+                    </AvatarFallback>
+                  </Avatar>
+                  <p>{post.userNickname}</p>
+                </div>
+              </TableCell>
               <TableCell className="text-center">{post.updatedAt}</TableCell>
               <TableCell className="text-center">{post.views}</TableCell>
             </TableRow>
@@ -179,7 +192,7 @@ const DataTable = () => {
       </Table>
       <div className="my-8">
         <PaginationComponent
-          totalPages={2}
+          totalPages={data.data.totalPages}
           setCurrentPage={setPage}
           currentPage={page}
         />

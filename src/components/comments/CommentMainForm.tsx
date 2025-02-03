@@ -24,7 +24,7 @@ const addCommentSchema = z.object({
 
 type CommentMainFormProps = {
   parentId?: string;
-  resetComments?: (resCommentArr: any[]) => void; //eslint-disable-line
+  resetComments?: () => void;
 };
 
 const CommentMainForm = ({ parentId, resetComments }: CommentMainFormProps) => {
@@ -54,7 +54,7 @@ const CommentMainForm = ({ parentId, resetComments }: CommentMainFormProps) => {
     }
 
     addComment(data).then((res) => {
-      resetComments && resetComments(res.data.data);
+      resetComments && resetComments();
       form.reset();
       console.log(res);
     });

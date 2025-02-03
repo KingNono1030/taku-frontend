@@ -39,8 +39,8 @@ export const getShortsDetail = async (shortsId: string) => {
  * 쇼츠 댓글 목록 조회 서비스
  * @param shortsId 쇼츠 ID
  */
-export const getShortsComments = async (shortsId: string) => {
-  const { data } = await ducku.get(`/api/shorts/${shortsId}/comments`);
+export const getShortsComment = async (shortsId: string) => {
+  const { data } = await ducku.get(`/api/shorts/${shortsId}/comment`);
   return data;
 };
 
@@ -54,7 +54,7 @@ export const createShortsComment = async (
   requestBody: { content: string },
 ) => {
   const { data } = await duckuWithAuthJSON.post(
-    `/api/shorts/${shortsId}/comments`,
+    `/api/shorts/${shortsId}/comment`,
     requestBody,
   );
   return data;
@@ -88,7 +88,7 @@ export const deleteShortsComment = async (
   commentId: string,
 ) => {
   const { data } = await duckuWithAuthJSON.delete(
-    `/api/shorts/${shortsId}/comments/${commentId}`,
+    `/api/shorts/${shortsId}/comment/${commentId}`,
   );
   return data;
 };

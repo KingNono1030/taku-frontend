@@ -35,25 +35,54 @@ const VideoPlayer = ({
     }
   }, [src, type]);
 
+  useEffect(() => {
+    const videoElement = videoRef.current;
+
+    if (!videoElement) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            videoElement.play();
+          } else {
+            videoElement.pause();
+          }
+        });
+      },
+      {
+        threshold: 0.7, // 비디오가 70% 이상 보일 때 재생
+      },
+    );
+
+    observer.observe(videoElement);
+
+    return () => {
+      observer.unobserve(videoElement);
+    };
+  }, []);
+
   return type === 'm3u8' ? (
-    <video
-      className="h-full w-full"
-      onTimeUpdate={handleTimeUpdate}
-      onEnded={handleEnded}
-      ref={videoRef}
-      muted
-      controls
-    />
+    <div className="h-full w-full bg-black">
+      <video
+        className="h-full w-full"
+        onTimeUpdate={handleTimeUpdate}
+        onEnded={handleEnded}
+        ref={videoRef}
+        controls
+      />
+    </div>
   ) : (
-    <video
-      className="h-full w-full"
-      onTimeUpdate={handleTimeUpdate}
-      onEnded={handleEnded}
-      ref={videoRef}
-      src={src}
-      muted
-      controls
-    />
+    <div className="h-full w-full bg-black">
+      <video
+        className="h-full w-full"
+        onTimeUpdate={handleTimeUpdate}
+        onEnded={handleEnded}
+        ref={videoRef}
+        src={src}
+        controls
+      />
+    </div>
   );
 };
 

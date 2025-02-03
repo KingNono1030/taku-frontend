@@ -9,6 +9,9 @@ import {
   CardFooter,
   CardHeader,
 } from '@/components/ui/card';
+import { useShortsComment } from '@/queries/shorts';
+
+import LoadingSpinner from '../loading/LoadingSpinner';
 
 type ShortsCommentsCardProps = {
   shortsId: string;
@@ -19,12 +22,31 @@ const ShortsCommentsCard = ({
   shortsId,
   setOpenComments,
 }: ShortsCommentsCardProps) => {
+  const {
+    data: comments,
+    refetch: resetComments,
+    isPending,
+    error,
+  } = useShortsComment(shortsId);
+
+  console.log('shortsId', shortsId);
+
+  console.log('comments', comments);
+
+  if (isPending)
+    return (
+      <Card className="h-full border border-[#ffffff20] bg-transparent text-white">
+        <LoadingSpinner />
+      </Card>
+    );
+  if (error) return <div>에러가 발생했습니다.</div>;
+
   return (
     <Card className="h-full border border-[#ffffff20] bg-transparent text-white">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-[#ffffff20] px-4 py-1">
         <div className="flex flex-row items-center gap-2">
           <h2 className="font-bold">댓글</h2>
-          <p className="text-base">{comments?.length}</p>
+          <p className="text-base">{comments?.data?.length}</p>
         </div>
         <Button
           size="icon"
@@ -36,13 +58,10 @@ const ShortsCommentsCard = ({
         </Button>
       </CardHeader>
       <CardContent className="h-full min-h-[800px]">
-        <CommentContent commentsArr={comments} />
+        <CommentContent commentsArr={comments?.data} />
       </CardContent>
       <CardFooter className="flex items-start justify-between gap-2 border-t border-[#ffffff20] p-4">
-        <CommentMainForm
-          parentId={selectedVideo?.id}
-          resetComments={resetComments}
-        />
+        <CommentMainForm parentId={shortsId} resetComments={resetComments} />
       </CardFooter>
     </Card>
   );

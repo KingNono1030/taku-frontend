@@ -10,7 +10,7 @@ const Main = ({ children }: MainProps) => {
   return (
     <main className="container mx-auto">
       <div
-        className="my-10 flex flex-col px-5 md:my-20 md:px-20"
+        className="flex flex-col px-5 md:px-20"
         style={{
           minHeight: `calc(100vh - ${HEADER.H_DESKTOP + FOOTER.H_DESKTOP}px)`,
         }}

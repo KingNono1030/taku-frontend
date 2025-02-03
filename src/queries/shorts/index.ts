@@ -1,6 +1,6 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
-import { uploadShorts } from '@/services/shorts';
+import { getShortsComment, uploadShorts } from '@/services/shorts';
 import { UploadShortsRequest } from '@/types/api/shorts.types';
 
 type UseUploadShortsProps = {
@@ -38,5 +38,19 @@ export const useUploadShorts = ({
       // 요청 완료 후 (성공/실패 관계없이) 실행할 로직
       onSettledCb && onSettledCb();
     },
+  });
+};
+
+/**
+ * 쇼츠 댓글 조회 커스텀 훅
+ * @param shortsId 쇼츠 ID
+ */
+export const useShortsComment = (shortsId: string) => {
+  return useQuery({
+    queryKey: ['shortsComments', shortsId],
+    queryFn: async () => shortsId && (await getShortsComment(shortsId)),
+    enabled: !!shortsId,
+    staleTime: 1000 * 60 * 5,
+    retry: 2,
   });
 };
