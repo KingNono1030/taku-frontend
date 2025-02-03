@@ -12,10 +12,7 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 
-import {
-  MarketPriceSearchResponse,
-  Period,
-} from '@/types/market-price-type/marketPrice.types';
+import { MarketPriceSearchResponse } from '@/types/market-price-type/marketPrice.types';
 
 // Chart.js 컴포넌트 등록
 ChartJS.register(
@@ -30,7 +27,8 @@ ChartJS.register(
 
 interface ChartProps {
   data: MarketPriceSearchResponse;
-  period: Period;
+  startDate: Date;
+  endDate: Date;
 }
 
 interface ChartDataset {
@@ -43,7 +41,7 @@ interface ChartDataset {
   }[];
 }
 
-export const Chart = ({ data, period }: ChartProps) => {
+export const Chart = ({ data, startDate, endDate }: ChartProps) => {
   const [chartData, setChartData] = useState<ChartDataset>({
     labels: [],
     datasets: [
@@ -74,6 +72,16 @@ export const Chart = ({ data, period }: ChartProps) => {
       },
     },
     scales: {
+      x: {
+        title: {
+          display: true,
+          text: `${startDate.toLocaleDateString()} ~ ${endDate.toLocaleDateString()}`,
+        },
+        ticks: {
+          maxRotation: 45,
+          minRotation: 45,
+        },
+      },
       y: {
         beginAtZero: false,
         title: {
@@ -88,36 +96,42 @@ export const Chart = ({ data, period }: ChartProps) => {
     if (data?.success && data.data?.priceGraph?.dataPoints) {
       const dataPoints = data.data.priceGraph.dataPoints;
 
+      // 선택된 날짜 범위 내의 데이터만 필터링
+      const filteredDataPoints = dataPoints.filter((point) => {
+        if (!point.date) return false;
+        const pointDate = new Date(point.date);
+        return pointDate >= startDate && pointDate <= endDate;
+      });
+
       const formatLabel = (point: { date?: string }) => {
         if (!point.date) return '';
         const date = new Date(point.date);
-
-        if (period === '1일') {
-          return date.getHours().toString().padStart(2, '0') + ':00';
-        } else {
-          return `${date.getMonth() + 1}/${date.getDate()}`;
-        }
+        return date.toLocaleDateString('ko-KR', {
+          month: 'numeric',
+          day: 'numeric',
+          weekday: 'short',
+        });
       };
 
       setChartData({
-        labels: dataPoints.map(formatLabel),
+        labels: filteredDataPoints.map(formatLabel),
         datasets: [
           {
             label: '판매가',
-            data: dataPoints.map((point) => point.registeredPrice ?? 0),
+            data: filteredDataPoints.map((point) => point.registeredPrice ?? 0),
             borderColor: 'rgb(59, 130, 246)',
             backgroundColor: 'rgba(59, 130, 246, 0.5)',
           },
           {
             label: '구매가',
-            data: dataPoints.map((point) => point.soldPrice ?? 0),
+            data: filteredDataPoints.map((point) => point.soldPrice ?? 0),
             borderColor: 'rgb(239, 68, 68)',
             backgroundColor: 'rgba(239, 68, 68, 0.5)',
           },
         ],
       });
     }
-  }, [data, period]);
+  }, [data, startDate, endDate]);
 
   // 데이터가 없는 경우 처리
   if (!data?.success || !data.data?.priceGraph?.dataPoints) {

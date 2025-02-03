@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 
 import { AxiosError } from 'axios';
+import { ko } from 'date-fns/locale';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 import { Chart } from '@/components/market-price/Chart';
 import { PriceList } from '@/components/market-price/PriceList';
@@ -10,24 +13,39 @@ import { testAxios } from '@/lib/axiosInstance';
 import {
   MarketPriceProps,
   MarketPriceSearchResponse,
-  Period,
 } from '@/types/market-price-type/marketPrice.types';
 
 const MarketPricePage = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState<Period>('1일');
+  const [startDate, setStartDate] = useState<Date>(new Date());
+  const [endDate, setEndDate] = useState<Date>(new Date());
   const [priceData, setPriceData] = useState<MarketPriceSearchResponse | null>(
     null,
   );
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const handlePeriodChange = (newStartDate: Date, newEndDate: Date) => {
+    setStartDate(newStartDate);
+    setEndDate(newEndDate);
+  };
+
+  const handleStartDateChange = (date: Date | null) => {
+    if (date) {
+      setStartDate(date);
+    }
+  };
+
+  const handleEndDateChange = (date: Date | null) => {
+    if (date) {
+      setEndDate(date);
+    }
+  };
+
   const fetchMarketPriceSearch = async (params: MarketPriceProps) => {
     try {
       const response = await testAxios.get<MarketPriceSearchResponse>(
         '/api/market-price/search',
-        {
-          params: params,
-        },
+        { params },
       );
       return response.data;
     } catch (error) {
@@ -49,8 +67,8 @@ const MarketPricePage = () => {
     const fetchInitialData = async () => {
       const searchParams: MarketPriceProps = {
         keyword: '원피스',
-        startDate: '2024-01-09',
-        endDate: '2025-02-03',
+        startDate: startDate.toISOString().split('T')[0],
+        endDate: endDate.toISOString().split('T')[0],
         displayOption: 'ALL',
         direction: 'ASC',
         page: 0,
@@ -74,45 +92,57 @@ const MarketPricePage = () => {
     };
 
     fetchInitialData();
-  }, []);
+  }, [startDate, endDate]);
 
   if (isLoading) return <div>로딩 중...</div>;
   if (error) return <div>에러: {error}</div>;
   if (!priceData || !priceData.data) return null;
 
-  console.log('시세조회 데이터', priceData);
+  const defaultWeeklyStats = {
+    averagePrice: 0,
+    highestPrice: 0,
+    lowestPrice: 0,
+    totalDeals: 0,
+  };
 
   return (
     <div className="flex flex-col space-y-8">
       <PriceList
-        selectedPeriod={selectedPeriod}
-        setSelectedPeriod={(period) => setSelectedPeriod(period as Period)}
+        startDate={startDate}
+        endDate={endDate}
+        onPeriodChange={handlePeriodChange}
         priceData={priceData}
       />
-      <Chart data={priceData} period={selectedPeriod} />
+      <div className="flex items-center gap-4">
+        <DatePicker
+          selected={startDate}
+          onChange={handleStartDateChange}
+          selectsStart
+          startDate={startDate}
+          endDate={endDate}
+          dateFormat="yyyy-MM-dd"
+          locale={ko}
+          className="rounded-md border border-border/50 px-3 py-2"
+        />
+        <span>~</span>
+        <DatePicker
+          selected={endDate}
+          onChange={handleEndDateChange}
+          selectsEnd
+          startDate={startDate}
+          endDate={endDate}
+          minDate={startDate}
+          dateFormat="yyyy-MM-dd"
+          locale={ko}
+          className="rounded-md border border-border/50 px-3 py-2"
+        />
+      </div>
+      <Chart data={priceData} startDate={startDate} endDate={endDate} />
+
       <RecentlyTradedProduct
-        weeklyStats={
-          priceData.data.weeklyStats || {
-            averagePrice: 0,
-            highestPrice: 0,
-            lowestPrice: 0,
-            totalDeals: 0,
-          }
-        }
+        weeklyStats={priceData.data.weeklyStats ?? defaultWeeklyStats}
       />
-      <RelatedProduct
-        similarProducts={
-          priceData.data.similarProducts || [
-            {
-              productId: '11',
-              title: '원피스 루피 피규어',
-              price: 21000,
-              tfidfVector: '0.5,0.3,0,2',
-              imageUrl: 'https://example.com/image.jpg',
-            },
-          ]
-        }
-      />
+      <RelatedProduct similarProducts={priceData.data.similarProducts ?? []} />
     </div>
   );
 };
