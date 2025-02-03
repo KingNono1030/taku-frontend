@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 import ScrollToTop from './layout/ScrollToTop';
 import Router from './routes';
+import './styles/global.css';
 
 // Create a client
 const queryClient = new QueryClient();
