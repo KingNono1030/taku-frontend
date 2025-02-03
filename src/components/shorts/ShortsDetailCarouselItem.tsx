@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { User } from 'lucide-react';
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { CarouselItem } from '@/components/ui/carousel';
 
@@ -52,7 +54,9 @@ const ShortsDetailCarouselItem = ({
           <div>
             <Avatar className="h-6 w-6">
               <AvatarImage src={shortsDetailData?.profile_img_url} />
-              <AvatarFallback>aa</AvatarFallback>
+              <AvatarFallback>
+                <User />
+              </AvatarFallback>
             </Avatar>
           </div>
           <p>{title}</p>

@@ -158,7 +158,7 @@ const ShortsPage = () => {
               orientation="vertical"
               className="w-full"
             >
-              <CarouselContent className="flex h-[1000px] flex-col gap-4 rounded-lg">
+              <CarouselContent className="flex h-[calc(100vh-248px)] flex-col gap-4 rounded-lg">
                 {videos.map((info: any) => (
                   <ShortsDetailCarouselItem
                     key={info.id}

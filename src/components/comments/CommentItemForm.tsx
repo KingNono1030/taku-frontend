@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { testAxios } from '@/lib/axiosInstance';
+import { useShortsComment } from '@/queries/shorts';
 
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Button } from '../ui/button';
@@ -25,7 +26,7 @@ const addCommentSchema = z.object({
 type CommentItemFormProps = {
   isEditing?: boolean;
   isReply?: boolean;
-  parentId?: string;
+  parentId: string;
   commentId?: string;
   replyId?: string;
   commentContent?: string;
@@ -40,7 +41,6 @@ const CommentItemForm = ({
   commentId,
   replyId,
   commentContent,
-  resetComments,
   handleCancel,
 }: CommentItemFormProps) => {
   const form = useForm<z.infer<typeof addCommentSchema>>({
@@ -49,6 +49,8 @@ const CommentItemForm = ({
       comment: '',
     },
   });
+
+  const { refetch: resetComments } = useShortsComment(parentId);
 
   // 댓글 추가
   const addReply = async (data: {
@@ -91,7 +93,7 @@ const CommentItemForm = ({
       if (isReply) {
         // 답글 수정
         editReply(data).then((res) => {
-          resetComments && resetComments(res.data.data);
+          resetComments && resetComments();
           form.reset();
           console.log(res);
         });
@@ -99,7 +101,7 @@ const CommentItemForm = ({
       }
       // 댓글 수정
       editComment(data).then((res) => {
-        resetComments && resetComments(res.data.data);
+        resetComments && resetComments();
         form.reset();
         console.log(res);
       });
@@ -108,7 +110,7 @@ const CommentItemForm = ({
 
     // 답글 추가
     addReply(data).then((res) => {
-      resetComments && resetComments(res.data.data);
+      resetComments && resetComments();
       form.reset();
       console.log(res);
     });
