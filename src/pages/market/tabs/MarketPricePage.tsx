@@ -48,13 +48,13 @@ const MarketPricePage = () => {
   useEffect(() => {
     const fetchInitialData = async () => {
       const searchParams: MarketPriceProps = {
-        keyword: '나루토',
-        startDate: '2025-01-09',
-        endDate: '2025-01-23',
+        keyword: '원피스',
+        startDate: '2024-01-09',
+        endDate: '2025-02-03',
         displayOption: 'ALL',
         direction: 'ASC',
         page: 0,
-        size: 5,
+        size: 10,
       };
 
       try {

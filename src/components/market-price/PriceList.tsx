@@ -56,9 +56,9 @@ export const PriceList = ({
             <span className="mb-1 text-[28px] text-blue-500">원</span>
             <div className="mb-2 flex items-center gap-1">
               {priceDiff >= 0 ? (
-                <TrendingUp className="h-5 w-5 text-blue-500" />
-              ) : (
                 <TrendingDown className="h-5 w-5 text-blue-500" />
+              ) : (
+                <TrendingUp className="h-5 w-5 text-blue-500" />
               )}
               <span className="text-blue-500">
                 {Math.abs(priceDiff).toLocaleString()} 원
