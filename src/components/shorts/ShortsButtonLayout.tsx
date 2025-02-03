@@ -61,23 +61,25 @@ const ShortsButtonLayout = ({
   const handleClickThumbsUp = async () => {
     if (selectedVideoInfo.user_like_interaction?.userLike) {
       await cancelShortsLike(selectedVideoInfo.shorts_id).then(() => {
-        resetVideoInfo();
+        resetVideoInfo && resetVideoInfo();
       });
     } else {
       await addShortsLike(selectedVideoInfo.shorts_id).then(() => {
-        resetVideoInfo();
+        resetVideoInfo && resetVideoInfo();
       });
     }
   };
 
+  console.log('selectedVideoInfo', selectedVideoInfo);
+
   const handleClickThumbsDown = async () => {
     if (selectedVideoInfo.user_like_interaction?.userDislike) {
       await cancelShortsDislike(selectedVideoInfo.shorts_id).then(() => {
-        resetVideoInfo();
+        resetVideoInfo && resetVideoInfo();
       });
     } else {
       await addShortsDislike(selectedVideoInfo.shorts_id).then(() => {
-        resetVideoInfo();
+        resetVideoInfo && resetVideoInfo();
       });
     }
   };
