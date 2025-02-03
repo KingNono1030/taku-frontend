@@ -10,6 +10,43 @@ interface PriceListProps {
   priceData: MarketPriceSearchResponse;
 }
 
+interface PriceDisplayProps {
+  label: '판매가' | '구매가';
+  price: number;
+  priceDiff: number;
+  priceChangePercent: string;
+  colorScheme: 'blue' | 'red';
+}
+
+const PriceDisplay = ({
+  price,
+  priceDiff,
+  priceChangePercent,
+  colorScheme,
+}: PriceDisplayProps) => {
+  const textColor = `text-${colorScheme}-500`;
+
+  return (
+    <div className="flex items-end gap-2">
+      <span className={`text-[40px] font-bold ${textColor}`}>
+        {price.toLocaleString()}
+      </span>
+      <span className={`mb-1 text-[28px] ${textColor}`}>원</span>
+      <div className="mb-2 flex items-center gap-1">
+        {priceDiff <= 0 ? (
+          <TrendingDown className={`h-5 w-5 ${textColor}`} />
+        ) : (
+          <TrendingUp className={`h-5 w-5 ${textColor}`} />
+        )}
+        <span className={textColor}>
+          {Math.abs(priceDiff).toLocaleString()} 원
+        </span>
+        <span className="text-muted-foreground">({priceChangePercent}%)</span>
+      </div>
+    </div>
+  );
+};
+
 export const PriceList = ({
   startDate,
   endDate,
@@ -38,13 +75,26 @@ export const PriceList = ({
       ? filteredDataPoints[filteredDataPoints.length - 2]
       : latestData;
 
-  // null 체크 추가
-  const latestPrice = latestData.registeredPrice ?? 0;
-  const previousPrice = previousData.registeredPrice ?? 0;
-  const priceDiff = latestPrice - previousPrice;
-  const priceChangePercent =
-    previousPrice !== 0
-      ? ((priceDiff / previousPrice) * 100).toFixed(2)
+  // 가격 변동 계산
+  // 현재는 PriceList는 선택된 기간 내에서 가장 최근 데이터와 그 직전 데이터를 비교하여 가격 변동 추이
+  // TODO: 추후 변동 예정
+
+  // 판매가 관련 계산
+  const latestSellingPrice = latestData.registeredPrice ?? 0;
+  const previousSellingPrice = previousData.registeredPrice ?? 0;
+  const sellingPriceDiff = latestSellingPrice - previousSellingPrice;
+  const sellingPriceChangePercent =
+    previousSellingPrice !== 0
+      ? ((sellingPriceDiff / previousSellingPrice) * 100).toFixed(2)
+      : '0.00';
+
+  // 구매가 관련 계산
+  const latestBuyingPrice = latestData.soldPrice ?? 0;
+  const previousBuyingPrice = previousData.soldPrice ?? 0;
+  const buyingPriceDiff = latestBuyingPrice - previousBuyingPrice;
+  const buyingPriceChangePercent =
+    previousBuyingPrice !== 0
+      ? ((buyingPriceDiff / previousBuyingPrice) * 100).toFixed(2)
       : '0.00';
 
   return (
@@ -52,50 +102,20 @@ export const PriceList = ({
       <div className="space-y-4">
         <h2 className="text-xl font-semibold">{priceData.data?.keyword}</h2>
         <div className="flex space-x-16">
-          <div className="flex items-end gap-2">
-            <span className="text-[40px] font-bold text-blue-500">
-              {latestPrice.toLocaleString()}
-            </span>
-            <span className="mb-1 text-[28px] text-blue-500">원</span>
-            <div className="mb-2 flex items-center gap-1">
-              {priceDiff >= 0 ? (
-                <TrendingDown className="h-5 w-5 text-blue-500" />
-              ) : (
-                <TrendingUp className="h-5 w-5 text-blue-500" />
-              )}
-              <span className="text-blue-500">
-                {Math.abs(priceDiff).toLocaleString()} 원
-              </span>
-              <span className="text-muted-foreground">
-                ({priceChangePercent}%)
-              </span>
-            </div>
-          </div>
-          <div className="flex items-end gap-2">
-            <span className="text-[40px] font-bold text-red-500">
-              {(latestData.soldPrice ?? 0).toLocaleString()}
-            </span>
-            <span className="mb-1 text-[28px] text-red-500">원</span>
-            <div className="mb-2 flex items-center gap-1">
-              <TrendingUp className="h-5 w-5 text-red-500" />
-              <span className="text-red-500">
-                {Math.abs(
-                  latestData.soldPrice ?? 0 - (previousData.soldPrice ?? 0),
-                ).toLocaleString()}{' '}
-                원
-              </span>
-              <span className="text-muted-foreground">
-                (
-                {(
-                  (((latestData.soldPrice ?? 0) -
-                    (previousData.soldPrice ?? 0)) /
-                    (previousData.soldPrice ?? 1)) *
-                  100
-                ).toFixed(2)}
-                %)
-              </span>
-            </div>
-          </div>
+          <PriceDisplay
+            label="판매가"
+            price={latestSellingPrice}
+            priceDiff={sellingPriceDiff}
+            priceChangePercent={sellingPriceChangePercent}
+            colorScheme="blue"
+          />
+          <PriceDisplay
+            label="구매가"
+            price={latestBuyingPrice}
+            priceDiff={buyingPriceDiff}
+            priceChangePercent={buyingPriceChangePercent}
+            colorScheme="red"
+          />
         </div>
       </div>
     </div>
