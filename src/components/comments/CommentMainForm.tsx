@@ -1,11 +1,10 @@
 import { useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AxiosResponse } from 'axios';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { testAxios } from '@/lib/axiosInstance';
+import { useCreateShortsComment } from '@/queries/shorts';
 
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Button } from '../ui/button';
@@ -23,11 +22,19 @@ const addCommentSchema = z.object({
 });
 
 type CommentMainFormProps = {
-  parentId?: string;
+  parentId: string;
   resetComments?: () => void;
 };
 
 const CommentMainForm = ({ parentId, resetComments }: CommentMainFormProps) => {
+  const { mutate: createCommentMutate } = useCreateShortsComment({
+    shortsId: parentId,
+    onSuccessCb: () => {
+      resetComments && resetComments();
+      form.reset();
+    },
+  });
+
   const [isFocused, setIsFocused] = useState(false);
 
   const form = useForm<z.infer<typeof addCommentSchema>>({
@@ -36,12 +43,6 @@ const CommentMainForm = ({ parentId, resetComments }: CommentMainFormProps) => {
       comment: '',
     },
   });
-
-  const addComment = async (data: {
-    comment: string;
-  }): Promise<AxiosResponse> => {
-    return await testAxios.post('/api/shorts/' + parentId + '/comment', data);
-  };
 
   const handleCancel = () => {
     form.reset();
@@ -52,12 +53,7 @@ const CommentMainForm = ({ parentId, resetComments }: CommentMainFormProps) => {
     if (!parentId) {
       return;
     }
-
-    addComment(data).then((res) => {
-      resetComments && resetComments();
-      form.reset();
-      console.log(res);
-    });
+    createCommentMutate(data);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {

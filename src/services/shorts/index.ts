@@ -31,7 +31,7 @@ export const getShortsList = async () => {
  * @param shortsId 쇼츠 ID
  */
 export const getShortsDetail = async (shortsId: string) => {
-  const { data } = await ducku.get(`/api/shorts/${shortsId}`);
+  const { data } = await duckuWithAuthJSON.get(`/api/shorts/${shortsId}`);
   return data;
 };
 
@@ -51,7 +51,7 @@ export const getShortsComment = async (shortsId: string) => {
  */
 export const createShortsComment = async (
   shortsId: string,
-  requestBody: { content: string },
+  requestBody: { comment: string },
 ) => {
   const { data } = await duckuWithAuthJSON.post(
     `/api/shorts/${shortsId}/comment`,
@@ -69,7 +69,7 @@ export const createShortsComment = async (
 export const updateShortsComment = async (
   shortsId: string,
   commentId: string,
-  requestBody: { content: string },
+  requestBody: { comment: string },
 ) => {
   const { data } = await duckuWithAuthJSON.patch(
     `/api/shorts/${shortsId}/comment/${commentId}`,
@@ -102,7 +102,7 @@ export const deleteShortsComment = async (
 export const createShortsCommentReply = async (
   shortsId: string,
   commentId: string,
-  requestBody: { content: string },
+  requestBody: { comment: string },
 ) => {
   const { data } = await duckuWithAuthJSON.post(
     `/api/shorts/${shortsId}/comment/${commentId}/reply`,
@@ -122,7 +122,7 @@ export const updateShortsCommentReply = async (
   shortsId: string,
   commentId: string,
   replyId: string,
-  requestBody: { content: string },
+  requestBody: { comment: string },
 ) => {
   const { data } = await duckuWithAuthJSON.patch(
     `/api/shorts/${shortsId}/comment/${commentId}/reply/${replyId}`,

@@ -52,6 +52,12 @@ export type FindShortsCommentSuccessResponse =
 export type CreateShortsCommentRequest = NonNullable<
   operations['createShortsComment']['requestBody']
 >['content']['application/json'];
+
+export interface CreateShortsCommentRequestBody
+  extends CreateShortsCommentRequest {
+  comment: string;
+}
+
 export type CreateShortsCommentSuccessResponse =
   operations['createShortsComment']['responses'][200]['content']['*/*'];
 
@@ -69,6 +75,12 @@ export type CreateShortsCommentSuccessResponse =
 export type UpdateShortsCommentRequest = NonNullable<
   operations['updateShortsComment']['requestBody']
 >['content']['application/json'];
+
+export interface UpdateShortsCommentRequestBody
+  extends UpdateShortsCommentRequest {
+  comment: string;
+}
+
 export type UpdateShortsCommentSuccessResponse =
   operations['updateShortsComment']['responses'][200]['content']['*/*'];
 

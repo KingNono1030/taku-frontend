@@ -2,6 +2,8 @@ import { useState } from 'react';
 
 import { AvatarImage } from '@radix-ui/react-avatar';
 
+import { useDeleteShortsComment, useShortsComment } from '@/queries/shorts';
+
 import ReportButton from '../report/ReportButton';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { Button } from '../ui/button';
@@ -21,12 +23,27 @@ const CommentItem = ({ comment }: CommentItemProps) => {
 
   const [isEditing, setIsEditing] = useState(false);
 
+  const { refetch: resetComments } = useShortsComment(comment?.shorts_id);
+
+  const { mutate: deleteCommentMutate } = useDeleteShortsComment({
+    shortsId: comment?.shorts_id,
+    commentId: comment?.id,
+    onSuccessCb: () => {
+      resetComments && resetComments();
+    },
+  });
+
   const handleClickEdit = () => {
     setIsEditing(true);
   };
 
-  const handleClickCancel = () => {
+  const handleCancelEditing = () => {
     setIsEditing(false);
+    setOpenCommentForm(false);
+  };
+
+  const handleDeleteComment = () => {
+    deleteCommentMutate();
   };
 
   return (
@@ -35,7 +52,7 @@ const CommentItem = ({ comment }: CommentItemProps) => {
         <CommentItemForm
           commentId={comment?.id}
           parentId={comment?.shorts_id}
-          handleCancel={handleClickCancel}
+          handleCancelEditing={handleCancelEditing}
           commentContent={comment?.comment}
           isEditing={isEditing}
         />
@@ -61,7 +78,7 @@ const CommentItem = ({ comment }: CommentItemProps) => {
               {SAME_USER ? (
                 <CommentButton
                   onClickEdit={handleClickEdit}
-                  onClickDelete={() => {}}
+                  onClickDelete={handleDeleteComment}
                 />
               ) : (
                 <ReportButton />
@@ -78,9 +95,7 @@ const CommentItem = ({ comment }: CommentItemProps) => {
               <CommentItemForm
                 parentId={comment?.shorts_id}
                 commentId={comment?.id}
-                handleCancel={() => {
-                  setOpenCommentForm(false);
-                }}
+                handleCancelEditing={handleCancelEditing}
               />
             )}
             <Replies replies={comment?.replies} />
