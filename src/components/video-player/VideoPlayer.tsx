@@ -1,21 +1,16 @@
-import { MutableRefObject, useEffect, useRef } from 'react';
+import { MutableRefObject, useEffect, useRef, useState } from 'react';
 
 import Hls from 'hls.js';
 
 type VideoPlayerProps = {
-  currentTime: number;
-  setCurrentTime: React.Dispatch<React.SetStateAction<number>>;
   src: string;
   type?: 'm3u8' | 'mp4';
 };
 
-const VideoPlayer = ({
-  currentTime,
-  setCurrentTime,
-  src,
-  type,
-}: VideoPlayerProps) => {
+const VideoPlayer = ({ src, type }: VideoPlayerProps) => {
   const videoRef: MutableRefObject<HTMLVideoElement | null> = useRef(null);
+
+  const [currentTime, setCurrentTime] = useState(0);
 
   const handleTimeUpdate = () => {
     if (videoRef.current) {
@@ -65,7 +60,7 @@ const VideoPlayer = ({
   return type === 'm3u8' ? (
     <div className="h-full w-full bg-black">
       <video
-        className="h-full w-full"
+        className="h-full w-full object-scale-down"
         onTimeUpdate={handleTimeUpdate}
         onEnded={handleEnded}
         ref={videoRef}

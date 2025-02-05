@@ -25,12 +25,6 @@ const ShortsPage = () => {
 
   const [selectedVideo, setSelectedVideo] = useState<any>(null);
 
-  const [currentTime, setCurrentTime] = useState(0);
-  const logCurrentTime = () => {
-    console.log('비디오 시간', currentTime);
-    setCurrentTime(0);
-  };
-
   // 쇼츠 리스트 가져오기
   const getVedioList = async (): Promise<AxiosResponse> => {
     return await testAxios.get('/api/shorts/recommend');
@@ -137,15 +131,8 @@ const ShortsPage = () => {
     refetchShortsDetailData();
   }, [selectedVideo]);
 
-  useEffect(() => {
-    if (currentTime > 0) {
-      logCurrentTime();
-    }
-  }, [shortsDetailData]);
-
   return (
     <div className="h-full bg-stone-900">
-      {/* <div className="text-white">{currentTime}</div> */}
       <div className={'flex w-full justify-center gap-20 p-4'}>
         <section className="inset-x-0 flex w-[600px] items-end gap-4 text-white">
           {/* video layout */}
@@ -164,8 +151,6 @@ const ShortsPage = () => {
                     key={info.id}
                     title={info.title}
                     shortsDetailData={shortsDetailData?.data}
-                    currentTime={currentTime}
-                    setCurrentTime={setCurrentTime}
                   />
                 ))}
                 <CarouselItem

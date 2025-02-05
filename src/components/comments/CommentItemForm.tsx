@@ -28,7 +28,7 @@ const addCommentSchema = z.object({
 
 type CommentItemFormProps = {
   isEditing?: boolean;
-  isReply?: boolean;
+  hasReply?: boolean;
   parentId: string;
   commentId: string;
   replyId?: string;
@@ -39,7 +39,7 @@ type CommentItemFormProps = {
 
 const CommentItemForm = ({
   isEditing,
-  isReply,
+  hasReply,
   parentId,
   commentId,
   replyId,
@@ -96,7 +96,7 @@ const CommentItemForm = ({
     }
 
     if (isEditing) {
-      if (isReply) {
+      if (hasReply) {
         // 대댓글 수정
         return updateReplyMutate(data);
       }

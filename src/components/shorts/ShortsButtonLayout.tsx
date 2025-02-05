@@ -70,8 +70,6 @@ const ShortsButtonLayout = ({
     }
   };
 
-  console.log('selectedVideoInfo', selectedVideoInfo);
-
   const handleClickThumbsDown = async () => {
     if (selectedVideoInfo.user_like_interaction?.userDislike) {
       await cancelShortsDislike(selectedVideoInfo.shorts_id).then(() => {

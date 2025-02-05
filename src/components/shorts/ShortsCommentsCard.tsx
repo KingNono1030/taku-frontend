@@ -29,10 +29,6 @@ const ShortsCommentsCard = ({
     error,
   } = useShortsComment(shortsId);
 
-  console.log('shortsId', shortsId);
-
-  console.log('comments', comments);
-
   if (isPending)
     return (
       <Card className="h-full border border-[#ffffff20] bg-transparent text-white">

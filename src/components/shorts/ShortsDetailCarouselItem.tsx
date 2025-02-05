@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { User } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -31,22 +29,16 @@ type shortsDetailData = {
 type ShortsDetailCarouselItemProps = {
   title: string;
   shortsDetailData: shortsDetailData | undefined;
-  currentTime: number;
-  setCurrentTime: React.Dispatch<React.SetStateAction<number>>;
 };
 
 const ShortsDetailCarouselItem = ({
   title,
   shortsDetailData,
-  currentTime,
-  setCurrentTime,
 }: ShortsDetailCarouselItemProps) => {
   return (
     <CarouselItem className="w-full basis-11/12">
       <div className="relative h-full w-full overflow-hidden rounded-lg">
         <VideoPlayer
-          currentTime={currentTime}
-          setCurrentTime={setCurrentTime}
           src={shortsDetailData?.m3u8_url ? shortsDetailData?.m3u8_url : ''}
           type="m3u8"
         />
