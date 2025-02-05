@@ -148,6 +148,7 @@ const CommentItemForm = ({
                     }
                     {...field}
                     onKeyDown={handleKeyDown}
+                    autoFocus
                   />
                 </FormControl>
                 <FormMessage />
