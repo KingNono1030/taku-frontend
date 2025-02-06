@@ -9,8 +9,9 @@ const OauthCallBack = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const token = searchParams.get('token') as string;
-  const encodedUser = searchParams.get('user') as string;
-  const user = JSON.parse(encodedUser);
+  const base64String = searchParams.get('user') as string;
+  const decodedString = decodeURIComponent(escape(atob(base64String)));
+  const user = JSON.parse(decodedString);
   const { setUser, setToken } = useUserStore();
 
   useEffect(() => {

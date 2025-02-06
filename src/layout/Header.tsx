@@ -137,7 +137,10 @@ export default function Header() {
               <DropdownMenu>
                 <DropdownMenuTrigger>
                   <Avatar>
-                    <AvatarImage src={user?.profileImg} alt={user?.nickname} />
+                    <AvatarImage
+                      src={user?.profile_image}
+                      alt={user?.nickname}
+                    />
                     <AvatarFallback>CN</AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>

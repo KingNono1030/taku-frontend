@@ -1,7 +1,14 @@
 import { components, operations } from './apiSchema.types';
 
 export type OAuthProvider = 'KAKAO' | 'NAVER' | 'GOOGLE';
-export type UserDetail = components['schemas']['UserDetailDto'];
+export type UserDetail = {
+  user_id: number;
+  is_black: boolean;
+  user_role: 'USER' | 'ADMIN';
+  profile_image: string;
+  nickname: string;
+};
+
 /**
  * path: '/api/user'
  */
