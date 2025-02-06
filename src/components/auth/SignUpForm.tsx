@@ -5,6 +5,8 @@ import { useForm } from 'react-hook-form';
 // import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
+import { RHFUploadAvatar } from '@/components/hook-form/RhfUpload';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -17,9 +19,6 @@ import { Input } from '@/components/ui/input';
 import { useRegisterUser } from '@/queries/user';
 import { RegisterUserRequestWithJSON } from '@/services/user';
 import { OAuthProvider } from '@/types/api/user.types';
-
-import { RHFUploadAvatar } from '../hook-form/rhf-upload';
-import { Button } from '../ui/button';
 
 const signupSchema = z.object({
   user: z.object({
