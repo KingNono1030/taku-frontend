@@ -1,7 +1,7 @@
 import { Camera } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 
-import RejectionFiles from './errors-rejection-files';
+import RejectionFiles from './ErrorsRejectionFiles';
 import { UploadProps } from './types';
 
 // ----------------------------------------------------------------------

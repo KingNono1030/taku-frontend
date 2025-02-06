@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { RHFUpload } from '@/components/hook-form/rhf-upload';
+import { RHFUpload } from '@/components/hook-form/RhfUpload';
 import { Button } from '@/components/ui/button';
 import {
   Form,

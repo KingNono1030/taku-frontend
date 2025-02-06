@@ -12,6 +12,11 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 
+import {
+  MarketPriceSearchResponse,
+  Period,
+} from '@/types/market-price-type/marketPrice.types';
+
 // Chart.js 컴포넌트 등록
 ChartJS.register(
   CategoryScale,
@@ -24,12 +29,22 @@ ChartJS.register(
 );
 
 interface ChartProps {
-  data: any; // TODO: 타입 정의 필요
-  period: string;
+  data: MarketPriceSearchResponse;
+  period: Period;
+}
+
+interface ChartDataset {
+  labels: string[];
+  datasets: {
+    label: string;
+    data: number[];
+    borderColor: string;
+    backgroundColor: string;
+  }[];
 }
 
 export const Chart = ({ data, period }: ChartProps) => {
-  const [chartData, setChartData] = useState({
+  const [chartData, setChartData] = useState<ChartDataset>({
     labels: [],
     datasets: [
       {
@@ -70,18 +85,17 @@ export const Chart = ({ data, period }: ChartProps) => {
   };
 
   useEffect(() => {
-    if (data.success && data.data?.priceGraph?.dataPoints) {
+    if (data?.success && data.data?.priceGraph?.dataPoints) {
       const dataPoints = data.data.priceGraph.dataPoints;
 
-      // 기간에 따른 날짜 포맷 변경
-      const formatLabel = (point: any) => {
-        // TODO: 타입 정의 필요
+      const formatLabel = (point: { date?: string }) => {
+        if (!point.date) return '';
+        const date = new Date(point.date);
+
         if (period === '1일') {
-          // 시간 포맷 (HH:00)
-          return `${point.date[3].toString().padStart(2, '0')}:00`;
+          return date.getHours().toString().padStart(2, '0') + ':00';
         } else {
-          // 날짜 포맷 (MM/DD)
-          return `${point.date[1]}/${point.date[2]}`;
+          return `${date.getMonth() + 1}/${date.getDate()}`;
         }
       };
 
@@ -90,20 +104,29 @@ export const Chart = ({ data, period }: ChartProps) => {
         datasets: [
           {
             label: '판매가',
-            data: dataPoints.map((point: any) => point.registeredPrice), // TODO: 타입 정의 필요
+            data: dataPoints.map((point) => point.registeredPrice ?? 0),
             borderColor: 'rgb(59, 130, 246)',
             backgroundColor: 'rgba(59, 130, 246, 0.5)',
           },
           {
             label: '구매가',
-            data: dataPoints.map((point: any) => point.soldPrice), // TODO: 타입 정의 필요
+            data: dataPoints.map((point) => point.soldPrice ?? 0),
             borderColor: 'rgb(239, 68, 68)',
             backgroundColor: 'rgba(239, 68, 68, 0.5)',
           },
         ],
       });
     }
-  }, [data, period]); // data와 period가 변경될 때마다 실행
+  }, [data, period]);
+
+  // 데이터가 없는 경우 처리
+  if (!data?.success || !data.data?.priceGraph?.dataPoints) {
+    return (
+      <div className="flex aspect-video w-full items-center justify-center rounded-lg bg-white p-4">
+        <p className="text-muted-foreground">데이터가 없습니다.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="aspect-video w-full rounded-lg bg-white p-4">

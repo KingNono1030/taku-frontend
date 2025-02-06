@@ -1,11 +1,15 @@
 import { useEffect } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AxiosResponse } from 'axios';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { testAxios } from '@/lib/axiosInstance';
+import {
+  useCreateShortsCommentReply,
+  useEditShortsComment,
+  useEditShortsCommentReply,
+  useShortsComment,
+} from '@/queries/shorts';
 
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Button } from '../ui/button';
@@ -24,24 +28,23 @@ const addCommentSchema = z.object({
 
 type CommentItemFormProps = {
   isEditing?: boolean;
-  isReply?: boolean;
-  parentId?: string;
-  commentId?: string;
+  hasReply?: boolean;
+  parentId: string;
+  commentId: string;
   replyId?: string;
   commentContent?: string;
   resetComments?: (resCommentArr: any[]) => void; // eslint-disable-line
-  handleCancel?: () => void;
+  handleCancelEditing?: () => void;
 };
 
 const CommentItemForm = ({
   isEditing,
-  isReply,
+  hasReply,
   parentId,
   commentId,
   replyId,
   commentContent,
-  resetComments,
-  handleCancel,
+  handleCancelEditing,
 }: CommentItemFormProps) => {
   const form = useForm<z.infer<typeof addCommentSchema>>({
     resolver: zodResolver(addCommentSchema),
@@ -50,68 +53,59 @@ const CommentItemForm = ({
     },
   });
 
-  // 댓글 추가
-  const addReply = async (data: {
-    comment: string;
-  }): Promise<AxiosResponse> => {
-    return await testAxios.post(
-      '/api/shorts/' + parentId + '/comment/' + commentId + '/reply',
-      data,
-    );
-  };
+  //댓글 리스트 리프레시
+  const { refetch: resetComments } = useShortsComment(parentId);
 
-  // 댓글 수정
-  const editComment = async (data: {
-    comment: string;
-  }): Promise<AxiosResponse> => {
-    return await testAxios.patch(
-      '/api/shorts/' + parentId + '/comment/' + commentId,
-      data,
-    );
-  };
+  //댓글 수정
+  const { mutate: editCommentMutate } = useEditShortsComment({
+    shortsId: parentId,
+    commentId,
+    onSuccessCb: () => {
+      resetComments && resetComments();
+      handleCancelEditing && handleCancelEditing();
+      form.reset();
+    },
+  });
 
-  // 답글 수정
-  const editReply = async (data: {
-    comment: string;
-  }): Promise<AxiosResponse> => {
-    return await testAxios.patch(
-      '/api/shorts/' + parentId + '/comment/' + commentId + '/reply/' + replyId,
-      data,
-    );
-  };
+  //대댓글 생성
+  const { mutate: createReplyMutate } = useCreateShortsCommentReply({
+    shortsId: parentId,
+    commentId,
+    onSuccessCb: () => {
+      resetComments && resetComments();
+      handleCancelEditing && handleCancelEditing();
+      form.reset();
+    },
+  });
+
+  //대댓글 수정
+  const { mutate: updateReplyMutate } = useEditShortsCommentReply({
+    shortsId: parentId,
+    commentId,
+    replyId: replyId || '',
+    onSuccessCb: () => {
+      resetComments && resetComments();
+      handleCancelEditing && handleCancelEditing();
+      form.reset();
+    },
+  });
 
   const onSubmit = (data: z.infer<typeof addCommentSchema>) => {
-    console.log('data', data, parentId, commentId);
-
     if (!parentId) {
       return;
     }
 
     if (isEditing) {
-      if (isReply) {
-        // 답글 수정
-        editReply(data).then((res) => {
-          resetComments && resetComments(res.data.data);
-          form.reset();
-          console.log(res);
-        });
-        return;
+      if (hasReply) {
+        // 대댓글 수정
+        return updateReplyMutate(data);
       }
       // 댓글 수정
-      editComment(data).then((res) => {
-        resetComments && resetComments(res.data.data);
-        form.reset();
-        console.log(res);
-      });
-      return;
+      return editCommentMutate(data);
     }
 
     // 답글 추가
-    addReply(data).then((res) => {
-      resetComments && resetComments(res.data.data);
-      form.reset();
-      console.log(res);
-    });
+    return createReplyMutate(data);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -154,6 +148,7 @@ const CommentItemForm = ({
                     }
                     {...field}
                     onKeyDown={handleKeyDown}
+                    autoFocus
                   />
                 </FormControl>
                 <FormMessage />
@@ -165,7 +160,7 @@ const CommentItemForm = ({
               variant="ghost"
               type="button"
               className="h-8 py-1"
-              onClick={handleCancel}
+              onClick={handleCancelEditing}
             >
               취소
             </Button>

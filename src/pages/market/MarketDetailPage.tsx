@@ -42,6 +42,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
 import { CATEGORY_MAP } from '@/constants/jangter';
+import { useChat } from '@/hooks/useChat';
 import {
   cn,
   formatCurrency,
@@ -82,6 +83,7 @@ const MarketDetailPage = () => {
     error: recommendedProductsError,
   } = useRecommendedProducts(productId);
   const { mutate } = useDeleteProduct(productId);
+  const { handleChat } = useChat();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -100,15 +102,13 @@ const MarketDetailPage = () => {
     viewCount,
     imageUrlList,
     itemCategoryId,
-    userId,
+    userId: sellerId,
   } = productDetailData;
-  const handleChat = () => {
-    console.log(id);
-  };
+
   const handleLike = () => {
     console.log('하트');
   };
-  const isOwnPost = !((userId as number) % 2);
+  const isOwnPost = !((sellerId as number) % 2);
 
   const getRecommendPostList = (
     isLoading: boolean,
@@ -239,7 +239,10 @@ const MarketDetailPage = () => {
             >
               <Heart fill="#ef4444" className="text-red-500" />
             </Button>
-            <Button onClick={handleChat} className="w-full">
+            <Button
+              onClick={() => handleChat(productId, sellerId as number)}
+              className="w-full"
+            >
               채팅하기
             </Button>
             <Button
@@ -313,4 +316,3 @@ const MarketDetailPage = () => {
 };
 
 export default MarketDetailPage;
-alert;

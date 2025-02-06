@@ -5,7 +5,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
-import DownloadButton from './download-button';
+import DownloadButton from './DownloadButton';
 import { fileData, fileFormat, fileThumb } from './utils';
 
 // ----------------------------------------------------------------------

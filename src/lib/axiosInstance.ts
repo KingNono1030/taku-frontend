@@ -3,7 +3,7 @@ import axios from 'axios';
 import useUserStore from '@/store/userStore';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-const TEST_ACCESS_TOKEN = import.meta.env.VITE_GOOGLE_ACCESS_TOKEN;
+const TEST_ACCESS_TOKEN = import.meta.env.VITE_KAKAO_ACESS_TOKEN;
 
 const ducku = axios.create({
   baseURL: 'https://api-duckwho.xyz',
@@ -19,7 +19,7 @@ export const testAxios = axios.create({
   baseURL: BACKEND_URL,
   headers: {
     'Content-Type': 'application/json',
-    Authorization: 'Bearer ' + TEST_ACCESS_TOKEN,
+    Authorization: `Bearer ${TEST_ACCESS_TOKEN}`,
   },
 });
 

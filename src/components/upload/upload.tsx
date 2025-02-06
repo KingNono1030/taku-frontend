@@ -4,9 +4,9 @@ import { useDropzone } from 'react-dropzone';
 import { cn } from '@/lib/utils.ts';
 
 import { Button } from '../ui/button';
-import RejectionFiles from './errors-rejection-files.tsx';
-import MultiFilePreview from './preview-multi-file.tsx';
-import SingleFilePreview from './preview-single-file.tsx';
+import RejectionFiles from './ErrorsRejectionFiles.tsx';
+import MultiFilePreview from './PreviewMultiFile.tsx';
+import SingleFilePreview from './PreviewSingleFile.tsx';
 import { UploadProps } from './types';
 
 // ----------------------------------------------------------------------
@@ -31,7 +31,7 @@ export default function Upload({
 }: UploadProps & {
   imageUrlList?: string[];
   deleteImageUrlList?: string[];
-  onDeleteImageUrl?: (url: string) => void;
+  onDeleteImageUrl?: (url: string) => void; // eslint-disable-line no-unused-vars
 }) {
   // useDropzone 훅을 사용하여 드롭존 관련 속성 및 상태를 가져옴
   const {
@@ -71,6 +71,7 @@ export default function Upload({
   const renderSinglePreview = (
     <SingleFilePreview
       imgUrl={typeof file === 'string' ? file : file?.preview}
+      alt={typeof file === 'string' ? 'uploaded' : file?.name}
     />
   );
 

@@ -15,14 +15,23 @@ export const PriceList = ({
   setSelectedPeriod,
   priceData,
 }: PriceListProps) => {
+  // 데이터 존재 여부 확인을 위한 console.log 추가
+  console.log('PriceList data:', priceData);
+
   const dataPoints = priceData.data?.priceGraph?.dataPoints;
 
-  if (!dataPoints || dataPoints.length < 2) {
-    return null;
+  // 데이터 포인트가 2개 미만일 때 렌더링하지 않음 조건 수정
+  if (!dataPoints || dataPoints.length === 0) {
+    return (
+      <div className="flex aspect-video w-full items-center justify-center rounded-lg bg-white p-4">
+        <p className="text-muted-foreground">가격 데이터가 없습니다.</p>
+      </div>
+    );
   }
 
   const latestData = dataPoints[dataPoints.length - 1];
-  const previousData = dataPoints[dataPoints.length - 2];
+  const previousData =
+    dataPoints.length > 1 ? dataPoints[dataPoints.length - 2] : latestData;
 
   // null 체크 추가
   const latestPrice = latestData.registeredPrice ?? 0;
