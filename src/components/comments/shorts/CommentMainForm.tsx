@@ -4,18 +4,17 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { useCreateShortsComment } from '@/queries/shorts';
-
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { Button } from '../ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from '../ui/form';
-import { Textarea } from '../ui/textarea';
+} from '@/components/ui/form';
+import { Textarea } from '@/components/ui/textarea';
+import { useCreateShortsComment } from '@/queries/shorts';
 
 const addCommentSchema = z.object({
   comment: z.string().nonempty('댓글을 입력해주세요.'),

@@ -23,6 +23,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
+import { Input } from '@/components/ui/input';
 import {
   Popover,
   PopoverContent,
@@ -33,7 +34,7 @@ import SectionLayout from '@/layout/SectionLayout';
 import ducku from '@/lib/axiosInstance';
 import { formatKoreanDateWithLimit } from '@/lib/utils';
 
-const getCommunityDetail = async (postId) => {
+const getCommunityDetail = async (postId: string) => {
   const { data } = await ducku.get(
     `/api/community/posts/${postId}?canAddView=true`,
   );
@@ -54,7 +55,7 @@ const CommunityDetailPage = () => {
     error,
   } = useQuery({
     queryKey: ['communityDetail', id],
-    queryFn: () => getCommunityDetail(id),
+    queryFn: () => id && getCommunityDetail(id),
   });
 
   if (isPending) {
@@ -198,7 +199,19 @@ const CommunityDetailPage = () => {
       </div>
       <Separator className="my-8" />
       {/* 댓글 */}
-      <div></div>
+      <div>
+        <div>댓글 {communityDetailInfo.data?.comments.length ?? 0}</div>
+        <div className="relative mx-auto my-10">
+          <Button
+            variant="ghost"
+            className="absolute right-5 top-1/2 h-8 w-8 -translate-y-1/2 transform text-muted-foreground"
+          >
+            게시
+          </Button>
+          <Input placeholder={'댓글을 입력해주세요...'} className="pl-5" />
+        </div>
+        <div></div>
+      </div>
       <Button
         variant="outline"
         className="h-12 w-full border-2 border-primary font-bold text-primary hover:text-primary"
