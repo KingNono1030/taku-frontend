@@ -116,6 +116,13 @@ export type DeletePostDetailSuccessResponse =
 export type CreateCommentsRequest = NonNullable<
   operations['createComments']['requestBody']
 >['content']['application/json'];
+
+export interface CreateCommentsRequestBody extends CreateCommentsRequest {
+  postId: string;
+  content: string;
+  parentCommentId?: string;
+}
+
 export type CreateCommentsSuccessResponse =
   operations['createComments']['responses'][201]['content']['*/*'];
 
@@ -131,6 +138,12 @@ export type CreateCommentsSuccessResponse =
 export type UpdateCommentsRequest = NonNullable<
   operations['updateComments']['requestBody']
 >['content']['application/json'];
+
+export interface UpdateCommentsRequestBody extends UpdateCommentsRequest {
+  postId: string;
+  content: string;
+}
+
 export type UpdateCommentsSuccessResponse =
   operations['updateComments']['responses'][200]['content']['*/*'];
 

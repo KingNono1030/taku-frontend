@@ -13,7 +13,7 @@ import {
   useShortsComment,
 } from '@/queries/shorts';
 
-import CommentButton from './CommentButton';
+import CommentButton from '../CommentButton';
 import CommentItemForm from './CommentItemForm';
 
 const SAME_USER = true;

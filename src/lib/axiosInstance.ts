@@ -30,6 +30,7 @@ const duckuWithAuthJSON = axios.create({
 
 duckuWithAuthJSON.interceptors.request.use((config) => {
   const token = import.meta.env.VITE_GOOGLE_ACCESS_TOKEN;
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
