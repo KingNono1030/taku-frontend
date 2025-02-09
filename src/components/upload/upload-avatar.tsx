@@ -34,7 +34,11 @@ export default function UploadAvatar({
   const imgUrl = typeof file === 'string' ? file : file?.preview; // 파일의 URL
 
   const renderPreview = hasFile && (
-    <img alt="avatar" src={imgUrl} className="h-full w-full rounded-full" />
+    <img
+      alt="avatar"
+      src={imgUrl}
+      className="h-full w-full rounded-full object-cover"
+    />
   ); // 파일이 있을 때 미리보기 렌더링
 
   const renderPlaceholder = (

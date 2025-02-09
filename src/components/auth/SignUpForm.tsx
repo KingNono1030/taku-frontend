@@ -1,8 +1,12 @@
+import { useCallback } from 'react';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
+import { RHFUploadAvatar } from '@/components/hook-form/RhfUpload';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -12,90 +16,134 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { signUp } from '@/services/auth';
+import { useRegisterUser } from '@/queries/user';
+import { RegisterUserRequestWithJSON } from '@/services/user';
+import { OAuthProvider } from '@/types/api/user.types';
 
 const signupSchema = z.object({
-  nickname: z
-    .string()
-    .min(1, '이메일을 입력해주세요')
-    .email('유효한 이메일 형식이 아닙니다'),
-  phoneNumber: z
-    .string()
-    .min(8, '비밀번호는 최소 8자리 이상이어야 합니다')
-    .max(10, '비밀번호는 최대 20자리 이하이어야 합니다'),
-  authCode: z
-    .string()
-    .min(8, '비밀번호는 최소 8자리 이상이어야 합니다')
-    .max(10, '비밀번호는 최대 20자리 이하이어야 합니다'),
+  user: z.object({
+    nickname: z.string().nonempty('닉네임을 입력해주세요'),
+    provider_type: z.enum(['KAKAO', 'GOOGLE', 'NAVER']),
+  }),
+  profileImage: z
+    .object({
+      preview: z.string(),
+      name: z.string(),
+      size: z.number(),
+      type: z.string(),
+    })
+    .optional()
+    .transform((imageObj) => {
+      if (!imageObj) return undefined;
+
+      const file = new File([], imageObj.name, {
+        type: imageObj.type,
+        lastModified: Date.now(),
+      });
+
+      return Object.assign(file, { preview: imageObj.preview });
+    }),
 });
 
-export const SignUpForm = () => {
-  const navigate = useNavigate();
+export const SignUpForm = ({
+  token,
+  provider,
+}: {
+  token: string;
+  provider: OAuthProvider;
+}) => {
+  // const navigate = useNavigate();
+  const { mutate } = useRegisterUser();
+
   const form = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
-      nickname: '',
-      phoneNumber: '',
-      authCode: '',
+      user: {
+        nickname: '',
+        provider_type: provider,
+      },
+      profileImage: undefined,
     },
   });
 
+  const { handleSubmit, control, watch, setValue } = form;
+  const values = watch();
+
   const onSubmit = async (values: z.infer<typeof signupSchema>) => {
-    try {
-      const data = await signUp(values);
-      navigate('/');
-      return data;
-    } catch (error) {
-      console.error(error);
+    // FormData 객체 생성
+    const requestBody: RegisterUserRequestWithJSON = {
+      user: JSON.stringify(values.user),
+    };
+
+    // profileImage가 존재하면 추가
+    if (values.profileImage) {
+      requestBody.profileImage = values.profileImage;
     }
+
+    const data = await mutate({ requestBody, token });
+    console.log(data);
   };
 
+  const handleDropSingleFile = useCallback(
+    (acceptedFiles: File[]) => {
+      // 이전 파일의 preview URL을 해제하여 메모리 누수를 방지
+      if (values.profileImage?.preview) {
+        URL.revokeObjectURL(values.profileImage.preview);
+      }
+
+      // 첫 번째 파일만 처리
+      const [file] = acceptedFiles;
+
+      if (file) {
+        const newFile = Object.assign(file, {
+          preview: URL.createObjectURL(file),
+        });
+
+        // 단일 파일을 profileImage 필드에 설정
+        setValue('profileImage', newFile, {
+          shouldValidate: true,
+        });
+      }
+    },
+    [setValue, values.profileImage],
+  );
   return (
     <Form {...form}>
-      <form
-        id="loginForm"
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-6"
-      >
-        <FormField
-          control={form.control}
-          name="nickname"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-base text-[#767676]">닉네임</FormLabel>
-              <FormControl className="h-14 p-4 text-[#767676] md:text-base">
-                <Input placeholder="이메일" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="phoneNumber"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-[#767676]">휴대폰 번호</FormLabel>
-              <FormControl className="mt-3 h-14 p-4 text-[#767676] md:text-base">
-                <Input placeholder="비밀번호" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="authCode"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-[#767676]">인증번호</FormLabel>
-              <FormControl className="mt-3 h-14 p-4 text-[#767676] md:text-base">
-                <Input placeholder="비밀번호" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <div>
+          <FormField
+            control={control}
+            name="user.nickname"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-base text-[#767676]">
+                  닉네임
+                </FormLabel>
+                <FormControl className="h-14 p-4 text-[#767676] md:text-base">
+                  <Input placeholder="닉네임을 입력해주세요" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <div>
+          <FormLabel className="text-base text-[#767676]">프로필</FormLabel>
+          <RHFUploadAvatar
+            thumbnail
+            name="profileImage"
+            maxSize={3145728}
+            onDrop={handleDropSingleFile}
+          />
+        </div>
+        <div className="pt-10">
+          <Button
+            className="h-14 w-full bg-primary py-4 font-semibold text-white hover:bg-primary/90"
+            type="submit"
+          >
+            회원가입하기
+          </Button>
+        </div>
       </form>
     </Form>
   );

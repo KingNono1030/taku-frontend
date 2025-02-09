@@ -1,4 +1,13 @@
 import { type ClassValue, clsx } from 'clsx';
+import {
+  addHours,
+  differenceInDays,
+  differenceInHours,
+  differenceInMinutes,
+  differenceInSeconds,
+  format,
+  parse,
+} from 'date-fns';
 import { twMerge } from 'tailwind-merge';
 
 /**
@@ -115,6 +124,7 @@ const MONTHS_IN_A_YEAR = 12;
  */
 export const formatKoreanDate = (dateString: string): string => {
   const now = new Date();
+
   const targetDate = new Date(dateString);
   const timeDifference = now.getTime() - targetDate.getTime();
 
@@ -149,4 +159,42 @@ export const formatKoreanDate = (dateString: string): string => {
   return `${year}.${month.toString().padStart(2, '0')}.${day
     .toString()
     .padStart(2, '0')}`;
+};
+
+/**
+ * 주어진 날짜 문자열을 한국식 날짜 형식으로 변환하거나,
+ * 경과 시간을 초, 분, 시간, 일, 주, 월 단위로 표시하는 함수. 최대 3일 전 이후 날짜는 날짜 형식으로 반환합니다.
+ * @param dateString - "YYYY-MM-DD HH:MM" 형식의 날짜 문자열.
+ * @returns 변환된 한국식 날짜 문자열 또는 경과 시간.
+ */
+export const formatKoreanDateWithLimit = (dateString: string): string => {
+  const now = new Date();
+
+  // 주어진 날짜 문자열을 Date 객체로 파싱
+  const targetDate = parse(dateString, 'yyyy-MM-dd HH:mm', new Date());
+
+  // 한국 시간으로 변환 (UTC +9)
+  const koreanDate = addHours(targetDate, 9);
+
+  // 현재 시간과의 차이 계산
+  const secondsDifference = differenceInSeconds(now, koreanDate);
+  const minutesDifference = differenceInMinutes(now, koreanDate);
+  const hoursDifference = differenceInHours(now, koreanDate);
+  const daysDifference = differenceInDays(now, koreanDate);
+
+  if (daysDifference < 3) {
+    // 3일 미만인 경우 경과 시간 표시
+    if (secondsDifference < 60) {
+      return `${secondsDifference}초 전`;
+    } else if (minutesDifference < 60) {
+      return `${minutesDifference}분 전`;
+    } else if (hoursDifference < 24) {
+      return `${hoursDifference}시간 전`;
+    } else {
+      return `${daysDifference}일 전`;
+    }
+  }
+
+  // 3일 이상인 경우 한국식 날짜 포맷으로 변환
+  return format(koreanDate, 'yyyy.MM.dd');
 };
