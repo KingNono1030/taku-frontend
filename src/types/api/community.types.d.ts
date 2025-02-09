@@ -97,9 +97,19 @@ export type FindPostDetailSuccessResponse =
  */
 
 export type UpdatePostQuery = operations['updatePost']['parameters']['query'];
+
+export interface UpdatePostQueryRequest extends UpdatePostQuery {
+  categoryId: string;
+  title: string;
+  content: string;
+  imageList?: File[];
+  deleteImageUrl?: string[];
+}
+
 export type UpdatePostRequest = NonNullable<
   operations['updatePost']['requestBody']
 >['content']['application/json'];
+
 export type UpdatePostSuccessResponse =
   operations['updatePost']['responses'][200]['content']['*/*'];
 

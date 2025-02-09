@@ -6,11 +6,13 @@ import {
   deleteCommunityComment,
   getCommunityDetail,
   updateCommunityComment,
+  updateCommunityDetail,
 } from '@/services/community';
 import {
   CreateCommentsRequestBody,
   CreatePostQueryRequest,
   UpdateCommentsRequestBody,
+  UpdatePostQueryRequest,
 } from '@/types/api/community.types';
 
 type UseMutationProps = {
@@ -18,6 +20,10 @@ type UseMutationProps = {
   onErrorCb?: () => void;
   onSettledCb?: () => void;
 };
+
+interface UseUpdateMutationProps extends UseMutationProps {
+  postId: string;
+}
 
 /**
  * 커뮤니티 상세 조회 커스텀 훅
@@ -33,6 +39,12 @@ export const useCommunityDetail = (postId: string) => {
   });
 };
 
+/**
+ * 커뮤니티 상세 등록 커스텀 훅
+ * @param onSuccessCb 성공 시 실행할 콜백 함수
+ * @param onErrorCb 실패 시 실행할 콜백 함수
+ * @param onSettledCb 완료 시 실행할 콜백 함수
+ */
 export const useCreateCommunityDetail = ({
   onSuccessCb,
   onErrorCb,
@@ -54,6 +66,37 @@ export const useCreateCommunityDetail = ({
     },
     onSettled: () => {
       // 요청 완료 후 (성공/실패 관계없이) 실행할 로직
+      onSettledCb && onSettledCb();
+    },
+  });
+};
+
+/**
+ * 커뮤니티 상세 수정 커스텀 훅
+ * @param postId 쇼츠 ID
+ * @param onSuccessCb 성공 시 실행할 콜백 함수
+ * @param onErrorCb 실패 시 실행할 콜백 함수
+ * @param onSettledCb 완료 시 실행할 콜백 함수
+ */
+export const useUpdateCommunityDetail = ({
+  postId,
+  onSuccessCb,
+  onErrorCb,
+  onSettledCb,
+}: UseUpdateMutationProps) => {
+  return useMutation({
+    mutationFn: async (requestBody: UpdatePostQueryRequest) => {
+      return updateCommunityDetail(postId, requestBody);
+    },
+    onSuccess: (data) => {
+      console.log('커뮤니티 수정 성공:', data);
+      onSuccessCb && onSuccessCb();
+    },
+    onError: (error) => {
+      console.error('커뮤니티 수정 실패:', error);
+      onErrorCb && onErrorCb();
+    },
+    onSettled: () => {
       onSettledCb && onSettledCb();
     },
   });

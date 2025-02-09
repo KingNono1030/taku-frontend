@@ -1,5 +1,9 @@
 import { duckuWithAuthFormData, duckuWithAuthJSON } from '@/lib/axiosInstance';
-import { CreatePostQueryRequest } from '@/types/api/community.types';
+import { convertDataToFormData } from '@/lib/utils';
+import {
+  CreatePostQueryRequest,
+  UpdatePostQueryRequest,
+} from '@/types/api/community.types';
 
 type CommunityCommentRequest = {
   postId: string;
@@ -23,8 +27,24 @@ export const getCommunityDetail = async (postId: string) => {
 export const createCommunityDetail = async (
   requestBody: CreatePostQueryRequest,
 ) => {
+  const requestFormData = convertDataToFormData(requestBody);
+
   const { data } = await duckuWithAuthFormData.post(
     '/api/community/posts',
+    requestFormData,
+  );
+  return data;
+};
+
+/**
+ * 커뮤니티 상세 업데이트 서비스
+ */
+export const updateCommunityDetail = async (
+  postId: string,
+  requestBody: UpdatePostQueryRequest,
+) => {
+  const { data } = await duckuWithAuthFormData.put(
+    `/api/community/posts/${postId}`,
     requestBody,
   );
   return data;

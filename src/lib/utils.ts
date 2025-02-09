@@ -198,3 +198,36 @@ export const formatKoreanDateWithLimit = (dateString: string): string => {
   // 3일 이상인 경우 한국식 날짜 포맷으로 변환
   return format(koreanDate, 'yyyy.MM.dd');
 };
+
+/**
+ * react-hook-form의 data 객체를 FormData로 변환하는 함수.
+ */
+export const convertDataToFormData = (data: Record<string, any>): FormData => {
+  const formData = new FormData();
+
+  Object.keys(data).forEach((key) => {
+    if (Array.isArray(data[key])) {
+      // 배열인 경우, 각 요소를 순회하며 FormData에 추가
+      data[key].forEach((item) => {
+        // item이 객체인 경우 preview 속성을 제거하고 file 객체로 변환
+        if (typeof item === 'object') {
+          console.log('item', item);
+
+          delete item.preview;
+          const newItem = new File([], item.name, {
+            type: item.type,
+            lastModified: item.lastModified,
+          });
+          formData.append(`${key}`, newItem);
+          return;
+        }
+        formData.append(`${key}`, item); // key[] 형태로 추가
+      });
+    } else {
+      // 일반적인 값인 경우
+      formData.append(key, data[key]);
+    }
+  });
+
+  return formData;
+};

@@ -57,7 +57,7 @@ const CommunityDetailPage = () => {
   }
 
   const onClickEdit = () => {
-    console.log('edit');
+    navigate(`/community/${category}/${id}/edit`);
   };
 
   const onClickDelete = () => {

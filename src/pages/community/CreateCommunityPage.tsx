@@ -54,7 +54,7 @@ const CreateCommunityPage = () => {
 
   const { mutate, isPending } = useCreateCommunityDetail({
     onSuccessCb: () => {
-      navigate(`/community/${category}`);
+      // navigate(`/community/${category}`);
     },
   });
 
@@ -63,9 +63,9 @@ const CreateCommunityPage = () => {
     resolver: zodResolver(addPostSchema),
     defaultValues: {
       categoryId: category,
-      title: '',
-      content: '',
       imageList: undefined,
+      content: '',
+      title: '',
     },
   });
   const { setValue, watch, handleSubmit } = form;
@@ -105,7 +105,7 @@ const CreateCommunityPage = () => {
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-6"
         >
-          <div className="mt-10 flex flex-col gap-4 rounded bg-slate-100 p-5">
+          <div className="mt-10 flex flex-col gap-4 rounded-lg bg-slate-100 p-5">
             <FormField
               control={form.control}
               name="title"
