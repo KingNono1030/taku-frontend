@@ -1,9 +1,33 @@
 import { duckuWithAuthFormData, duckuWithAuthJSON } from '@/lib/axiosInstance';
+import { CreatePostQueryRequest } from '@/types/api/community.types';
 
 type CommunityCommentRequest = {
   postId: string;
   content: string;
   parentCommentId?: string;
+};
+
+/**
+ * 커뮤니티 상세 조회 서비스
+ */
+export const getCommunityDetail = async (postId: string) => {
+  const { data } =
+    await duckuWithAuthJSON.get(`/api/community/posts/${postId}?canAddView=true
+`);
+  return data;
+};
+
+/**
+ * 커뮤니티 상세 등록 서비스
+ */
+export const createCommunityDetail = async (
+  requestBody: CreatePostQueryRequest,
+) => {
+  const { data } = await duckuWithAuthFormData.post(
+    '/api/community/posts',
+    requestBody,
+  );
+  return data;
 };
 
 /**
@@ -17,16 +41,6 @@ export const createCommunityComment = async (
     `/api/community/comments`,
     requestBody,
   );
-  return data;
-};
-
-/**
- * 커뮤니티 상세 조회 서비스
- */
-export const getCommunityDetail = async (postId: string) => {
-  const { data } =
-    await duckuWithAuthJSON.get(`/api/community/posts/${postId}?canAddView=true
-`);
   return data;
 };
 

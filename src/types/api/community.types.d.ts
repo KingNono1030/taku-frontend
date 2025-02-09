@@ -51,6 +51,14 @@ export type FindAllPostSuccessResponse =
  */
 
 type CreatePostQuery = operations['createPost']['parameters']['query'];
+
+export interface CreatePostQueryRequest extends CreatePostQuery {
+  categoryId: string;
+  title: string;
+  content: string;
+  imageList?: File[];
+}
+
 type CreatePostRequest = NonNullable<
   operations['createPost']['requestBody']
 >['content']['application/json'];

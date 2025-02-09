@@ -2,12 +2,14 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 
 import {
   createCommunityComment,
+  createCommunityDetail,
   deleteCommunityComment,
   getCommunityDetail,
   updateCommunityComment,
 } from '@/services/community';
 import {
   CreateCommentsRequestBody,
+  CreatePostQueryRequest,
   UpdateCommentsRequestBody,
 } from '@/types/api/community.types';
 
@@ -28,6 +30,32 @@ export const useCommunityDetail = (postId: string) => {
     enabled: !!postId,
     staleTime: 1000 * 60 * 5,
     retry: 2,
+  });
+};
+
+export const useCreateCommunityDetail = ({
+  onSuccessCb,
+  onErrorCb,
+  onSettledCb,
+}: UseMutationProps) => {
+  return useMutation({
+    mutationFn: async (requestBody: CreatePostQueryRequest) => {
+      return createCommunityDetail(requestBody);
+    },
+    onSuccess: (data) => {
+      // 요청 성공 시 실행할 로직
+      console.log('커뮤니티 등록 성공', data);
+      onSuccessCb && onSuccessCb();
+    },
+    onError: (error) => {
+      // 요청 실패 시 실행할 로직
+      console.error('Mutation failed:', error);
+      onErrorCb && onErrorCb();
+    },
+    onSettled: () => {
+      // 요청 완료 후 (성공/실패 관계없이) 실행할 로직
+      onSettledCb && onSettledCb();
+    },
   });
 };
 

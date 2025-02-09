@@ -2,9 +2,8 @@ import { useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 import { Bookmark, BookmarkCheck, ChevronLeft } from 'lucide-react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
-import TestImg from '@/assets/스크린샷.png';
 import DataTable from '@/components/data-table/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -23,6 +22,7 @@ type Gerne = {
 
 const CommunityCategoryPage = () => {
   const { category } = useParams();
+  const navigate = useNavigate();
 
   const [bookmarkChecked, setBookmarkChecked] = useState(false);
 
@@ -51,7 +51,13 @@ const CommunityCategoryPage = () => {
       <section className="flex h-full justify-between">
         <div className="flex flex-col justify-between gap-4">
           <div className="flex flex-col items-start gap-4">
-            <Button variant={'ghost'} className="font-bold">
+            <Button
+              variant={'ghost'}
+              className="font-bold"
+              onClick={() => {
+                navigate('/community');
+              }}
+            >
               <ChevronLeft />
               커뮤니티 목록으로
             </Button>
@@ -80,7 +86,7 @@ const CommunityCategoryPage = () => {
         <div className="flex items-center bg-slate-500">
           <div className="relative h-[400px] w-[600px] overflow-hidden">
             <img
-              src={TestImg}
+              src={data.data?.categoryImages[0]?.imageUrl}
               alt="아무거나"
               className="h-full w-full object-cover object-center"
             />

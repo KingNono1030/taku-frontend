@@ -10,7 +10,7 @@ import {
   Trash2,
   User,
 } from 'lucide-react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import CommuCommentList from '@/components/comments/community/CommuCommentList';
 import CommuCommentMainForm from '@/components/comments/community/CommuCommentMainForm';
@@ -37,10 +37,9 @@ import { useCommunityDetail } from '@/queries/community';
 const CommunityDetailPage = () => {
   const { category, id } = useParams();
 
-  const [isLike, setIsLike] = useState(false);
+  const navigate = useNavigate();
 
-  console.log('category:', category);
-  console.log('id:', id);
+  const [isLike, setIsLike] = useState(false);
 
   const {
     data: communityDetailInfo,
@@ -68,7 +67,11 @@ const CommunityDetailPage = () => {
   return (
     <SectionLayout>
       <div className="mt-10 flex flex-col" style={{ wordBreak: 'break-word' }}>
-        <Button variant={'ghost'} className="w-fit font-bold">
+        <Button
+          variant={'ghost'}
+          className="w-fit font-bold"
+          onClick={() => navigate(`/community/${category}`)}
+        >
           <ChevronLeft />
           뒤로가기
         </Button>
@@ -152,19 +155,22 @@ const CommunityDetailPage = () => {
             className="w-full"
           >
             <CarouselContent>
-              {Array.from({ length: 5 }).map((_, index) => (
-                <CarouselItem key={index} className="md:basis-1/3 lg:basis-1/3">
-                  <div className="p-1">
-                    <Card>
-                      <CardContent className="flex aspect-square items-center justify-center p-6">
-                        <span className="text-3xl font-semibold">
-                          {index + 1}
-                        </span>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </CarouselItem>
-              ))}
+              {communityDetailInfo.data?.imageUrls.map(
+                (imageUrl: string, index: number) => (
+                  <CarouselItem
+                    key={index}
+                    className="md:basis-1/3 lg:basis-1/3"
+                  >
+                    <div className="p-1">
+                      <Card>
+                        <CardContent className="flex aspect-square items-center justify-center p-6">
+                          <img src={imageUrl} alt="" />
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </CarouselItem>
+                ),
+              )}
             </CarouselContent>
             <CarouselPrevious />
             <CarouselNext />
@@ -206,7 +212,7 @@ const CommunityDetailPage = () => {
       <Button
         variant="outline"
         className="my-8 h-12 w-full border-2 font-bold"
-        onClick={() => console.log('comment')}
+        onClick={() => navigate(`/community/${category}`)}
       >
         목록으로
       </Button>
