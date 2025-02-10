@@ -6,6 +6,7 @@ import {
   deleteProduct,
   getJangterRank,
   getProductDetail,
+  getProductItems,
   getRecommendedProductDetail,
   updateProduct,
 } from '@/services/jangter';
@@ -105,6 +106,15 @@ export const useJangterRank = () => {
   return useQuery({
     queryKey: ['jangter', 'rank'],
     queryFn: () => getJangterRank(),
+    staleTime: 1000 * 60 * 5,
+    retry: 2,
+  });
+};
+
+export const useProductItems = () => {
+  return useQuery({
+    queryKey: ['jangter', 'products'],
+    queryFn: () => getProductItems(),
     staleTime: 1000 * 60 * 5,
     retry: 2,
   });

@@ -3,6 +3,7 @@ import {
   CreateProductRequest,
   CreateProductSuccessResponse,
   FindProductDetailSuccessResponse,
+  FindProductItemsSuccessResponse,
   GetJangterRankSuccessResponse,
   UpdateProductRequest,
   UpdateProductSuccessResponse,
@@ -61,5 +62,11 @@ export const getRecommendedProductDetail = async (
 export const getJangterRank =
   async (): Promise<GetJangterRankSuccessResponse> => {
     const { data } = await ducku.get('api/jangter/rank');
+    return data;
+  };
+
+export const getProductItems =
+  async (): Promise<FindProductItemsSuccessResponse> => {
+    const { data } = await ducku.get('api/jangter/products');
     return data;
   };
