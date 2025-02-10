@@ -46,7 +46,7 @@ export interface paths {
     };
     /**
      * 커뮤니티 게시글 상세 조회
-     * @description 댓글 미개발
+     * @description 게시글의 상세 정보와 댓글을 조회합니다.
      */
     get: operations['findPostDetail'];
     /**
@@ -110,7 +110,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/file/upload': {
+  '/file/upload/video': {
     parameters: {
       query?: never;
       header?: never;
@@ -120,10 +120,30 @@ export interface paths {
     get?: never;
     put?: never;
     /**
-     * 파일 업로드
-     * @description 파일을 스토리지에 업로드합니다.
+     * 비디오 업로드
+     * @description 비디오를 스토리지에 업로드합니다.
      */
-    post: operations['uploadFile'];
+    post: operations['uploadVideoFile'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/file/upload/image': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * 이미지 업로드
+     * @description 이미지를 스토리지에 업로드합니다.
+     */
+    post: operations['uploadImageFile'];
     delete?: never;
     options?: never;
     head?: never;
@@ -160,7 +180,7 @@ export interface paths {
     put?: never;
     /**
      * 유저 등록
-     * @description 유저를 등록합니다.
+     * @description 유저를 등록합니다...
      */
     post: operations['registerUser'];
     delete?: never;
@@ -186,7 +206,7 @@ export interface paths {
      * 쇼츠 업로드
      * @description 파일을 스토리지에 업로드합니다.
      */
-    post: operations['uploadFile_1'];
+    post: operations['uploadFile'];
     delete?: never;
     options?: never;
     head?: never;
@@ -371,7 +391,7 @@ export interface paths {
      * 커뮤니티글 전체 조회
      * @description 검색어와 정렬필터 기능이 포함된 게시글 조회
      */
-    get: operations['findAllPostList'];
+    get: operations['findPostPage'];
     put?: never;
     /**
      * 커뮤니티 게시글 생성
@@ -579,7 +599,7 @@ export interface paths {
     patch: operations['updateShortsReply'];
     trace?: never;
   };
-  '/file/download/{fileName}': {
+  '/file/download/video/{fileName}': {
     parameters: {
       query?: never;
       header?: never;
@@ -587,10 +607,30 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * 파일 다운로드
-     * @description 파일을 스토리지에서 다운로드합니다.
+     * 비디오 다운로드
+     * @description 비디오을 스토리지에서 다운로드합니다.
      */
-    get: operations['downloadFile'];
+    get: operations['downloadVideoFile'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/file/download/image/{fileName}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * 이미지 다운로드
+     * @description 이미지를 스토리지에서 다운로드합니다.
+     */
+    get: operations['downloadImageFile'];
     put?: never;
     post?: never;
     delete?: never;
@@ -804,6 +844,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/jangter/rank': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * 장터 랭킹 일괄 조회
+     * @description 장터 랭킹 일괄 조회
+     */
+    get: operations['getJangterRank'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/itemCategory': {
     parameters: {
       query?: never;
@@ -816,6 +876,54 @@ export interface paths {
      * @description API로 GET요청시 덕후장터 아이템 카테고리 ID와 NAME이 List로 반환됨
      */
     get: operations['getAllItemCategories'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/chat/rooms/{roomId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['getChatRoom'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/chat/rooms/{roomId}/unread': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['getChatRoomUnreadCount'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/chat/rooms/unread/total': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['getTotalUnreadCount'];
     put?: never;
     post?: never;
     delete?: never;
@@ -1247,10 +1355,6 @@ export interface components {
       buyerId?: number;
       /** Format: int64 */
       sellerId?: number;
-      /** Format: int64 */
-      lastMessageId?: number;
-      /** Format: int64 */
-      unreadCount?: number;
       /** Format: date-time */
       createdAt?: string;
     };
@@ -1433,9 +1537,9 @@ export interface components {
     PageImplUserPurchaseResponseDTO: {
       content?: components['schemas']['UserPurchaseResponseDTO'][];
       pageable?: components['schemas']['PageableObject'];
-      last?: boolean;
       /** Format: int64 */
       totalElements?: number;
+      last?: boolean;
       /** Format: int32 */
       totalPages?: number;
       /** Format: int32 */
@@ -1851,6 +1955,126 @@ export interface components {
       created_at?: string;
     };
     /** @description 공통 응답 */
+    CommonResponseProductRankInfoResponseDTO: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success?: boolean;
+      data?: components['schemas']['ProductRankInfoResponseDTO'];
+      error?: components['schemas']['ExceptionDto'];
+    };
+    /**
+     * @description 랭킹 상품 정보
+     * @example {
+     *       "DAY": [
+     *         {
+     *           "rank_idx": 1,
+     *           "product_id": 123,
+     *           "product_name": "나루토 피규어",
+     *           "product_image": "https://example.com/image1.jpg",
+     *           "product_price": 50000,
+     *           "author_name": "애니덕후"
+     *         }
+     *       ],
+     *       "WEEK": [
+     *         {
+     *           "rank_idx": 1,
+     *           "product_id": 456,
+     *           "product_name": "원피스 피규어",
+     *           "product_image": "https://example.com/image2.jpg",
+     *           "product_price": 75000,
+     *           "author_name": "피규어매니아"
+     *         }
+     *       ],
+     *       "MONTH": [
+     *         {
+     *           "rank_idx": 1,
+     *           "product_id": 789,
+     *           "product_name": "건담 프라모델",
+     *           "product_image": "https://example.com/image3.jpg",
+     *           "product_price": 100000,
+     *           "author_name": "건프라러"
+     *         }
+     *       ]
+     *     }
+     */
+    ProductRankInfo: {
+      /**
+       * Format: int32
+       * @description 랭킹 순위
+       * @example 1
+       */
+      rank_idx?: number;
+      /**
+       * Format: int64
+       * @description 상품 ID
+       * @example 123
+       */
+      product_id?: number;
+      /**
+       * @description 상품명
+       * @example 나루토 피규어
+       */
+      product_name?: string;
+      /**
+       * @description 상품 이미지 URL
+       * @example https://example.com/image.jpg
+       */
+      product_image?: string;
+      /**
+       * @description 상품 가격
+       * @example 50000
+       */
+      product_price?: number;
+      /**
+       * @description 작성자 닉네임
+       * @example 애니덕후
+       */
+      author_name?: string;
+    };
+    /** @description 장터 랭킹 응답 DTO */
+    ProductRankInfoResponseDTO: {
+      /**
+       * @description 기간별 랭킹 정보
+       * @example {
+       *       "DAY": [
+       *         {
+       *           "rank_idx": 1,
+       *           "product_id": 123,
+       *           "product_name": "나루토 피규어",
+       *           "product_image": "https://example.com/image1.jpg",
+       *           "product_price": 50000,
+       *           "author_name": "애니덕후"
+       *         }
+       *       ],
+       *       "WEEK": [
+       *         {
+       *           "rank_idx": 1,
+       *           "product_id": 456,
+       *           "product_name": "원피스 피규어",
+       *           "product_image": "https://example.com/image2.jpg",
+       *           "product_price": 75000,
+       *           "author_name": "피규어매니아"
+       *         }
+       *       ],
+       *       "MONTH": [
+       *         {
+       *           "rank_idx": 1,
+       *           "product_id": 789,
+       *           "product_name": "건담 프라모델",
+       *           "product_image": "https://example.com/image3.jpg",
+       *           "product_price": 100000,
+       *           "author_name": "건프라러"
+       *         }
+       *       ]
+       *     }
+       */
+      rank_info?: {
+        [key: string]: components['schemas']['ProductRankInfo'][];
+      };
+    };
+    /** @description 공통 응답 */
     CommonResponseItemCategoriesResponseDTO: {
       /**
        * @description 성공 여부
@@ -1884,7 +2108,7 @@ export interface components {
       error?: components['schemas']['ExceptionDto'];
     };
     /** @description 게시글 정보 */
-    FindAllPostQuerydslDTO: {
+    FindPostQueryDTO: {
       /**
        * Format: int64
        * @description 게시글 ID
@@ -1925,6 +2149,21 @@ export interface components {
        * @description 조회수
        */
       views?: number;
+      /**
+       * Format: int64
+       * @description 좋아요수
+       */
+      likes?: number;
+      /**
+       * @description 유저 닉네임
+       * @example 유저 닉네임
+       */
+      userNickname?: string;
+      /**
+       * @description 유저 이미지
+       * @example 유저 이미지
+       */
+      userImageUrl?: string;
     };
     /** @description 응답 데이터 */
     PostListResponseDTO: {
@@ -1934,129 +2173,49 @@ export interface components {
        */
       postCount?: number;
       /**
+       * Format: int32
+       * @description 현재 페이지 번호(0부터 시작)
+       */
+      currentPage?: number;
+      /**
+       * Format: int32
+       * @description 전체 페이지 수(0부터 시작)
+       */
+      totalPages?: number;
+      /**
        * @description 게시글 정보
        * @example 게시글 정보
        */
-      responsePostList?: components['schemas']['FindAllPostQuerydslDTO'][];
+      responsePostList?: components['schemas']['FindPostQueryDTO'][];
     };
-    AnimationGenre: {
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
-      /** Format: int64 */
+    /** @description 게시글의 댓글 목록 */
+    CommentsResponseDTO: {
+      /**
+       * Format: int64
+       * @description 댓글 ID
+       */
       id?: number;
-      genreName?: string;
-      categoryGenres?: components['schemas']['CategoryGenre'][];
-    };
-    Category: {
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
-      /** Format: int64 */
-      id?: number;
-      name?: string;
-      /** @enum {string} */
-      createdType?: 'USER' | 'ADMIN' | 'BLACKLIST' | 'ANONYMOUS';
-      /** @enum {string} */
-      status?: 'ACTIVE' | 'INACTIVE' | 'PENDING';
-      /** Format: int64 */
-      viewCount?: number;
-      user?: components['schemas']['User'];
-      categoryImage?: components['schemas']['CategoryImage'];
-      categoryGenres?: components['schemas']['CategoryGenre'][];
-    };
-    CategoryGenre: {
-      /** Format: int64 */
-      id?: number;
-      category?: components['schemas']['Category'];
-      genre?: components['schemas']['AnimationGenre'];
-    };
-    CategoryImage: {
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
-      /** Format: int64 */
-      id?: number;
-      category?: components['schemas']['Category'];
-    };
-    CommunityImage: {
-      /** Format: int64 */
-      id?: number;
-      image?: components['schemas']['Image'];
-      post?: components['schemas']['Post'];
-    };
-    GrantedAuthority: {
-      authority?: string;
-    };
-    Image: {
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
-      /** Format: int64 */
-      id?: number;
-      user?: components['schemas']['User'];
-      fileName?: string;
-      imageUrl?: string;
-      originalName?: string;
-      fileType?: string;
-      /** Format: int32 */
-      fileSize?: number;
-      /** Format: date-time */
-      deletedAt?: string;
-    };
-    Post: {
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
-      /** Format: int64 */
-      id?: number;
-      user?: components['schemas']['User'];
-      category?: components['schemas']['Category'];
-      communityImages?: components['schemas']['CommunityImage'][];
-      title?: string;
+      /**
+       * @description 댓글 내용
+       * @example 댓글 내용
+       */
       content?: string;
-      /** Format: int64 */
-      views?: number;
-      /** Format: date-time */
-      deletedAt?: string;
-    };
-    PrincipalUser: {
-      user?: components['schemas']['User'];
-      enabled?: boolean;
-      password?: string;
-      username?: string;
-      /** Format: int64 */
-      userId?: number;
-      anonymous?: boolean;
-      authorities?: components['schemas']['GrantedAuthority'][];
-      accountNonExpired?: boolean;
-      accountNonLocked?: boolean;
-      credentialsNonExpired?: boolean;
-    };
-    User: {
-      /** Format: int64 */
-      userId?: number;
-      nickname?: string;
-      providerType?: string;
-      profileImg?: string;
-      /** @enum {string} */
-      status?: 'ACTIVE' | 'INACTIVE';
-      domesticId?: string;
-      gender?: string;
-      ageRange?: string;
-      /** Format: date-time */
+      /**
+       * Format: date-time
+       * @description 댓글 작성 시간
+       */
       createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
-      /** @enum {string} */
-      role?: 'USER' | 'ADMIN' | 'BLACKLIST' | 'ANONYMOUS';
-      email?: string;
-      posts?: components['schemas']['Post'][];
+      user?: components['schemas']['UserDetailDto'];
+      /**
+       * @description 댓글 소유자 여부
+       * @example false
+       */
+      isOwner?: boolean;
+      /**
+       * @description 대댓글 목록
+       * @example 대댓글 목록
+       */
+      replies?: components['schemas']['CommentsResponseDTO'][];
     };
     /** @description 공통 응답 */
     CommonResponsePostDetailResponseDTO: {
@@ -2096,7 +2255,7 @@ export interface components {
        */
       viewCount?: number;
       /**
-       * @description 봤는지 안봤는지? 윤정님 확인 필요
+       * @description 현재 사용자가 게시글의 작성자인지 여부
        * @example false
        */
       owner?: boolean;
@@ -2110,6 +2269,16 @@ export interface components {
        * @example 보여줄 이미지 URL
        */
       imageUrls?: string[];
+      /**
+       * @description 게시글의 댓글 목록
+       * @example 게시글의 댓글 목록
+       */
+      comments?: components['schemas']['CommentsResponseDTO'][];
+      /**
+       * Format: int64
+       * @description 좋아요 수
+       */
+      likeCount?: number;
     };
     /** @description 공통 응답 */
     CommonResponseListChatRoomResponseDTO: {
@@ -2123,6 +2292,20 @@ export interface components {
        * @example 응답 데이터
        */
       data?: components['schemas']['ChatRoomResponseDTO'][];
+      error?: components['schemas']['ExceptionDto'];
+    };
+    /** @description 공통 응답 */
+    CommonResponseInteger: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success?: boolean;
+      /**
+       * Format: int32
+       * @description 응답 데이터
+       */
+      data?: number;
       error?: components['schemas']['ExceptionDto'];
     };
     /** @description 공통 응답 */
@@ -2393,10 +2576,8 @@ export interface operations {
   findPostDetail: {
     parameters: {
       query: {
-        /** @description 조회를 했는지 여부 */
+        /** @description 조회수 증가 여부 */
         canAddView: boolean;
-        /** @description 유저 정보?? 윤정님 확인 필요 */
-        principalUser: components['schemas']['PrincipalUser'];
       };
       header?: never;
       path: {
@@ -2407,8 +2588,17 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 게시글 조회 성공 */
       200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponsePostDetailResponseDTO'];
+        };
+      };
+      /** @description 존재하지 않는 게시글 */
+      404: {
         headers: {
           [name: string]: unknown;
         };
@@ -2662,7 +2852,43 @@ export interface operations {
       };
     };
   };
-  uploadFile: {
+  uploadVideoFile: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        'multipart/form-data': {
+          /** Format: binary */
+          video: string;
+        };
+      };
+    };
+    responses: {
+      /** @description Video upload : SUCCESS */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': string;
+        };
+      };
+      /** @description Bad Request: Invalid input data. */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': string;
+        };
+      };
+    };
+  };
+  uploadImageFile: {
     parameters: {
       query?: never;
       header?: never;
@@ -2850,7 +3076,7 @@ export interface operations {
       };
     };
   };
-  uploadFile_1: {
+  uploadFile: {
     parameters: {
       query?: never;
       header?: never;
@@ -3258,20 +3484,34 @@ export interface operations {
       };
     };
   };
-  findAllPostList: {
+  findPostPage: {
     parameters: {
       query?: {
-        /** @description 정렬 기준 id = latest 조회수 = views 좋아요 = likes */
-        sortFilterType?: string;
-        /** @description 정렬 기준(id, 조회수, 좋아요)의 마지막 값 */
-        lastValue?: string;
-        /** @description 정렬 방향(true = 오름차순, false = 내림차순) */
-        asc?: string;
-        /** @description 페이지당 항목 수 */
-        limit?: string;
+        /**
+         * @description 페이지 번호(0부터 시작)
+         * @example 0
+         */
+        page?: string;
+        /**
+         * @description 페이지 수
+         * @example 20
+         */
+        size?: string;
+        /**
+         * @description 정렬 필터와 정렬 방식,
+         *
+         *     입력 방법: 정렬 필터,정렬 방식(띄어쓰기 없어야함)
+         *
+         *     정렬 필터: id(최신순), views(조회수순)
+         *
+         *     정렬 방식: desc(내림차순, 기본값), asc(오름차순)
+         *
+         * @example id,desc
+         */
+        sort?: string;
         /** @description 검색어 */
         keyword?: string;
-        /** @description 카테고리 ID(현재 69, 70에 더미데이터 존재) */
+        /** @description 카테고리 ID(기본값 1) */
         categoryId?: string;
       };
       header?: never;
@@ -3497,13 +3737,7 @@ export interface operations {
   createCategory: {
     parameters: {
       query?: never;
-      header: {
-        /**
-         * @description JWT 토큰
-         * @example Bearer eyJhbGciOiJIUzI1NiJ9.eyJhZ2VfcmFuZ2...
-         */
-        Authorization: string;
-      };
+      header?: never;
       path?: never;
       cookie?: never;
     };
@@ -3956,7 +4190,38 @@ export interface operations {
       };
     };
   };
-  downloadFile: {
+  downloadVideoFile: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        fileName: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Video download : SUCCESS */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': string;
+        };
+      };
+      /** @description Bad Request: Invalid input data. */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': string;
+        };
+      };
+    };
+  };
+  downloadImageFile: {
     parameters: {
       query?: never;
       header?: never;
@@ -4293,6 +4558,26 @@ export interface operations {
       };
     };
   };
+  getJangterRank: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description 장터 랭킹 조회 성공 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseProductRankInfoResponseDTO'];
+        };
+      };
+    };
+  };
   getAllItemCategories: {
     parameters: {
       query?: never;
@@ -4309,6 +4594,76 @@ export interface operations {
         };
         content: {
           '*/*': components['schemas']['CommonResponseItemCategoriesResponseDTO'];
+        };
+      };
+    };
+  };
+  getChatRoom: {
+    parameters: {
+      query: {
+        userId: number;
+      };
+      header?: never;
+      path: {
+        roomId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseChatRoomResponseDTO'];
+        };
+      };
+    };
+  };
+  getChatRoomUnreadCount: {
+    parameters: {
+      query: {
+        userId: number;
+      };
+      header?: never;
+      path: {
+        roomId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseInteger'];
+        };
+      };
+    };
+  };
+  getTotalUnreadCount: {
+    parameters: {
+      query: {
+        userId: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseInteger'];
         };
       };
     };
