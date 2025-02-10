@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   createProduct,
   deleteProduct,
+  getJangterRank,
   getProductDetail,
   getRecommendedProductDetail,
   updateProduct,
@@ -95,6 +96,15 @@ export const useRecommendedProducts = (productId: number) => {
     queryKey: ['products', productId, 'recommended'],
     queryFn: () => getRecommendedProductDetail(productId),
     enabled: !!productId,
+    staleTime: 1000 * 60 * 5,
+    retry: 2,
+  });
+};
+
+export const useJangterRank = () => {
+  return useQuery({
+    queryKey: ['jangter', 'rank'],
+    queryFn: () => getJangterRank(),
     staleTime: 1000 * 60 * 5,
     retry: 2,
   });
