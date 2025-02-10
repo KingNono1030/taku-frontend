@@ -12,6 +12,7 @@ import {
 } from '@/services/jangter';
 import type {
   CreateProductRequest,
+  FindProductItemsQuery,
   UpdateProductRequest,
 } from '@/types/api/jangter.types';
 
@@ -111,10 +112,10 @@ export const useJangterRank = () => {
   });
 };
 
-export const useProductItems = () => {
+export const useProductItems = (params?: FindProductItemsQuery) => {
   return useQuery({
     queryKey: ['jangter', 'products'],
-    queryFn: () => getProductItems(),
+    queryFn: () => getProductItems(params),
     staleTime: 1000 * 60 * 5,
     retry: 2,
   });

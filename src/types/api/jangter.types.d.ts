@@ -118,13 +118,16 @@ export type GetJangterRankSuccessResponse =
  * 판매글 전체 조회
  * @description 덕후 장터 판매글 전체 조회
  */
+export type FindProductItemsQuery =
+  components['schemas']['ProductFindListRequestDTO'];
+
 export type JangterProduct = {
-  product_id: number;
+  id: number;
   title: string;
   price: number;
-  thumbnail_url: string;
-  created_at: string;
-  author_name: string;
+  imageUrl: string;
+  viewCount: number;
+  userNickname: string;
 };
 
 export type FindProductItemsSuccessResponse =
