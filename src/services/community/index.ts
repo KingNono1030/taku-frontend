@@ -100,3 +100,11 @@ export const deleteCommunityComment = async (commentsId: string) => {
   );
   return data;
 };
+
+/**
+ * 커뮤니티 장르 조회 서비스
+ */
+export const getCommunityGenres = async () => {
+  const { data } = await duckuWithAuthJSON.get('/api/category/genres');
+  return data;
+};

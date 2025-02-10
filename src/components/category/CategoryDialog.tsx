@@ -23,6 +23,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { useCommunityGenres } from '@/queries/community';
 
 import { RHFUpload } from '../hook-form/RhfUpload';
 import { MultiSelect } from '../multi-select/MultiSelect';
@@ -40,30 +41,46 @@ const addCategorySchema = z.object({
   ),
 });
 
-const aniGenreArr = [
-  { label: '액션', value: '1' },
-  { label: '로맨스', value: '2' },
-  { label: '스릴러', value: '3' },
-  { label: '판타지', value: '4' },
-  { label: '드라마', value: '5' },
-  { label: '코미디', value: '6' },
-  { label: 'SF', value: '7' },
-  { label: '공포', value: '8' },
-  { label: '모험', value: '9' },
-  { label: '미스터리', value: '10' },
-  { label: '범죄', value: '11' },
-  { label: '전쟁', value: '12' },
-  { label: '애니메이션', value: '13' },
-  { label: '판타지', value: '14' },
-  { label: '로맨틱코미디', value: '15' },
-  { label: '스포츠', value: '16' },
-  { label: '시대극', value: '17' },
-  { label: '음악', value: '18' },
-  { label: '가족', value: '19' },
-  { label: '미니시리즈', value: '20' },
-];
+// const aniGenreArr = [
+//   { label: '액션', value: '1' },
+//   { label: '로맨스', value: '2' },
+//   { label: '스릴러', value: '3' },
+//   { label: '판타지', value: '4' },
+//   { label: '드라마', value: '5' },
+//   { label: '코미디', value: '6' },
+//   { label: 'SF', value: '7' },
+//   { label: '공포', value: '8' },
+//   { label: '모험', value: '9' },
+//   { label: '미스터리', value: '10' },
+//   { label: '범죄', value: '11' },
+//   { label: '전쟁', value: '12' },
+//   { label: '애니메이션', value: '13' },
+//   { label: '판타지', value: '14' },
+//   { label: '로맨틱코미디', value: '15' },
+//   { label: '스포츠', value: '16' },
+//   { label: '시대극', value: '17' },
+//   { label: '음악', value: '18' },
+//   { label: '가족', value: '19' },
+//   { label: '미니시리즈', value: '20' },
+// ];
+
+type Genre = {
+  id: number;
+  genreName: string;
+};
 
 const CategoryDialog = () => {
+  const { data: genreList, isPending, error } = useCommunityGenres();
+
+  /*
+    data.genres 배열 ex) [{id: 1, genreName: '액션'}, {id: 2, genreName: '로맨스'}, ...]
+    data.genres 배열을 aniGenreArr로 변환
+   */
+  const aniGenreArr = genreList.data?.genres?.map((genre: Genre) => ({
+    label: genre.genreName,
+    value: genre.id.toString(),
+  }));
+
   const form = useForm<z.infer<typeof addCategorySchema>>({
     resolver: zodResolver(addCategorySchema),
     defaultValues: {
@@ -96,6 +113,11 @@ const CategoryDialog = () => {
     },
     [setValue, values.multiUpload],
   );
+
+  if (isPending) return <div>Loading...</div>;
+
+  if (error) return <div>Error: {error.message}</div>;
+
   return (
     <Dialog modal={false}>
       <DialogTrigger asChild>
@@ -134,7 +156,7 @@ const CategoryDialog = () => {
                   <FormLabel className="text-base">장르</FormLabel>
                   <FormControl>
                     <MultiSelect
-                      options={aniGenreArr}
+                      options={aniGenreArr ?? []}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                       placeholder="선택하기..."

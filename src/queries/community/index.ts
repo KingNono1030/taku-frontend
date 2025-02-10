@@ -6,6 +6,7 @@ import {
   deleteCommunityComment,
   deleteCommunityDetail,
   getCommunityDetail,
+  getCommunityGenres,
   updateCommunityComment,
   updateCommunityDetail,
 } from '@/services/community';
@@ -127,7 +128,7 @@ export const useDeleteCommunityDetail = ({
     },
     onSuccess: (data) => {
       console.log('커뮤니티 삭제 성공:', data);
-      onSuccessCb && onSuccessCb();
+      onSuccessCb && onSuccessCb(data);
     },
     onError: (error) => {
       console.error('커뮤니티 삭제 실패:', error);
@@ -234,5 +235,15 @@ export const useDeleteCommunityComment = ({
     onSettled: () => {
       onSettledCb && onSettledCb();
     },
+  });
+};
+
+/**
+ * 커뮤니티 장르 조회 커스텀 훅
+ */
+export const useCommunityGenres = () => {
+  return useQuery({
+    queryKey: ['communityGenres'],
+    queryFn: async () => await getCommunityGenres(),
   });
 };
