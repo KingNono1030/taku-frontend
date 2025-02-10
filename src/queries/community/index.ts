@@ -15,8 +15,18 @@ import {
   UpdatePostQueryRequest,
 } from '@/types/api/community.types';
 
+type ResponseType = {
+  success: boolean;
+  data: number;
+  error: {
+    code: number;
+    message: string;
+  };
+};
+
 type UseMutationProps = {
-  onSuccessCb?: () => void;
+  // eslint-disable-next-line no-unused-vars
+  onSuccessCb?: (data: ResponseType) => void;
   onErrorCb?: () => void;
   onSettledCb?: () => void;
 };
@@ -34,7 +44,6 @@ export const useCommunityDetail = (postId: string) => {
     queryKey: ['communityDetail', postId],
     queryFn: async () => postId && (await getCommunityDetail(postId)),
     enabled: !!postId,
-    staleTime: 1000 * 60 * 5,
     retry: 2,
   });
 };
@@ -57,7 +66,7 @@ export const useCreateCommunityDetail = ({
     onSuccess: (data) => {
       // 요청 성공 시 실행할 로직
       console.log('커뮤니티 등록 성공', data);
-      onSuccessCb && onSuccessCb();
+      onSuccessCb && onSuccessCb(data);
     },
     onError: (error) => {
       // 요청 실패 시 실행할 로직
@@ -90,7 +99,7 @@ export const useUpdateCommunityDetail = ({
     },
     onSuccess: (data) => {
       console.log('커뮤니티 수정 성공:', data);
-      onSuccessCb && onSuccessCb();
+      onSuccessCb && onSuccessCb(data);
     },
     onError: (error) => {
       console.error('커뮤니티 수정 실패:', error);
@@ -119,7 +128,7 @@ export const useCreateCommunityComment = ({
     },
     onSuccess: (data) => {
       console.log('댓글 등록 성공:', data);
-      onSuccessCb && onSuccessCb();
+      onSuccessCb && onSuccessCb(data);
     },
     onError: (error) => {
       console.error('댓글 등록 실패:', error);
