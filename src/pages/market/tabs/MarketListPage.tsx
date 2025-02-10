@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { Plus, Search } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 
@@ -185,9 +185,6 @@ const MarketListPage = () => {
                 placeholder="검색어를 입력하세요"
                 {...register('searchKeyword')}
               />
-              <Button type="submit" size="icon">
-                <Search className="h-4 w-4" />
-              </Button>
             </div>
           </div>
 
