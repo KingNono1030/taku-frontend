@@ -109,3 +109,23 @@ export type JangterRank = {
 export type JangterRankType = 'DAY' | 'WEEK' | 'MONTH';
 export type GetJangterRankSuccessResponse =
   operations['getJangterRank']['responses'][200]['content']['*/*'];
+
+/**
+ * path: '/api/jangter/products'
+ */
+
+/**
+ * 판매글 전체 조회
+ * @description 덕후 장터 판매글 전체 조회
+ */
+export type JangterProduct = {
+  product_id: number;
+  title: string;
+  price: number;
+  thumbnail_url: string;
+  created_at: string;
+  author_name: string;
+};
+
+export type FindProductItemsSuccessResponse =
+  operations['findProductItems']['responses'][200]['content']['*/*'];

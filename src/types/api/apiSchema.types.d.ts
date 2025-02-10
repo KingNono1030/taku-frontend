@@ -487,6 +487,30 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/category/{id}/bookmark': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * 카테고리 상세 북마크 추가
+     * @description 카테고리 상세에서 사용자가 북마크를 합니다.
+     */
+    post: operations['createCategoryBookmark'];
+    /**
+     * 카테고리 상세 북마크 삭제
+     * @description 카테고리 상세에서 사용자가 북마크를 취소 합니다.
+     */
+    delete: operations['deleteCategoryBookmark'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/auth/logout': {
     parameters: {
       query?: never;
@@ -856,6 +880,26 @@ export interface paths {
      * @description 장터 랭킹 일괄 조회
      */
     get: operations['getJangterRank'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/jangter/products': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * 판매글 전체 조회
+     * @description 덕후 장터 판매글 전체 조회
+     */
+    get: operations['findProductItems'];
     put?: never;
     post?: never;
     delete?: never;
@@ -1493,17 +1537,17 @@ export interface components {
       error?: components['schemas']['ExceptionDto'];
     };
     /** @description 공통 응답 */
-    CommonResponseUserDetailDto: {
+    CommonResponseUserDetailDTO: {
       /**
        * @description 성공 여부
        * @example true
        */
       success?: boolean;
-      data?: components['schemas']['UserDetailDto'];
+      data?: components['schemas']['UserDetailDTO'];
       error?: components['schemas']['ExceptionDto'];
     };
     /** @description 응답 데이터 */
-    UserDetailDto: {
+    UserDetailDTO: {
       nickname?: string;
       profileImg?: string;
       gender?: string;
@@ -1537,9 +1581,9 @@ export interface components {
     PageImplUserPurchaseResponseDTO: {
       content?: components['schemas']['UserPurchaseResponseDTO'][];
       pageable?: components['schemas']['PageableObject'];
+      last?: boolean;
       /** Format: int64 */
       totalElements?: number;
-      last?: boolean;
       /** Format: int32 */
       totalPages?: number;
       /** Format: int32 */
@@ -2074,6 +2118,91 @@ export interface components {
         [key: string]: components['schemas']['ProductRankInfo'][];
       };
     };
+    ProductFindListRequestDTO: {
+      /**
+       * @description 정렬 기준 (가격: price, 날짜: day)
+       * @example price
+       */
+      sort?: string;
+      /**
+       * @description 정렬 기준 오른차순 (asc) 내림 차순(desc)
+       * @example asc
+       */
+      order?: string;
+      /**
+       * Format: int64
+       * @description 마지막으로 본 id
+       * @example 0
+       */
+      lastId?: number;
+      /**
+       * Format: int32
+       * @description 페이지 크기
+       * @example 10
+       */
+      size?: number;
+      /**
+       * Format: int32
+       * @description 최소 가격 필터
+       * @example 100
+       */
+      minPrice?: number | null;
+      /**
+       * Format: int32
+       * @description 최대 가격 필터
+       * @example 50000000
+       */
+      maxPrice?: number | null;
+      /**
+       * Format: int64
+       * @description 카테고리 ID()
+       * @example 1
+       */
+      categoryId?: number | null;
+      /**
+       * @description 검색
+       * @example 검색
+       */
+      searchKeyword?: string | null;
+    };
+    /** @description 공통 응답 */
+    CommonResponseListProductFindListResponseDTO: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success?: boolean;
+      /**
+       * @description 응답 데이터
+       * @example 응답 데이터
+       */
+      data?: components['schemas']['ProductFindListResponseDTO'][];
+      error?: components['schemas']['ExceptionDto'];
+    };
+    /** @description 응답 데이터 */
+    ProductFindListResponseDTO: {
+      /** Format: int64 */
+      id?: number;
+      /**
+       * @description 장터글 제목
+       * @example 장터글 제목
+       */
+      title?: string;
+      /** @description 장터글 가격 */
+      price?: number;
+      /**
+       * @description 대표 이미지
+       * @example 대표 이미지
+       */
+      imageUrl?: string;
+      /**
+       * @description 올린이 유저 이름
+       * @example 올린이 유저 이름
+       */
+      userNickname?: string;
+      /** Format: int64 */
+      viewCount?: number;
+    };
     /** @description 공통 응답 */
     CommonResponseItemCategoriesResponseDTO: {
       /**
@@ -2205,7 +2334,7 @@ export interface components {
        * @description 댓글 작성 시간
        */
       createdAt?: string;
-      user?: components['schemas']['UserDetailDto'];
+      user?: components['schemas']['UserDetailDTO'];
       /**
        * @description 댓글 소유자 여부
        * @example false
@@ -3792,6 +3921,52 @@ export interface operations {
       };
     };
   };
+  createCategoryBookmark: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description 카테고리 ID */
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
+        };
+      };
+    };
+  };
+  deleteCategoryBookmark: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description 카테고리 ID */
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
+        };
+      };
+    };
+  };
   logout: {
     parameters: {
       query?: never;
@@ -3898,7 +4073,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['CommonResponseUserDetailDto'];
+          '*/*': components['schemas']['CommonResponseUserDetailDTO'];
         };
       };
     };
@@ -3954,7 +4129,7 @@ export interface operations {
           /** Format: binary */
           image?: string;
           /** Format: binary */
-          request?: string;
+          request: string;
         };
       };
     };
@@ -4574,6 +4749,28 @@ export interface operations {
         };
         content: {
           '*/*': components['schemas']['CommonResponseProductRankInfoResponseDTO'];
+        };
+      };
+    };
+  };
+  findProductItems: {
+    parameters: {
+      query: {
+        request: components['schemas']['ProductFindListRequestDTO'];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description 성공 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseListProductFindListResponseDTO'];
         };
       };
     };
