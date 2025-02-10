@@ -4,6 +4,7 @@ import {
   createCommunityComment,
   createCommunityDetail,
   deleteCommunityComment,
+  deleteCommunityDetail,
   getCommunityDetail,
   updateCommunityComment,
   updateCommunityDetail,
@@ -94,6 +95,33 @@ export const useUpdateCommunityDetail = ({
     },
     onError: (error) => {
       console.error('커뮤니티 수정 실패:', error);
+      onErrorCb && onErrorCb();
+    },
+    onSettled: () => {
+      onSettledCb && onSettledCb();
+    },
+  });
+};
+
+/**
+ * 커뮤니티 상세 삭제 커스텀 훅
+ */
+export const useDeleteCommunityDetail = ({
+  postId,
+  onSuccessCb,
+  onErrorCb,
+  onSettledCb,
+}: UseUpdateMutationProps) => {
+  return useMutation({
+    mutationFn: async () => {
+      return deleteCommunityDetail(postId);
+    },
+    onSuccess: (data) => {
+      console.log('커뮤니티 삭제 성공:', data);
+      onSuccessCb && onSuccessCb();
+    },
+    onError: (error) => {
+      console.error('커뮤니티 삭제 실패:', error);
       onErrorCb && onErrorCb();
     },
     onSettled: () => {

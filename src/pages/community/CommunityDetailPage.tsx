@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import DeleteAlertDialog from '@/components/alert-dialog/DeleteAlertDialog';
 import CommuCommentList from '@/components/comments/community/CommuCommentList';
 import CommuCommentMainForm from '@/components/comments/community/CommuCommentMainForm';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -32,7 +33,10 @@ import {
 import { Separator } from '@/components/ui/separator';
 import SectionLayout from '@/layout/SectionLayout';
 import { formatKoreanDateWithLimit } from '@/lib/utils';
-import { useCommunityDetail } from '@/queries/community';
+import {
+  useCommunityDetail,
+  useDeleteCommunityDetail,
+} from '@/queries/community';
 
 const CommunityDetailPage = () => {
   const { category, id } = useParams();
@@ -41,12 +45,21 @@ const CommunityDetailPage = () => {
 
   const [isLike, setIsLike] = useState(false);
 
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
   const {
     data: communityDetailInfo,
     isPending,
     error,
     refetch: refetchCommunityDetail,
   } = useCommunityDetail(id ?? '');
+
+  const { mutate } = useDeleteCommunityDetail({
+    postId: id ?? '',
+    onSuccessCb: () => {
+      navigate(`/community/${category}`);
+    },
+  });
 
   if (isPending) {
     return <div>Loading...</div>;
@@ -61,7 +74,11 @@ const CommunityDetailPage = () => {
   };
 
   const onClickDelete = () => {
-    console.log('delete');
+    setOpenDeleteDialog(true);
+  };
+
+  const handleDeleteCommunityDetail = () => {
+    mutate();
   };
 
   return (
@@ -216,6 +233,14 @@ const CommunityDetailPage = () => {
       >
         목록으로
       </Button>
+
+      <DeleteAlertDialog
+        title="게시글 삭제"
+        content="게시글을 완전히 삭제할까요?"
+        isDialogOpen={openDeleteDialog}
+        setIsDialogOpen={setOpenDeleteDialog}
+        handleClickDelete={handleDeleteCommunityDetail}
+      />
     </SectionLayout>
   );
 };
