@@ -1,48 +1,86 @@
+import { useState } from 'react';
+
 import { Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+import { ProductListCard } from '@/components/market/ProductListCard';
 import { Button } from '@/components/ui/button';
+import { useProductItems } from '@/queries/jangter';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+  FindProductItemsQuery,
+  JangterProduct,
+} from '@/types/api/jangter.types';
 
 const MarketListPage = () => {
+  const [queryParams, setQueryParams] = useState<FindProductItemsQuery>({
+    lastId: undefined,
+    size: 20,
+    sort: 'day',
+    order: 'desc',
+    minPrice: undefined,
+    maxPrice: undefined,
+    categoryId: undefined,
+    searchKeyword: undefined,
+  });
+
+  const { data } = useProductItems(queryParams);
+  const productItems = data?.data as JangterProduct[];
+  // 무한 스크롤 핸들러
+  const handleLoadMore = (lastItemId: number) => {
+    setQueryParams((prev) => ({
+      ...prev,
+      lastId: lastItemId,
+    }));
+  };
+
+  // 정렬 변경 핸들러
+  const handleSortChange = (sort: string, order: string) => {
+    setQueryParams((prev) => ({
+      ...prev,
+      sort,
+      order,
+      lastId: undefined, // 정렬 변경 시 처음부터 다시 로드
+    }));
+  };
+
+  // 검색어 변경 핸들러
+  const handleSearchChange = (searchKeyword: string) => {
+    setQueryParams((prev) => ({
+      ...prev,
+      searchKeyword,
+      lastId: undefined, // 검색 시 처음부터 다시 로드
+    }));
+  };
+
+  // 가격 필터 핸들러
+  const handlePriceFilter = (minPrice?: number, maxPrice?: number) => {
+    setQueryParams((prev) => ({
+      ...prev,
+      minPrice,
+      maxPrice,
+      lastId: undefined, // 필터 변경 시 처음부터 다시 로드
+    }));
+  };
+
+  // 카테고리 필터 핸들러
+  const handleCategoryChange = (categoryId?: number) => {
+    setQueryParams((prev) => ({
+      ...prev,
+      categoryId,
+      lastId: undefined, // 카테고리 변경 시 처음부터 다시 로드
+    }));
+  };
+
   return (
     <div>
       <div className="mb-8">
         <h1 className="text-3xl font-bold">상품 조회/검색 탭 입니다.</h1>
       </div>
       <div className="grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {Array.from(new Array(41))
-          .map((_, i) => i + 1)
-          .map((num: number) => (
-            <Link to={`/market/${num}`} key={num}>
-              <Card>
-                <div className="relative aspect-square w-full overflow-hidden">
-                  <img
-                    className="w-full object-cover transition-transform duration-300 hover:scale-110"
-                    src="https://fastly.picsum.photos/id/1051/200/200.jpg?hmac=s6d4ypEjpec8nvA2zqhWzx_6ogXYM2fJ_YJwaOM1CUA"
-                    alt=""
-                  />
-                </div>
-                <CardHeader className="p-4">
-                  <CardDescription>
-                    한섬 타임 TIME 캐시미어 100% 코트
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="px-4 pb-4">
-                  <CardTitle className="">22000원</CardTitle>
-                </CardContent>
-                <CardFooter className="px-4 pb-4">
-                  <span className="text-gray-400">3초 전</span>
-                </CardFooter>
-              </Card>
-            </Link>
+        {productItems &&
+          productItems.length > 0 &&
+          productItems.map((item: JangterProduct) => (
+            <ProductListCard key={item.id} data={item} />
           ))}
       </div>
       <div className="group fixed bottom-10 right-10">
