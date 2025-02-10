@@ -210,6 +210,7 @@ export const convertDataToFormData = (data: Record<string, any>): FormData => {
       // 배열인 경우, 각 요소를 순회하며 FormData에 추가
       data[key].forEach((item) => {
         // item이 객체인 경우 preview 속성을 제거하고 file 객체로 변환
+
         if (typeof item === 'object') {
           console.log('item', item);
 
@@ -224,6 +225,10 @@ export const convertDataToFormData = (data: Record<string, any>): FormData => {
         formData.append(`${key}`, item); // key[] 형태로 추가
       });
     } else {
+      if (typeof data[key] === 'undefined') {
+        // 값이 없는 경우 무시
+        return;
+      }
       // 일반적인 값인 경우
       formData.append(key, data[key]);
     }

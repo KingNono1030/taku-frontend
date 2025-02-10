@@ -64,7 +64,9 @@ const UpdateCommunityPage = () => {
 
   const { mutate, isPending } = useUpdateCommunityDetail({
     postId: id ?? '',
-    onSettledCb: () => {},
+    onSuccessCb: () => {
+      navigate(`/community/${category}/${id}`);
+    },
   });
 
   const { data, isLoading, error } = useCommunityDetail(id ?? '');

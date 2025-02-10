@@ -53,8 +53,9 @@ const CreateCommunityPage = () => {
   const navigate = useNavigate();
 
   const { mutate, isPending } = useCreateCommunityDetail({
-    onSuccessCb: () => {
-      // navigate(`/community/${category}`);
+    onSuccessCb: (data) => {
+      const { data: postId } = data;
+      navigate(`/community/${category}/${postId}`);
     },
   });
 
