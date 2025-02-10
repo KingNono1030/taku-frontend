@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -13,6 +13,7 @@ import {
 import type {
   CreateProductRequest,
   FindProductItemsQuery,
+  JangterProduct,
   UpdateProductRequest,
 } from '@/types/api/jangter.types';
 
@@ -112,11 +113,25 @@ export const useJangterRank = () => {
   });
 };
 
-export const useProductItems = (params?: FindProductItemsQuery) => {
-  return useQuery({
-    queryKey: ['jangter', 'products'],
-    queryFn: () => getProductItems(params),
-    staleTime: 1000 * 60 * 5,
-    retry: 2,
+export const useProductItems = (
+  queryParams: Omit<FindProductItemsQuery, 'lastId'>,
+) => {
+  return useInfiniteQuery({
+    queryKey: ['productItems', queryParams],
+    queryFn: async ({ pageParam }) => {
+      const response = await getProductItems({
+        ...queryParams,
+        lastId: pageParam as number | undefined,
+      });
+      return response;
+    },
+    initialPageParam: undefined as number | undefined,
+    getNextPageParam: (data) => {
+      const lastPage = data?.data as JangterProduct[];
+      if (lastPage.length < queryParams.size!) {
+        return undefined;
+      }
+      return lastPage[lastPage.length - 1]?.id;
+    },
   });
 };

@@ -1,19 +1,77 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-import { Plus } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
+import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 
-import { ProductListCard } from '@/components/market/ProductListCard';
 import { Button } from '@/components/ui/button';
-import { useProductItems } from '@/queries/jangter';
 import {
-  FindProductItemsQuery,
-  JangterProduct,
-} from '@/types/api/jangter.types';
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Slider } from '@/components/ui/slider';
+import { CATEGORY_MAP } from '@/constants/jangter';
+import { useProductItems } from '@/queries/jangter';
+import { FindProductItemsQuery } from '@/types/api/jangter.types';
+
+interface ProductItem {
+  id: number;
+  title: string;
+  price: number;
+  imageUrl: string;
+  userNickname: string;
+  viewCount: number;
+}
+
+const CATEGORY_OPTIONS = Object.entries(CATEGORY_MAP).map(([value, label]) => ({
+  value,
+  label,
+}));
+
+const SORT_OPTIONS = [
+  { value: 'day', label: '최신순' },
+  { value: 'price', label: '가격순' },
+];
+
+const ORDER_OPTIONS = [
+  { value: 'desc', label: '내림차순' },
+  { value: 'asc', label: '오름차순' },
+];
+
+interface FilterForm {
+  categoryId: string;
+  sort: string;
+  order: string;
+  searchKeyword: string;
+  priceRange: [number, number];
+}
 
 const MarketListPage = () => {
-  const [queryParams, setQueryParams] = useState<FindProductItemsQuery>({
-    lastId: undefined,
+  const { register, handleSubmit, setValue, watch } = useForm<FilterForm>({
+    defaultValues: {
+      categoryId: '',
+      sort: 'day',
+      order: 'desc',
+      searchKeyword: '',
+      priceRange: [0, 1000000],
+    },
+  });
+
+  const [queryParams, setQueryParams] = useState<
+    Omit<FindProductItemsQuery, 'lastId'>
+  >({
     size: 20,
     sort: 'day',
     order: 'desc',
@@ -23,66 +81,184 @@ const MarketListPage = () => {
     searchKeyword: undefined,
   });
 
-  const { data } = useProductItems(queryParams);
-  const productItems = data?.data as JangterProduct[];
-  // 무한 스크롤 핸들러
-  const handleLoadMore = (lastItemId: number) => {
-    setQueryParams((prev) => ({
-      ...prev,
-      lastId: lastItemId,
-    }));
-  };
+  const { data, fetchNextPage, isFetchingNextPage } =
+    useProductItems(queryParams);
 
-  // 정렬 변경 핸들러
-  const handleSortChange = (sort: string, order: string) => {
-    setQueryParams((prev) => ({
-      ...prev,
-      sort,
-      order,
-      lastId: undefined, // 정렬 변경 시 처음부터 다시 로드
-    }));
-  };
+  const observerRef = useRef<IntersectionObserver>();
+  const lastItemRef = useRef<HTMLDivElement>(null);
 
-  // 검색어 변경 핸들러
-  const handleSearchChange = (searchKeyword: string) => {
-    setQueryParams((prev) => ({
-      ...prev,
-      searchKeyword,
-      lastId: undefined, // 검색 시 처음부터 다시 로드
-    }));
-  };
+  useEffect(() => {
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.1 },
+    );
 
-  // 가격 필터 핸들러
-  const handlePriceFilter = (minPrice?: number, maxPrice?: number) => {
-    setQueryParams((prev) => ({
-      ...prev,
-      minPrice,
-      maxPrice,
-      lastId: undefined, // 필터 변경 시 처음부터 다시 로드
-    }));
-  };
+    if (lastItemRef.current) {
+      observerRef.current.observe(lastItemRef.current);
+    }
 
-  // 카테고리 필터 핸들러
-  const handleCategoryChange = (categoryId?: number) => {
-    setQueryParams((prev) => ({
-      ...prev,
-      categoryId,
-      lastId: undefined, // 카테고리 변경 시 처음부터 다시 로드
-    }));
+    return () => observerRef.current?.disconnect();
+  }, [fetchNextPage, isFetchingNextPage]);
+
+  const allItems = (data?.pages.flatMap((page) => page.data) ??
+    []) as ProductItem[];
+
+  const onSubmit = (data: FilterForm) => {
+    setQueryParams({
+      ...queryParams,
+      categoryId: data.categoryId ? Number(data.categoryId) : undefined,
+      sort: data.sort,
+      order: data.order,
+      searchKeyword: data.searchKeyword || undefined,
+      minPrice: data.priceRange[0],
+      maxPrice: data.priceRange[1],
+    });
   };
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">상품 조회/검색 탭 입니다.</h1>
+    <div className="space-y-8">
+      {/* 헤더 섹션 */}
+      <div>
+        <h1 className="text-3xl font-bold">더쿠장터 판매글 전체 조회</h1>
       </div>
-      <div className="grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {productItems &&
-          productItems.length > 0 &&
-          productItems.map((item: JangterProduct) => (
-            <ProductListCard key={item.id} data={item} />
+
+      {/* 필터 섹션 */}
+      <section>
+        <h2 className="mb-4 text-xl font-semibold">필터 및 검색</h2>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <div className="flex flex-wrap items-center gap-4">
+            <Select
+              value={watch('categoryId')}
+              onValueChange={(value) => setValue('categoryId', value)}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="카테고리 선택" />
+              </SelectTrigger>
+              <SelectContent>
+                {CATEGORY_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={watch('sort')}
+              onValueChange={(value) => setValue('sort', value)}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="정렬 기준" />
+              </SelectTrigger>
+              <SelectContent>
+                {SORT_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={watch('order')}
+              onValueChange={(value) => setValue('order', value)}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="정렬 순서" />
+              </SelectTrigger>
+              <SelectContent>
+                {ORDER_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <div className="flex w-full max-w-sm items-center gap-2">
+              <Input
+                type="text"
+                placeholder="검색어를 입력하세요"
+                {...register('searchKeyword')}
+              />
+              <Button type="submit" size="icon">
+                <Search className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          <div>
+            <div className="mb-2 flex items-center justify-between">
+              <label className="text-sm font-medium">가격 범위</label>
+              <span className="text-sm text-gray-500">
+                {watch('priceRange')[0].toLocaleString()}원 ~{' '}
+                {watch('priceRange')[1].toLocaleString()}원
+              </span>
+            </div>
+            <Slider
+              value={watch('priceRange')}
+              defaultValue={[0, 1000000]}
+              max={1000000}
+              step={1000}
+              onValueChange={(value) =>
+                setValue('priceRange', value as [number, number])
+              }
+            />
+          </div>
+
+          <div className="flex justify-end">
+            <Button type="submit" variant="default">
+              필터 적용
+            </Button>
+          </div>
+        </form>
+      </section>
+
+      {/* 상품 목록 섹션 */}
+      <section>
+        <h2 className="mb-4 text-xl font-semibold">상품 목록</h2>
+        <div className="grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {allItems.map((item: ProductItem, index: number) => (
+            <div
+              ref={index === allItems.length - 1 ? lastItemRef : null}
+              key={item.id}
+            >
+              <Link to={`/market/${item.id}`}>
+                <Card>
+                  <div className="relative aspect-square w-full overflow-hidden">
+                    <img
+                      className="w-full object-cover transition-transform duration-300 hover:scale-110"
+                      src={item.imageUrl}
+                      alt={item.title}
+                    />
+                  </div>
+                  <CardHeader className="p-4">
+                    <CardDescription>{item.title}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="px-4 pb-4">
+                    <CardTitle className="">
+                      {item.price.toLocaleString()}원
+                    </CardTitle>
+                  </CardContent>
+                  <CardFooter className="px-4 pb-4">
+                    <span className="text-gray-400">{item.userNickname}</span>
+                  </CardFooter>
+                </Card>
+              </Link>
+            </div>
           ))}
-      </div>
+        </div>
+
+        {isFetchingNextPage && (
+          <div className="mt-4 text-center">로딩중...</div>
+        )}
+      </section>
+
+      {/* 글쓰기 버튼 */}
       <div className="group fixed bottom-10 right-10">
         <Link to={'/market/add'}>
           <Button
