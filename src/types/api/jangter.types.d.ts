@@ -89,3 +89,46 @@ export type GetAllItemCategoriesSuccessResponse =
   operations['getAllItemCategories']['responses'][200]['content']['*/*'];
 export type ItemCategoriesIdList = number[];
 export type itemCategoryNameList = string[];
+
+/**
+ * path: '/api/jangter/rank'
+ */
+
+/**
+ * 장터 랭킹 일괄 조회
+ * @description 장터 랭킹 일괄 조회
+ */
+export type JangterRank = {
+  rank_idx: number;
+  product_id: number;
+  product_name: string;
+  product_image: string;
+  product_price: number;
+  author_name: string;
+};
+export type JangterRankType = 'DAY' | 'WEEK' | 'MONTH';
+export type GetJangterRankSuccessResponse =
+  operations['getJangterRank']['responses'][200]['content']['*/*'];
+
+/**
+ * path: '/api/jangter/products'
+ */
+
+/**
+ * 판매글 전체 조회
+ * @description 덕후 장터 판매글 전체 조회
+ */
+export type FindProductItemsQuery =
+  components['schemas']['ProductFindListRequestDTO'];
+
+export type JangterProduct = {
+  id: number;
+  title: string;
+  price: number;
+  imageUrl: string;
+  viewCount: number;
+  userNickname: string;
+};
+
+export type FindProductItemsSuccessResponse =
+  operations['findProductItems']['responses'][200]['content']['*/*'];
