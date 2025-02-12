@@ -3,6 +3,9 @@ import {
   CreateProductRequest,
   CreateProductSuccessResponse,
   FindProductDetailSuccessResponse,
+  FindProductItemsQuery,
+  FindProductItemsSuccessResponse,
+  GetJangterRankSuccessResponse,
   UpdateProductRequest,
   UpdateProductSuccessResponse,
   deleteProductSuccessResponse,
@@ -54,5 +57,18 @@ export const getRecommendedProductDetail = async (
   productId: number,
 ): Promise<findRecommendedProductSuccessResponse> => {
   const { data } = await ducku.get(`api/jangter/${productId}/recommend`);
+  return data;
+};
+
+export const getJangterRank =
+  async (): Promise<GetJangterRankSuccessResponse> => {
+    const { data } = await ducku.get('api/jangter/rank');
+    return data;
+  };
+
+export const getProductItems = async (
+  params?: FindProductItemsQuery,
+): Promise<FindProductItemsSuccessResponse> => {
+  const { data } = await ducku.get('api/jangter/products', { params });
   return data;
 };
