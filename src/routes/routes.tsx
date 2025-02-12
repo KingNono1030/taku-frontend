@@ -11,7 +11,7 @@ import MarketRankingPage from '@/pages/market/tabs/MarketRankingPage';
 // Lazy imports for components
 const MainPage = lazy(() => import('@/pages/MainPage'));
 const LoginPage = lazy(() => import('@/pages/auth/LoginPage'));
-const KakaoCallBack = lazy(() => import('@/pages/oauth/KakaoCallBack'));
+const OauthCallBack = lazy(() => import('@/pages/oauth/CallBack'));
 const SignupPage = lazy(() => import('@/pages/auth/SignUpPage'));
 const CommunityCategoryPage = lazy(
   () => import('@/pages/community/CommunityCategoryPage'),
@@ -49,9 +49,10 @@ export const routes = [
     ),
     children: [
       { path: '/', element: <MainPage /> },
-      { path: '/auth/login', element: <LoginPage /> },
-      { path: '/auth/signup', element: <SignupPage /> },
-      { path: '/oauth/kakao', element: <KakaoCallBack /> },
+      { path: '/login', element: <LoginPage /> },
+      { path: '/register', element: <SignupPage /> },
+      { path: '/oauth/callback', element: <OauthCallBack /> },
+
       { path: '/community', element: <CommunityPage /> },
       { path: '/community/:category', element: <CommunityCategoryPage /> },
       { path: '/community/:category/:id', element: <CommunityDetailPage /> },

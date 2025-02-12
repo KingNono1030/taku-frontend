@@ -19,7 +19,6 @@ const App = () => {
           <Router />
         </Suspense>
       </BrowserRouter>
-      {/* The rest of your application */}
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
