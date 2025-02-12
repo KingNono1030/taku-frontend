@@ -1,4 +1,4 @@
-import { duckuWithAuthFormData, duckuWithAuthJSON } from '@/lib/axiosInstance';
+import { duckuWithAuth } from '@/lib/axiosInstance';
 import { convertDataToFormData } from '@/lib/utils';
 import {
   CreatePostQueryRequest,
@@ -16,7 +16,7 @@ type CommunityCommentRequest = {
  */
 export const getCommunityDetail = async (postId: string) => {
   const { data } =
-    await duckuWithAuthJSON.get(`/api/community/posts/${postId}?canAddView=true
+    await duckuWithAuth.get(`/api/community/posts/${postId}?canAddView=true
 `);
   return data;
 };
@@ -29,9 +29,14 @@ export const createCommunityDetail = async (
 ) => {
   const requestFormData = convertDataToFormData(requestBody);
 
-  const { data } = await duckuWithAuthFormData.post(
+  const { data } = await duckuWithAuth.post(
     '/api/community/posts',
     requestFormData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    },
   );
   return data;
 };
@@ -40,9 +45,7 @@ export const createCommunityDetail = async (
  * 커뮤니티 상세 삭제 서비스
  */
 export const deleteCommunityDetail = async (postId: string) => {
-  const { data } = await duckuWithAuthJSON.delete(
-    `/api/community/posts/${postId}`,
-  );
+  const { data } = await duckuWithAuth.delete(`/api/community/posts/${postId}`);
   return data;
 };
 
@@ -53,9 +56,14 @@ export const updateCommunityDetail = async (
   postId: string,
   requestBody: UpdatePostQueryRequest,
 ) => {
-  const { data } = await duckuWithAuthFormData.put(
+  const { data } = await duckuWithAuth.put(
     `/api/community/posts/${postId}`,
     requestBody,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    },
   );
   return data;
 };
@@ -67,9 +75,14 @@ export const updateCommunityDetail = async (
 export const createCommunityComment = async (
   requestBody: CommunityCommentRequest,
 ) => {
-  const { data } = await duckuWithAuthFormData.post(
+  const { data } = await duckuWithAuth.post(
     `/api/community/comments`,
     requestBody,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    },
   );
   return data;
 };
@@ -83,9 +96,14 @@ export const updateCommunityComment = async (
   commentsId: string,
   requestBody: { postId: string; content: string },
 ) => {
-  const { data } = await duckuWithAuthFormData.put(
+  const { data } = await duckuWithAuth.put(
     `/api/community/comments/${commentsId}`,
     requestBody,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    },
   );
   return data;
 };
@@ -95,7 +113,7 @@ export const updateCommunityComment = async (
  * @param commentsId  댓글 ID
  */
 export const deleteCommunityComment = async (commentsId: string) => {
-  const { data } = await duckuWithAuthJSON.delete(
+  const { data } = await duckuWithAuth.delete(
     `/api/community/comments/${commentsId}`,
   );
   return data;
@@ -105,6 +123,6 @@ export const deleteCommunityComment = async (commentsId: string) => {
  * 커뮤니티 장르 조회 서비스
  */
 export const getCommunityGenres = async () => {
-  const { data } = await duckuWithAuthJSON.get('/api/category/genres');
+  const { data } = await duckuWithAuth.get('/api/category/genres');
   return data;
 };
