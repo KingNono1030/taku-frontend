@@ -1,11 +1,12 @@
 import { useMutation } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 
 // import { useNavigate } from 'react-router-dom';
 
 import { registerUser } from '@/services/user';
 
 export const useRegisterUser = () => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   return useMutation({
     mutationFn: async ({
@@ -20,8 +21,7 @@ export const useRegisterUser = () => {
     onSuccess: (data) => {
       // 요청 성공 시 실행할 로직
       console.log(data);
-
-      // navigate(`/market/${productId}`);
+      navigate('/login');
     },
     onError: (error) => {
       // 요청 실패 시 실행할 로직
