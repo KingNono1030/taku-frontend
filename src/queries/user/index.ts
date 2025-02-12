@@ -3,20 +3,19 @@ import { useMutation } from '@tanstack/react-query';
 // import { useNavigate } from 'react-router-dom';
 
 import { registerUser } from '@/services/user';
-import { RegisterUserRequestWithJSON } from '@/services/user';
 
 export const useRegisterUser = () => {
   // const navigate = useNavigate();
 
   return useMutation({
     mutationFn: async ({
-      requestBody,
+      formData,
       token,
     }: {
-      requestBody: RegisterUserRequestWithJSON;
+      formData: FormData;
       token: string;
     }) => {
-      return registerUser(requestBody, token);
+      return registerUser(formData, token);
     },
     onSuccess: (data) => {
       // 요청 성공 시 실행할 로직
