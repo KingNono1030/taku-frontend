@@ -1,4 +1,4 @@
-import { duckuWithAuth } from '@/lib/axiosInstance';
+import ducku, { duckuWithAuth, duckuWithoutAuth } from '@/lib/axiosInstance';
 import { convertDataToFormData } from '@/lib/utils';
 import {
   CreatePostQueryRequest,
@@ -16,7 +16,7 @@ type CommunityCommentRequest = {
  */
 export const getCommunityDetail = async (postId: string) => {
   const { data } =
-    await duckuWithAuth.get(`/api/community/posts/${postId}?canAddView=true
+    await duckuWithoutAuth.get(`/api/community/posts/${postId}?canAddView=true
 `);
   return data;
 };
@@ -123,6 +123,22 @@ export const deleteCommunityComment = async (commentsId: string) => {
  * 커뮤니티 장르 조회 서비스
  */
 export const getCommunityGenres = async () => {
-  const { data } = await duckuWithAuth.get('/api/category/genres');
+  const { data } = await ducku.get('/api/category/genres');
+  return data;
+};
+
+/**
+ * 커뮤니티 카테고리 등록 서비스
+ */
+export const createCommunityCategory = async (requestBody: {
+  category_name: string;
+  ani_genre_id: string[];
+  image?: File;
+}) => {
+  const { data } = await duckuWithAuth.post('/api/category', requestBody, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
   return data;
 };

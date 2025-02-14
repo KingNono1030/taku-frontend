@@ -62,4 +62,18 @@ duckuWithAuth.interceptors.response.use(
   },
 );
 
-export { ducku, duckuWithAuth };
+// 조회용 axios 인스턴스 로그인해도, 안해도 사용 가능
+const duckuWithoutAuth = axios.create({
+  baseURL: 'https://api-duckwho.xyz',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+duckuWithoutAuth.interceptors.request.use((config) => {
+  const token = getToken();
+  config.headers.Authorization = `Bearer ${token ?? ''}`;
+  return config;
+});
+
+export { ducku, duckuWithAuth, duckuWithoutAuth };

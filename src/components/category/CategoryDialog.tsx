@@ -1,7 +1,9 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { Loader2 } from 'lucide-react';
+import { Controller, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
@@ -23,46 +25,20 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useCommunityGenres } from '@/queries/community';
+import {
+  useCommunityGenres,
+  useCreateCommunityCategory,
+} from '@/queries/community';
 
-import { RHFUpload } from '../hook-form/RhfUpload';
 import { MultiSelect } from '../multi-select/MultiSelect';
+import { Label } from '../ui/label';
+import { Upload } from '../upload';
 
 const addCategorySchema = z.object({
-  title: z.string().nonempty('제목을 입력해주세요.'),
-  aniGenre: z.array(z.string().min(1)).nonempty('장르를 선택해주세요.'),
-  multiUpload: z.array(
-    z.object({
-      preview: z.string(),
-      name: z.string(),
-      size: z.number(),
-      type: z.string(),
-    }),
-  ),
+  category_name: z.string().nonempty('카테고리 이름을 입력해주세요.'),
+  ani_genre_id: z.array(z.string().min(1)).nonempty('장르를 선택해주세요.'),
+  image: z.any().refine((v) => !!v, { message: '이미지를 업로드해주세요.' }),
 });
-
-// const aniGenreArr = [
-//   { label: '액션', value: '1' },
-//   { label: '로맨스', value: '2' },
-//   { label: '스릴러', value: '3' },
-//   { label: '판타지', value: '4' },
-//   { label: '드라마', value: '5' },
-//   { label: '코미디', value: '6' },
-//   { label: 'SF', value: '7' },
-//   { label: '공포', value: '8' },
-//   { label: '모험', value: '9' },
-//   { label: '미스터리', value: '10' },
-//   { label: '범죄', value: '11' },
-//   { label: '전쟁', value: '12' },
-//   { label: '애니메이션', value: '13' },
-//   { label: '판타지', value: '14' },
-//   { label: '로맨틱코미디', value: '15' },
-//   { label: '스포츠', value: '16' },
-//   { label: '시대극', value: '17' },
-//   { label: '음악', value: '18' },
-//   { label: '가족', value: '19' },
-//   { label: '미니시리즈', value: '20' },
-// ];
 
 type Genre = {
   id: number;
@@ -70,13 +46,31 @@ type Genre = {
 };
 
 const CategoryDialog = () => {
+  const navigate = useNavigate();
+
+  // 장르 목록 조회
   const { data: genreList, isPending, error } = useCommunityGenres();
 
-  /*
-    data.genres 배열 ex) [{id: 1, genreName: '액션'}, {id: 2, genreName: '로맨스'}, ...]
-    data.genres 배열을 aniGenreArr로 변환
-   */
-  const aniGenreArr = genreList.data?.genres?.map((genre: Genre) => ({
+  // 카테고리 생성 훅
+  const { mutate, isPending: createPending } = useCreateCommunityCategory({
+    onSuccessCb: (data) => {
+      form.reset();
+      if (
+        confirm(
+          '카테고리가 생성되었습니다. 해당 카테고리로 이동하시겠습니까까?',
+        )
+      ) {
+        const { data: id } = data;
+        navigate(`/community/${id}`);
+      }
+    },
+  });
+
+  //
+
+  const [open, setOpen] = useState(false);
+
+  const aniGenreArr = genreList?.data?.genres?.map((genre: Genre) => ({
     label: genre.genreName,
     value: genre.id.toString(),
   }));
@@ -84,34 +78,33 @@ const CategoryDialog = () => {
   const form = useForm<z.infer<typeof addCategorySchema>>({
     resolver: zodResolver(addCategorySchema),
     defaultValues: {
-      title: '',
-      aniGenre: [],
-      multiUpload: [],
+      category_name: '',
+      ani_genre_id: [],
+      image: null,
     },
   });
 
   const onSubmit = (data: z.infer<typeof addCategorySchema>) => {
-    console.log('123', data);
+    console.log('data:', data);
+
+    mutate(data);
   };
 
-  const { setValue, watch } = form;
-  const values = watch();
+  const { setValue } = form;
 
-  const handleDropMultiFile = useCallback(
+  const handleDropSingleFile = useCallback(
     (acceptedFiles: File[]) => {
-      const files = values.multiUpload || [];
+      const file = acceptedFiles[0];
 
-      const newFiles = acceptedFiles.map((file) =>
-        Object.assign(file, {
-          preview: URL.createObjectURL(file),
-        }),
-      );
-
-      setValue('multiUpload', [...files, ...newFiles], {
-        shouldValidate: true,
+      const newFile = Object.assign(file, {
+        preview: URL.createObjectURL(file),
       });
+
+      if (newFile) {
+        setValue('image', newFile, { shouldValidate: true });
+      }
     },
-    [setValue, values.multiUpload],
+    [setValue],
   );
 
   if (isPending) return <div>Loading...</div>;
@@ -119,7 +112,7 @@ const CategoryDialog = () => {
   if (error) return <div>Error: {error.message}</div>;
 
   return (
-    <Dialog modal={false}>
+    <Dialog modal={false} open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" onClick={() => form.reset()}>
           카테고리 만들기
@@ -137,12 +130,12 @@ const CategoryDialog = () => {
             </DialogHeader>
             <FormField
               control={form.control}
-              name="title"
+              name="category_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-base">제목</FormLabel>
+                  <FormLabel className="text-base">카테고리 이름</FormLabel>
                   <FormControl className="md:text-base">
-                    <Input placeholder="제목" {...field} />
+                    <Input placeholder="카테고리 이름" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -150,7 +143,7 @@ const CategoryDialog = () => {
             />
             <FormField
               control={form.control}
-              name="aniGenre"
+              name="ani_genre_id"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-base">장르</FormLabel>
@@ -171,26 +164,46 @@ const CategoryDialog = () => {
                 </FormItem>
               )}
             />
-            <RHFUpload
-              multiple
-              thumbnail
-              name="multiUpload"
-              maxSize={3145728}
-              onDrop={handleDropMultiFile}
-              onRemove={(inputFile) =>
-                setValue(
-                  'multiUpload',
-                  values.multiUpload &&
-                    values.multiUpload?.filter((file) => file !== inputFile),
-                  { shouldValidate: true },
-                )
-              }
-              onRemoveAll={() =>
-                setValue('multiUpload', [], { shouldValidate: true })
-              }
+            <Controller
+              name="image"
+              control={form.control}
+              render={({ field, fieldState: { error } }) => (
+                <div>
+                  <Label className="text-base">
+                    이미지 파일 업로드
+                    <span className="text-sm text-gray-500" aria-hidden="true">
+                      -[최대 20MB]
+                    </span>
+                  </Label>
+                  <Upload
+                    maxSize={
+                      // 20MB
+                      20 * 1024 * 1024
+                    }
+                    accept={{ 'image/*': [] }}
+                    error={!!error}
+                    file={field.value}
+                    {...field}
+                    onDrop={handleDropSingleFile}
+                    onDelete={() =>
+                      setValue('image', null, { shouldValidate: true })
+                    }
+                  />
+                  {!!error && (
+                    <FormMessage className="text-center">
+                      {error.message}
+                    </FormMessage>
+                  )}
+                </div>
+              )}
             />
             <DialogFooter>
-              <Button type="submit">저장하기</Button>
+              <Button type="submit" disabled={createPending}>
+                {createPending && (
+                  <Loader2 className="animate-spin" size={24} />
+                )}
+                저장하기
+              </Button>
             </DialogFooter>
           </form>
         </Form>

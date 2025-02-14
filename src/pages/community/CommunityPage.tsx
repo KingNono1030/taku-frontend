@@ -13,7 +13,6 @@ import SearchBar from '@/components/search-bar/SearchBar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import SectionLayout from '@/layout/SectionLayout';
 import { testAxios } from '@/lib/axiosInstance';
 
@@ -212,31 +211,7 @@ const CommunityPage = () => {
             />
           </div>
         </SectionLayout>
-        <aside className="w-[260px] bg-background">
-          <div className="space-y-4 py-4">
-            <div className="px-3">
-              <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
-                필터
-              </h2>
-              <ScrollArea className="h-auto">
-                <div className="space-y-2 p-2">
-                  <div className="flex flex-wrap gap-2">
-                    <Badge variant="secondary">label</Badge>
-                    <Badge variant="secondary">label</Badge>
-                    <Badge variant="secondary">label</Badge>
-                    <Badge variant="secondary">label</Badge>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    <Badge variant="secondary">label</Badge>
-                    <Badge variant="secondary">label</Badge>
-                    <Badge variant="secondary">label</Badge>
-                    <Badge variant="secondary">label</Badge>
-                  </div>
-                </div>
-              </ScrollArea>
-            </div>
-          </div>
-        </aside>
+        <aside className="w-[260px] bg-background"></aside>
       </div>
     </>
   );

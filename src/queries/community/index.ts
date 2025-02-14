@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 import {
+  createCommunityCategory,
   createCommunityComment,
   createCommunityDetail,
   deleteCommunityComment,
@@ -245,5 +246,37 @@ export const useCommunityGenres = () => {
   return useQuery({
     queryKey: ['communityGenres'],
     queryFn: async () => await getCommunityGenres(),
+  });
+};
+
+type CreateCategoryRequest = {
+  category_name: string;
+  ani_genre_id: string[];
+  image?: File;
+};
+
+/**
+ * 커뮤니티 카테고리 등록 커스텀 훅
+ */
+export const useCreateCommunityCategory = ({
+  onSuccessCb,
+  onErrorCb,
+  onSettledCb,
+}: UseMutationProps) => {
+  return useMutation({
+    mutationFn: async (requestBody: CreateCategoryRequest) => {
+      return createCommunityCategory(requestBody);
+    },
+    onSuccess: (data) => {
+      console.log('카테고리 등록 성공:', data);
+      onSuccessCb && onSuccessCb(data);
+    },
+    onError: (error) => {
+      console.error('카테고리 등록 실패:', error);
+      onErrorCb && onErrorCb();
+    },
+    onSettled: () => {
+      onSettledCb && onSettledCb();
+    },
   });
 };
