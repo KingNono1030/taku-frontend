@@ -35,7 +35,6 @@ const navLists = [
   { title: '커뮤니티', path: '/community' },
   { title: '쇼츠', path: '/shorts' },
   { title: '덕후장터', path: '/market' },
-  { title: '공지사항', path: '/' },
 ];
 
 export default function Header() {
