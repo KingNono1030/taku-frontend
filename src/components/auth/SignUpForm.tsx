@@ -17,7 +17,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useRegisterUser } from '@/queries/user';
-import { RegisterUserRequestWithJSON } from '@/services/user';
 import { OAuthProvider } from '@/types/api/user.types';
 
 const signupSchema = z.object({
@@ -70,18 +69,20 @@ export const SignUpForm = ({
   const values = watch();
 
   const onSubmit = async (values: z.infer<typeof signupSchema>) => {
-    // FormData 객체 생성
-    const requestBody: RegisterUserRequestWithJSON = {
-      user: JSON.stringify(values.user),
-    };
+    const formData = new FormData();
+
+    // user 객체를 JSON 문자열로 변환하여 추가
+    const userBlob = new Blob([JSON.stringify(values.user)], {
+      type: 'application/json',
+    });
+    formData.append('user', userBlob);
 
     // profileImage가 존재하면 추가
     if (values.profileImage) {
-      requestBody.profileImage = values.profileImage;
+      formData.append('profileImage', values.profileImage);
     }
 
-    const data = await mutate({ requestBody, token });
-    console.log(data);
+    mutate({ formData, token });
   };
 
   const handleDropSingleFile = useCallback(
