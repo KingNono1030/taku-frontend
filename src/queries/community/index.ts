@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 import {
+  createCommunityBookmark,
   createCommunityCategory,
   createCommunityComment,
   createCommunityDetail,
@@ -273,6 +274,67 @@ export const useCreateCommunityCategory = ({
     },
     onError: (error) => {
       console.error('카테고리 등록 실패:', error);
+      onErrorCb && onErrorCb();
+    },
+    onSettled: () => {
+      onSettledCb && onSettledCb();
+    },
+  });
+};
+
+type CreateBookmarkParam = {
+  categoryId: string;
+  onSuccessCb?: () => void;
+  onErrorCb?: () => void;
+  onSettledCb?: () => void;
+};
+
+/**
+ * 커뮤니티 북마크 등록 커스텀 훅
+ */
+export const useCreateCommunityBookmark = ({
+  categoryId,
+  onSuccessCb,
+  onErrorCb,
+  onSettledCb,
+}: CreateBookmarkParam) => {
+  return useMutation({
+    mutationFn: async () => {
+      return createCommunityBookmark(categoryId);
+    },
+    onSuccess: (data) => {
+      console.log('북마크 등록 성공:', data);
+      onSuccessCb && onSuccessCb();
+    },
+    onError: (error) => {
+      console.error('북마크 등록 실패:', error);
+      onErrorCb && onErrorCb();
+    },
+    onSettled: () => {
+      onSettledCb && onSettledCb();
+    },
+  });
+};
+
+/**
+ * 커뮤니티 북마크 삭제 커스텀 훅
+ */
+export const useDeleteCommunityBookmark = ({
+  categoryId,
+  onSuccessCb,
+  onErrorCb,
+  onSettledCb,
+}: CreateBookmarkParam) => {
+  return useMutation({
+    mutationFn: async () => {
+      return createCommunityBookmark(categoryId);
+    },
+    onSuccess: (data) => {
+      console.log('북마크 삭제 성공:', data);
+      onSuccessCb && onSuccessCb();
+    },
+    onError: (error) => {
+      console.error('북마크 삭제 실패:', error);
       onErrorCb && onErrorCb();
     },
     onSettled: () => {

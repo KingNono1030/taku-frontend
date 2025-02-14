@@ -9,6 +9,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { testAxios } from '@/lib/axiosInstance';
+import {
+  useCreateCommunityBookmark,
+  useDeleteCommunityBookmark,
+} from '@/queries/community';
 
 const getDetailCategory = async (category: string) => {
   const response = await testAxios.get(`/api/category/${category}`);
@@ -26,10 +30,34 @@ const CommunityCategoryPage = () => {
 
   const [bookmarkChecked, setBookmarkChecked] = useState(false);
 
-  const { data, status, error } = useQuery({
+  const { data, status, error, refetch } = useQuery({
     queryKey: ['category', category],
     queryFn: () => category && getDetailCategory(category),
   });
+
+  const { mutate: createBookmarkMutate } = useCreateCommunityBookmark({
+    categoryId: category ?? '',
+    onSuccessCb: () => {
+      setBookmarkChecked(true);
+      refetch();
+    },
+  });
+
+  const { mutate: deleteBookmarkMutate } = useDeleteCommunityBookmark({
+    categoryId: category ?? '',
+    onSuccessCb: () => {
+      setBookmarkChecked(false);
+      refetch();
+    },
+  });
+
+  const handleClickedBookmark = () => {
+    if (bookmarkChecked) {
+      deleteBookmarkMutate();
+    } else {
+      createBookmarkMutate();
+    }
+  };
 
   if (status === 'pending') {
     return <div>로딩중...</div>;
@@ -53,7 +81,7 @@ const CommunityCategoryPage = () => {
           <div className="flex flex-col items-start gap-4">
             <Button
               variant={'ghost'}
-              className="font-bold"
+              className="mt-10 font-bold"
               onClick={() => {
                 navigate('/community');
               }}
@@ -73,9 +101,10 @@ const CommunityCategoryPage = () => {
           <Button
             variant={bookmarkChecked ? 'default' : 'ghost'}
             size={'icon'}
-            onClick={() => setBookmarkChecked(!bookmarkChecked)}
+            onClick={handleClickedBookmark}
             className="h-12 w-12 rounded-full [&_svg]:size-8"
           >
+            {/* TODO: 북마크  */}
             {bookmarkChecked ? (
               <BookmarkCheck strokeWidth={2} />
             ) : (

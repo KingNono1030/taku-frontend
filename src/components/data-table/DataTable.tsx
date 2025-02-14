@@ -163,7 +163,7 @@ const DataTable = () => {
           <TableRow>
             <TableHead className="w-20 text-center font-bold">번호</TableHead>
             <TableHead className="text-center font-bold">제목</TableHead>
-            <TableHead className="w-[100px] text-center font-bold">
+            <TableHead className="w-[200px] text-center font-bold">
               작성자
             </TableHead>
             <TableHead className="w-[150px] text-center font-bold">
@@ -214,6 +214,16 @@ const DataTable = () => {
               <TableCell className="text-center">{post.likes}</TableCell>
             </TableRow>
           ))}
+          {data.data.responsePostList.length === 0 && (
+            <TableRow className="font-bold">
+              <TableCell
+                colSpan={6}
+                className="min-h-40 py-40 text-center text-muted-foreground"
+              >
+                데이터가 없습니다.
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
       <div className="my-8">

@@ -1,4 +1,8 @@
-import ducku, { duckuWithAuth, duckuWithoutAuth } from '@/lib/axiosInstance';
+import ducku, {
+  duckuWithAuth,
+  duckuWithoutAuth,
+  testAxios,
+} from '@/lib/axiosInstance';
 import { convertDataToFormData } from '@/lib/utils';
 import {
   CreatePostQueryRequest,
@@ -135,10 +139,28 @@ export const createCommunityCategory = async (requestBody: {
   ani_genre_id: string[];
   image?: File;
 }) => {
-  const { data } = await duckuWithAuth.post('/api/category', requestBody, {
+  const { data } = await testAxios.post('/api/category', requestBody, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
   });
+  return data;
+};
+
+/**
+ * 커뮤니티 카테고리 북마크 등록 서비스
+ */
+export const createCommunityBookmark = async (categoryId: string) => {
+  const { data } = await testAxios.post(`/api/category/${categoryId}/bookmark`);
+  return data;
+};
+
+/**
+ * 커뮤니티 카테고리 북마크 삭제 서비스
+ */
+export const deleteCommunityBookmark = async (categoryId: string) => {
+  const { data } = await testAxios.delete(
+    `/api/category/${categoryId}/bookmark`,
+  );
   return data;
 };

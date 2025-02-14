@@ -113,7 +113,7 @@ const CreateCommunityPage = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-base text-[#767676]">
-                    제목
+                    커뮤니티 제목
                   </FormLabel>
                   <FormControl className="h-14 p-4 text-[#767676] md:text-base">
                     <Input placeholder="제목을 입력해주세요" {...field} />
@@ -128,12 +128,12 @@ const CreateCommunityPage = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-base text-[#767676]">
-                    내용
+                    커뮤니티 내용
                   </FormLabel>
                   <FormControl className="h-14 p-4 text-[#767676] md:text-base">
                     <Textarea
                       className="h-40"
-                      placeholder="내용을 입력해주세요"
+                      placeholder="간단한 설명을 입력해주세요"
                       {...field}
                     />
                   </FormControl>

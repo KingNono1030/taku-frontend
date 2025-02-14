@@ -53,15 +53,17 @@ const CategoryDialog = () => {
 
   // 카테고리 생성 훅
   const { mutate, isPending: createPending } = useCreateCommunityCategory({
-    onSuccessCb: (data) => {
+    onSuccessCb: (data: any) => {
       form.reset();
       if (
         confirm(
           '카테고리가 생성되었습니다. 해당 카테고리로 이동하시겠습니까까?',
         )
       ) {
-        const { data: id } = data;
-        navigate(`/community/${id}`);
+        const { data: resData } = data;
+        navigate(`/community/${resData?.id}`);
+      } else {
+        setOpen(false);
       }
     },
   });
