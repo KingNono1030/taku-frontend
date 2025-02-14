@@ -36,14 +36,13 @@ import { formatKoreanDateWithLimit } from '@/lib/utils';
 import {
   useCommunityDetail,
   useDeleteCommunityDetail,
+  useLikeCommunityDetail,
 } from '@/queries/community';
 
 const CommunityDetailPage = () => {
   const { category, id } = useParams();
 
   const navigate = useNavigate();
-
-  const [isLike, setIsLike] = useState(false);
 
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
@@ -60,6 +59,17 @@ const CommunityDetailPage = () => {
       navigate(`/community/${category}`);
     },
   });
+
+  const { mutate: likeCommunityDetail } = useLikeCommunityDetail({
+    postId: id ?? '',
+    onSuccessCb: () => {
+      refetchCommunityDetail();
+    },
+  });
+
+  const handleClickedLike = () => {
+    likeCommunityDetail();
+  };
 
   if (isPending) {
     return <div>Loading...</div>;
@@ -160,7 +170,7 @@ const CommunityDetailPage = () => {
       <Separator className="my-8" />
       <div className="flex flex-col gap-4">
         {/* content pre-wrap */}
-        <div className="whitespace-pre-wrap">
+        <div className="min-h-40 whitespace-pre-wrap">
           {communityDetailInfo.data?.content}
         </div>
         {/* 이미지 캐러샐 */}
@@ -205,9 +215,12 @@ const CommunityDetailPage = () => {
           <Button
             variant="outline"
             className="rounded-full font-bold"
-            onClick={() => setIsLike(!isLike)}
+            onClick={handleClickedLike}
           >
-            <Heart color="#d32f2f" fill={isLike ? '#d32f2f' : 'none'} />
+            <Heart
+              color="#d32f2f"
+              fill={communityDetailInfo.data?.liked ? '#d32f2f' : 'none'}
+            />
             좋아요
           </Button>
           <div

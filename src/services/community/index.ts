@@ -54,6 +54,16 @@ export const deleteCommunityDetail = async (postId: string) => {
 };
 
 /**
+ * 커뮤니티 상세 좋아요 서비스
+ */
+export const likeCommunityDetail = async (postId: string) => {
+  const { data } = await duckuWithAuth.post(
+    `/api/community/posts/${postId}/like`,
+  );
+  return data;
+};
+
+/**
  * 커뮤니티 상세 업데이트 서비스
  */
 export const updateCommunityDetail = async (

@@ -12,7 +12,7 @@ import CategoryDialog from '@/components/category/CategoryDialog';
 import SearchBar from '@/components/search-bar/SearchBar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import SectionLayout from '@/layout/SectionLayout';
 import { testAxios } from '@/lib/axiosInstance';
 
@@ -53,9 +53,43 @@ type Category = {
   genreName: string[];
 };
 
+const CategoryCard = ({ category }: { category: Category }) => {
+  const navigate = useNavigate();
+
+  return (
+    <div
+      className="transform cursor-pointer space-y-2 transition-transform hover:scale-105"
+      onClick={() => {
+        navigate(`/community/${category.id}`);
+      }}
+    >
+      <Card className="aspect-video cursor-pointer overflow-hidden rounded bg-[#d3d3d3] transition-opacity hover:opacity-90">
+        <img
+          src={category.imageUrl}
+          alt={category.name}
+          className="h-full w-full object-cover"
+        />
+      </Card>
+      <div className="space-y-1">
+        <h3 className="font-bold">{category.name}</h3>
+        {/* 한줄로만 표현하기 나머지 ... */}
+        <div className="line-clamp-1 flex flex-wrap gap-1 overflow-hidden text-muted-foreground">
+          {category.genreName.map(
+            (genre: any, i: number) =>
+              i < 3 && (
+                <Badge key={i} className="text-sm" variant={'secondary'}>
+                  #{genre}
+                </Badge>
+              ),
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const CommunityPage = () => {
   const quiryClient = useQueryClient();
-  const navigate = useNavigate();
 
   const [page, setPage] = useState(0);
   const sort = 'name,asc';
@@ -64,6 +98,13 @@ const CommunityPage = () => {
   const { status, data, error, isPlaceholderData } = useQuery({
     queryKey: ['category', page, 20, sort, search],
     queryFn: () => getCategory(page, 20, sort, search),
+    placeholderData: keepPreviousData,
+    staleTime: 5000,
+  });
+
+  const { data: popularCategories } = useQuery({
+    queryKey: ['category', 'popular'],
+    queryFn: () => getCategory(0, 4, 'viewCount,desc', ''),
     placeholderData: keepPreviousData,
     staleTime: 5000,
   });
@@ -138,21 +179,8 @@ const CommunityPage = () => {
           <section className="mb-12">
             <h2 className="mb-6 text-2xl font-semibold">인기 카테고리</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {Array.from({ length: 4 }).map((_, i) => (
-                // hover시 약간 커짐
-                <div
-                  key={i}
-                  className="transform cursor-pointer space-y-2 transition-transform hover:scale-105"
-                >
-                  <Card className="aspect-video bg-[#d3d3d3] transition-opacity hover:opacity-90">
-                    <CardContent className="h-full p-0" />
-                  </Card>
-                  <div className="space-y-1">
-                    {/* 제목 최대 2줄 표시 넘어가면 ... */}
-                    <h3 className="line-clamp-2 font-medium">카테고리</h3>
-                    <p className="text-sm text-muted-foreground">장르</p>
-                  </div>
-                </div>
+              {popularCategories?.data.content.map((category: Category) => (
+                <CategoryCard key={category?.id} category={category} />
               ))}
             </div>
           </section>
@@ -166,40 +194,8 @@ const CommunityPage = () => {
               개의 커뮤니티가 검색됐덕!
             </h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {data.data.content.map((category: Category, i: number) => (
-                <div
-                  key={i}
-                  className="transform cursor-pointer space-y-2 transition-transform hover:scale-105"
-                  onClick={() => {
-                    navigate(`/community/${category.id}`);
-                  }}
-                >
-                  <Card className="aspect-video cursor-pointer overflow-hidden rounded bg-[#d3d3d3] transition-opacity hover:opacity-90">
-                    <img
-                      src={category.imageUrl}
-                      alt={category.name}
-                      className="h-full w-full object-cover"
-                    />
-                  </Card>
-                  <div className="space-y-1">
-                    <h3 className="font-bold">{category.name}</h3>
-                    {/* 한줄로만 표현하기 나머지 ... */}
-                    <div className="line-clamp-1 flex flex-wrap gap-1 overflow-hidden text-muted-foreground">
-                      {category.genreName.map(
-                        (genre: any, i: number) =>
-                          i < 3 && (
-                            <Badge
-                              key={i}
-                              className="text-sm"
-                              variant={'secondary'}
-                            >
-                              #{genre}
-                            </Badge>
-                          ),
-                      )}
-                    </div>
-                  </div>
-                </div>
+              {data.data.content.map((category: Category) => (
+                <CategoryCard key={category.id} category={category} />
               ))}
             </div>
           </section>

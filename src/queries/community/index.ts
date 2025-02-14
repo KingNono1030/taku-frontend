@@ -9,6 +9,7 @@ import {
   deleteCommunityDetail,
   getCommunityDetail,
   getCommunityGenres,
+  likeCommunityDetail,
   updateCommunityComment,
   updateCommunityDetail,
 } from '@/services/community';
@@ -134,6 +135,33 @@ export const useDeleteCommunityDetail = ({
     },
     onError: (error) => {
       console.error('커뮤니티 삭제 실패:', error);
+      onErrorCb && onErrorCb();
+    },
+    onSettled: () => {
+      onSettledCb && onSettledCb();
+    },
+  });
+};
+
+/**
+ * 커뮤니티 게시글 좋아요
+ */
+export const useLikeCommunityDetail = ({
+  postId,
+  onSuccessCb,
+  onErrorCb,
+  onSettledCb,
+}: UseUpdateMutationProps) => {
+  return useMutation({
+    mutationFn: async () => {
+      return likeCommunityDetail(postId);
+    },
+    onSuccess: (data) => {
+      console.log('커뮤니티 좋아요 성공:', data);
+      onSuccessCb && onSuccessCb(data);
+    },
+    onError: (error) => {
+      console.error('커뮤니티 좋아요 실패:', error);
       onErrorCb && onErrorCb();
     },
     onSettled: () => {
