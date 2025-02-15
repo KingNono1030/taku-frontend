@@ -96,10 +96,10 @@ const MainPage = () => {
           <h1 className="text-4xl font-bold">인기 커뮤니티</h1>
           <Button
             variant="ghost"
-            className="font-bold"
+            className="font-bold text-muted-foreground"
             onClick={handleMoveToCommunity}
           >
-            <Plus />
+            <Plus strokeWidth={3} />
             더보기
           </Button>
         </div>
@@ -112,10 +112,10 @@ const MainPage = () => {
           <h1 className="text-4xl font-bold">덕후장터</h1>
           <Button
             variant="ghost"
-            className="font-bold"
+            className="font-bold text-muted-foreground"
             onClick={handleMoveToMarket}
           >
-            <Plus />
+            <Plus strokeWidth={3} />
             더보기
           </Button>
         </div>
