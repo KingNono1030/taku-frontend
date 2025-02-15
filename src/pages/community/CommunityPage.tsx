@@ -53,6 +53,23 @@ type Category = {
   genreName: string[];
 };
 
+export const PopularCategories = () => {
+  const { data } = useQuery({
+    queryKey: ['category', 'popular'],
+    queryFn: () => getCategory(0, 4, 'viewCount,desc', ''),
+    placeholderData: keepPreviousData,
+    staleTime: 5000,
+  });
+
+  return (
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      {data?.data.content.map((category: Category) => (
+        <CategoryCard key={category.id} category={category} />
+      ))}
+    </div>
+  );
+};
+
 const CategoryCard = ({ category }: { category: Category }) => {
   const navigate = useNavigate();
 
@@ -98,13 +115,6 @@ const CommunityPage = () => {
   const { status, data, error, isPlaceholderData } = useQuery({
     queryKey: ['category', page, 20, sort, search],
     queryFn: () => getCategory(page, 20, sort, search),
-    placeholderData: keepPreviousData,
-    staleTime: 5000,
-  });
-
-  const { data: popularCategories } = useQuery({
-    queryKey: ['category', 'popular'],
-    queryFn: () => getCategory(0, 4, 'viewCount,desc', ''),
     placeholderData: keepPreviousData,
     staleTime: 5000,
   });
@@ -178,11 +188,12 @@ const CommunityPage = () => {
           {/* Popular Categories */}
           <section className="mb-12">
             <h2 className="mb-6 text-2xl font-semibold">인기 카테고리</h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {/* <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
               {popularCategories?.data.content.map((category: Category) => (
                 <CategoryCard key={category?.id} category={category} />
               ))}
-            </div>
+            </div> */}
+            <PopularCategories />
           </section>
 
           {/* Search Results */}

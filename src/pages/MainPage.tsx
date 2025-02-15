@@ -1,11 +1,14 @@
 import { useRef } from 'react';
 
 import Autoplay from 'embla-carousel-autoplay';
+import { Plus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 import Banner1 from '@/assets/banner/banner1.webp';
 import Banner2 from '@/assets/banner/banner2.webp';
 import Banner3 from '@/assets/banner/banner3.webp';
 import Banner4 from '@/assets/banner/banner4.webp';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Carousel,
@@ -15,6 +18,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
+
+import { PopularCategories } from './community/CommunityPage';
 
 const banners = [
   {
@@ -40,17 +45,27 @@ const banners = [
 ];
 
 const MainPage = () => {
+  const navigate = useNavigate();
+
   const plugin: any = useRef(
-    Autoplay({ delay: 2000, stopOnInteraction: true }),
+    Autoplay({ delay: 3500, stopOnInteraction: true }),
   );
 
+  const handleMoveToCommunity = () => {
+    navigate('/community');
+  };
+
+  const handleMoveToMarket = () => {
+    navigate('/market');
+  };
+
   return (
-    <div className="flex flex-col gap-12">
+    <div className="mb-10 flex flex-col gap-12">
       <Carousel
         plugins={[plugin?.current]}
         className="relative h-[740px] w-full"
-        onMouseEnter={plugin.current.stop}
-        onMouseLeave={plugin.current.reset}
+        // onMouseEnter={plugin.current.stop}
+        // onMouseLeave={plugin.current.reset}
         opts={{
           loop: true,
           align: 'center',
@@ -77,7 +92,34 @@ const MainPage = () => {
       </Carousel>
 
       <section>
-        <h1 className="text-4xl font-bold">커뮤니티</h1>
+        <div className="mb-10 flex items-center justify-between align-bottom">
+          <h1 className="text-4xl font-bold">인기 커뮤니티</h1>
+          <Button
+            variant="ghost"
+            className="font-bold"
+            onClick={handleMoveToCommunity}
+          >
+            <Plus />
+            더보기
+          </Button>
+        </div>
+        <div>
+          <PopularCategories />
+        </div>
+      </section>
+      <section>
+        <div className="mb-10 flex items-center justify-between align-bottom">
+          <h1 className="text-4xl font-bold">덕후장터</h1>
+          <Button
+            variant="ghost"
+            className="font-bold"
+            onClick={handleMoveToMarket}
+          >
+            <Plus />
+            더보기
+          </Button>
+        </div>
+        <div className="h-[400px] w-full bg-gray-200">덕후장터 컨텐츠 영역</div>
       </section>
     </div>
   );
