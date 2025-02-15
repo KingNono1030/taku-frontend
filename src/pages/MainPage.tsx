@@ -10,6 +10,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import {
   Carousel,
   CarouselContent,
+  CarouselDots,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
@@ -40,35 +41,44 @@ const banners = [
 
 const MainPage = () => {
   const plugin: any = useRef(
-    Autoplay({ delay: 1000, stopOnInteraction: true }),
+    Autoplay({ delay: 2000, stopOnInteraction: true }),
   );
 
   return (
-    <div>
+    <div className="flex flex-col gap-12">
       <Carousel
         plugins={[plugin?.current]}
-        className="relative h-[400px] w-full"
+        className="relative h-[740px] w-full"
         onMouseEnter={plugin.current.stop}
         onMouseLeave={plugin.current.reset}
+        opts={{
+          loop: true,
+          align: 'center',
+        }}
       >
         <CarouselContent>
           {banners.map((_, index) => (
             <CarouselItem key={index}>
               <Card className="h-full w-full">
-                <CardContent className="flex h-[400px] items-center justify-center p-0">
+                <CardContent className="flex h-[740px] items-center justify-center p-0">
                   <img
                     src={banners[index].src}
                     alt={banners[index].alt}
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-cover object-bottom"
                   />
                 </CardContent>
               </Card>
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
+        <CarouselPrevious variant={'default'} />
+        <CarouselNext variant={'default'} />
+        <CarouselDots />
       </Carousel>
+
+      <section>
+        <h1 className="text-4xl font-bold">커뮤니티</h1>
+      </section>
     </div>
   );
 };
