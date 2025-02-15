@@ -2,18 +2,18 @@ import { useState } from 'react';
 
 import { User } from 'lucide-react';
 
+import DeleteAlertDialog from '@/components/alert-dialog/DeleteAlertDialog';
+import ReportButton from '@/components/report/ReportButton';
 // 한국어 locale 설정
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import {
   useDeleteShortsComment,
   useDeleteShortsCommentReply,
   useShortsComment,
 } from '@/queries/shorts';
 
-import DeleteAlertDialog from '../alert-dialog/DeleteAlertDialog';
-import ReportButton from '../report/ReportButton';
-import { Button } from '../ui/button';
-import CommentButton from './CommentButton';
+import CommentButton from '../CommentButton';
 import CommentItemForm from './CommentItemForm';
 
 const SAME_USER = true;

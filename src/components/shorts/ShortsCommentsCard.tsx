@@ -1,7 +1,6 @@
 import { X } from 'lucide-react';
 
-import CommentContent from '@/components/comments/CommentList';
-import CommentMainForm from '@/components/comments/CommentMainForm';
+import CommentList from '@/components/comments/shorts/CommentList';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -11,6 +10,7 @@ import {
 } from '@/components/ui/card';
 import { useShortsComment } from '@/queries/shorts';
 
+import CommentMainForm from '../comments/shorts/CommentMainForm';
 import LoadingSpinner from '../loading/LoadingSpinner';
 
 type ShortsCommentsCardProps = {
@@ -54,7 +54,7 @@ const ShortsCommentsCard = ({
         </Button>
       </CardHeader>
       <CardContent className="mb-12 h-full min-h-[calc(100vh-380px)]">
-        <CommentContent commentsArr={comments?.data} />
+        <CommentList commentsArr={comments?.data} />
       </CardContent>
       <CardFooter className="absolute bottom-0 left-0 flex w-full items-start justify-between gap-2 border-t border-[#ffffff20] p-4">
         <CommentMainForm parentId={shortsId} resetComments={resetComments} />
