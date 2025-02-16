@@ -1,18 +1,15 @@
 interface SimilarProduct {
-  productId: string;
+  productId: string | number;
   title: string;
   price: number;
   imageUrl: string;
-  tfidfVector: string;
 }
 
 interface RelatedProductProps {
-  similarProducts: SimilarProduct[];
+  similarProducts: [string, SimilarProduct][];
 }
 
 export const RelatedProduct = ({ similarProducts }: RelatedProductProps) => {
-  console.log('RelatedProduct data:', similarProducts);
-
   if (!similarProducts || similarProducts.length === 0) {
     return (
       <div className="flex aspect-video w-full items-center justify-center rounded-lg bg-white p-4">
@@ -21,12 +18,15 @@ export const RelatedProduct = ({ similarProducts }: RelatedProductProps) => {
     );
   }
 
+  // 배열의 두 번째 요소(인덱스 1)에서 실제 상품 데이터를 추출
+  const products = similarProducts.map((item) => item[1]);
+
   return (
     <div className="space-y-20">
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">연관 상품</h3>
         <div className="grid grid-cols-5 gap-4">
-          {similarProducts.map((product) => (
+          {products.map((product) => (
             <div key={product.productId} className="space-y-2">
               <div
                 className="aspect-square rounded-lg bg-cover bg-center"
@@ -34,7 +34,7 @@ export const RelatedProduct = ({ similarProducts }: RelatedProductProps) => {
               />
               <div className="line-clamp-2 text-sm">{product.title}</div>
               <div className="text-sm font-semibold">
-                {product.price.toLocaleString()} 원
+                {(product.price ?? 0).toLocaleString()} 원
               </div>
             </div>
           ))}
