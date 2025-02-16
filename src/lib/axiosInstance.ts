@@ -3,7 +3,7 @@ import axios from 'axios';
 import useUserStore from '@/store/userStore';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-const TEST_ACCESS_TOKEN = import.meta.env.VITE_KAKAO_ACESS_TOKEN;
+const TEST_ACCESS_TOKEN = import.meta.env.VITE_GOOGLE_ACCESS_TOKEN;
 
 const ducku = axios.create({
   baseURL: 'https://api-duckwho.xyz',
@@ -23,14 +23,15 @@ export const testAxios = axios.create({
   },
 });
 
-class TokenError extends Error {
-  constructor() {
-    super('인증 토큰이 없습니다.');
-    this.name = 'TokenError';
-  }
-}
+// TODO: 회원가입 오류 수정 시 토큰으로 변경
+// class TokenError extends Error {
+//   constructor() {
+//     super('인증 토큰이 없습니다.');
+//     this.name = 'TokenError';
+//   }
+// }
 
-const getToken = () => useUserStore.getState().token;
+// const getToken = () => useUserStore.getState().token;
 
 const duckuWithAuth = axios.create({
   baseURL: 'https://api-duckwho.xyz',
@@ -40,12 +41,14 @@ const duckuWithAuth = axios.create({
 });
 
 duckuWithAuth.interceptors.request.use((config) => {
-  const token = getToken();
-  if (!token) {
-    throw new TokenError();
-  }
+  // TODO: 회원가입 오류 수정 시 토큰으로 변경
+  // const token = getToken();
+  // if (!token) {
+  //   throw new TokenError();
+  // }
 
-  config.headers.Authorization = `Bearer ${token}`;
+  // config.headers.Authorization = `Bearer ${token}`;
+  config.headers.Authorization = `Bearer ${TEST_ACCESS_TOKEN}`;
   return config;
 });
 
@@ -62,4 +65,18 @@ duckuWithAuth.interceptors.response.use(
   },
 );
 
-export { ducku, duckuWithAuth };
+// 조회용 axios 인스턴스 로그인해도, 안해도 사용 가능
+const duckuWithoutAuth = axios.create({
+  baseURL: 'https://api-duckwho.xyz',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+duckuWithoutAuth.interceptors.request.use((config) => {
+  // const token = getToken(); //TODO: test 작업 중
+  config.headers.Authorization = `Bearer ${TEST_ACCESS_TOKEN}`;
+  return config;
+});
+
+export { ducku, duckuWithAuth, duckuWithoutAuth };

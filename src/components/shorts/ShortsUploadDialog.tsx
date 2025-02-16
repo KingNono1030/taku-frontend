@@ -123,7 +123,7 @@ const ShortsUploadDialog = () => {
             className="space-y-6"
           >
             <DialogHeader>
-              <DialogTitle>카테고리 만들기</DialogTitle>
+              <DialogTitle>쇼츠 업로드드</DialogTitle>
             </DialogHeader>
             <FormField
               control={form.control}

@@ -5,7 +5,7 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { ImageOff, User } from 'lucide-react';
+import { ImageOff, SquarePen, User } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import {
@@ -17,12 +17,14 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { testAxios } from '@/lib/axiosInstance';
+import { formatKoreanDateWithLimit } from '@/lib/utils';
 
 import PaginationComponent from '../custom-pagination/CustomPagination';
 import DropdownFilter from '../dropdown-filter/DropdownFilter';
 import { COMMUNITY_FILTERS } from '../dropdown-filter/FilterConfig';
 import SearchBar from '../search-bar/SearchBar';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { Button } from '../ui/button';
 
 type Post = {
   id: number;
@@ -39,7 +41,6 @@ type Post = {
 };
 
 const getCommunityPosts = async (
-  sortFilterType = 'latest',
   page: number,
   sort = 'id,desc',
   size = 20,
@@ -48,7 +49,6 @@ const getCommunityPosts = async (
 ) => {
   const response = await testAxios.get('/api/community/posts', {
     params: {
-      sortFilterType,
       page,
       sort,
       size,
@@ -58,8 +58,6 @@ const getCommunityPosts = async (
   });
   return response.data;
 };
-
-const sort = 'id,desc';
 
 const DataTable = () => {
   const { category } = useParams();
@@ -76,15 +74,20 @@ const DataTable = () => {
   const { status, data, error, isPlaceholderData } = useQuery({
     queryKey: [
       'communityPosts',
-      selectedFilter,
       page,
-      sort,
+      selectedFilter + ',desc',
       20,
       search,
       category,
     ],
     queryFn: () =>
-      getCommunityPosts(selectedFilter, page, sort, 20, search, category ?? ''),
+      getCommunityPosts(
+        page,
+        selectedFilter + ',desc',
+        20,
+        search,
+        category ?? '',
+      ),
     placeholderData: keepPreviousData,
     staleTime: 5000,
   });
@@ -93,24 +96,26 @@ const DataTable = () => {
     navigate(`/community/${category}/${postId}`);
   };
 
+  const handleMoveCreatePost = () => {
+    navigate(`/community/${category}/add`);
+  };
+
   // 다음 페이지를 미리 가져옵니다!
   useEffect(() => {
     if (!isPlaceholderData && data?.hasMore) {
       quiryClient.prefetchQuery({
         queryKey: [
           'communityPosts',
-          selectedFilter,
           page + 1,
-          sort,
+          selectedFilter + ',desc',
           10,
           search,
           category,
         ],
         queryFn: () =>
           getCommunityPosts(
-            selectedFilter,
             page + 1,
-            sort,
+            selectedFilter + ',desc',
             10,
             search,
             category ?? '',
@@ -137,7 +142,16 @@ const DataTable = () => {
   return (
     <div>
       <SearchBar search={search} setSearch={setSearch} />
-      <div>
+      <div className="mb-4 flex justify-end">
+        <Button className="font-bold" onClick={handleMoveCreatePost}>
+          <SquarePen />
+          글쓰기
+        </Button>
+      </div>
+      <div className="flex items-center justify-between">
+        <p className="text-base font-bold">
+          전체 {data.data?.totalPages ?? 0}개
+        </p>
         <DropdownFilter
           selectedFilter={selectedFilter}
           setSelectedFilter={setSelectedFilter}
@@ -147,11 +161,20 @@ const DataTable = () => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-20 text-center">번호</TableHead>
-            <TableHead className="text-center">제목</TableHead>
-            <TableHead className="w-[100px] text-center">작성자</TableHead>
-            <TableHead className="w-[200px] text-center">작성일</TableHead>
-            <TableHead className="w-[100px] text-center">조회수</TableHead>
+            <TableHead className="w-20 text-center font-bold">번호</TableHead>
+            <TableHead className="text-center font-bold">제목</TableHead>
+            <TableHead className="w-[200px] text-center font-bold">
+              작성자
+            </TableHead>
+            <TableHead className="w-[150px] text-center font-bold">
+              작성일
+            </TableHead>
+            <TableHead className="w-[100px] text-center font-bold">
+              조회수
+            </TableHead>
+            <TableHead className="w-[100px] text-center font-bold">
+              좋아요수
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -184,10 +207,23 @@ const DataTable = () => {
                   <p>{post.userNickname}</p>
                 </div>
               </TableCell>
-              <TableCell className="text-center">{post.updatedAt}</TableCell>
+              <TableCell className="text-center">
+                {formatKoreanDateWithLimit(post.updatedAt)}
+              </TableCell>
               <TableCell className="text-center">{post.views}</TableCell>
+              <TableCell className="text-center">{post.likes}</TableCell>
             </TableRow>
           ))}
+          {data.data.responsePostList.length === 0 && (
+            <TableRow className="font-bold">
+              <TableCell
+                colSpan={6}
+                className="min-h-40 py-40 text-center text-muted-foreground"
+              >
+                데이터가 없습니다.
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
       <div className="my-8">

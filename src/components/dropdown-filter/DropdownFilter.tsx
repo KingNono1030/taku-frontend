@@ -32,7 +32,7 @@ const DropdownFilter = ({
           {filterArr.find((filter) => filter.value === selectedFilter)?.label}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56">
+      <DropdownMenuContent align="end">
         <DropdownMenuRadioGroup
           value={selectedFilter}
           onValueChange={setSelectedFilter}
