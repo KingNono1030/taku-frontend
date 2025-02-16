@@ -23,7 +23,7 @@ export const RelatedProduct = ({ similarProducts }: RelatedProductProps) => {
 
   return (
     <div className="space-y-20">
-      <div className="space-y-4">
+      <div className="mb-10 space-y-4">
         <h3 className="text-lg font-semibold">연관 상품</h3>
         <div className="grid grid-cols-5 gap-4">
           {products.map((product) => (
