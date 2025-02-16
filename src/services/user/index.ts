@@ -10,12 +10,12 @@ export interface RegisterUserRequestWithJSON
 }
 
 export const registerUser = async (
-  requestBody: RegisterUserRequestWithJSON,
-  code: string,
+  formData: FormData,
+  token: string,
 ): Promise<RegisterUserSuccessResponse> => {
-  const { data } = await ducku.post('/api/user', requestBody, {
+  const { data } = await ducku.post('/api/user', formData, {
     headers: {
-      'X-Registration-Token': `Bearer ${code}`,
+      'X-Registration-Token': `Bearer ${token}`,
       'Content-Type': 'multipart/form-data',
     },
   });

@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
 
-import ducku, { duckuWithAuth } from '@/lib/axiosInstance';
+import ducku, { duckuWithAuth, duckuWithoutAuth } from '@/lib/axiosInstance';
 import { UploadShortsRequest } from '@/types/api/shorts.types';
 
 /**
@@ -32,7 +32,7 @@ export const getShortsList = async () => {
  * @param shortsId 쇼츠 ID
  */
 export const getShortsDetail = async (shortsId: string) => {
-  const { data } = await duckuWithAuth.get(`/api/shorts/${shortsId}`);
+  const { data } = await duckuWithoutAuth.get(`/api/shorts/${shortsId}`);
   return data;
 };
 
