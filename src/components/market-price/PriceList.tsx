@@ -24,7 +24,13 @@ const PriceDisplay = ({
   priceChangePercent,
   colorScheme,
 }: PriceDisplayProps) => {
-  const textColor = `text-${colorScheme}-500`;
+  // 색상 매핑 객체 추가
+  const colors = {
+    blue: 'text-blue-500',
+    red: 'text-red-500',
+  };
+
+  const textColor = colors[colorScheme];
 
   return (
     <div className="flex items-end gap-2">
