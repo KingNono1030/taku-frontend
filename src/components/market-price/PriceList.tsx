@@ -11,7 +11,7 @@ interface PriceListProps {
 }
 
 interface PriceDisplayProps {
-  label: '판매가' | '구매가';
+  label: '판매가' | '등록가';
   price: number;
   priceDiff: number;
   priceChangePercent: string;
@@ -94,7 +94,7 @@ export const PriceList = ({
       ? ((sellingPriceDiff / previousSellingPrice) * 100).toFixed(2)
       : '0.00';
 
-  // 구매가 관련 계산
+  // 등록가 관련 계산
   const latestBuyingPrice = latestData.soldPrice ?? 0;
   const previousBuyingPrice = previousData.soldPrice ?? 0;
   const buyingPriceDiff = latestBuyingPrice - previousBuyingPrice;
@@ -116,7 +116,7 @@ export const PriceList = ({
             colorScheme="blue"
           />
           <PriceDisplay
-            label="구매가"
+            label="등록가"
             price={latestBuyingPrice}
             priceDiff={buyingPriceDiff}
             priceChangePercent={buyingPriceChangePercent}

@@ -52,7 +52,7 @@ export const Chart = ({ data, startDate, endDate }: ChartProps) => {
         backgroundColor: 'rgba(59, 130, 246, 0.5)',
       },
       {
-        label: '구매가',
+        label: '등록가',
         data: [],
         borderColor: 'rgb(239, 68, 68)',
         backgroundColor: 'rgba(239, 68, 68, 0.5)',
@@ -123,7 +123,7 @@ export const Chart = ({ data, startDate, endDate }: ChartProps) => {
             backgroundColor: 'rgba(59, 130, 246, 0.5)',
           },
           {
-            label: '구매가',
+            label: '등록가',
             data: filteredDataPoints.map((point) => point.soldPrice ?? 0),
             borderColor: 'rgb(239, 68, 68)',
             backgroundColor: 'rgba(239, 68, 68, 0.5)',
