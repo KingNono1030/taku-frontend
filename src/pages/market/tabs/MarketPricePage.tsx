@@ -1,28 +1,29 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { AxiosError } from 'axios';
 import { subMonths } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import { Search } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { useSearchParams } from 'react-router-dom';
 
 import { Chart } from '@/components/market-price/Chart';
 import { PriceList } from '@/components/market-price/PriceList';
 import { RecentlyTradedProduct } from '@/components/market-price/RecentlyTradedProduct';
 import { RelatedProduct } from '@/components/market-price/RelatedProduct';
-import { testAxios } from '@/lib/axiosInstance';
+import { Input } from '@/components/ui/input';
+import { ducku } from '@/lib/axiosInstance';
 import {
   MarketPriceProps,
   MarketPriceSearchResponse,
 } from '@/types/market-price-type/marketPrice.types';
 
 const MarketPricePage = () => {
-  // 오늘 날짜
+  const [searchParams, setSearchParams] = useSearchParams();
   const today = new Date();
-  // 1년 전 날짜
   const oneYearAgo = subMonths(today, 12);
 
-  // 초기값 설정: endDate는 오늘, startDate는 1년 전
   const [startDate, setStartDate] = useState<Date>(oneYearAgo);
   const [endDate, setEndDate] = useState<Date>(today);
   const [priceData, setPriceData] = useState<MarketPriceSearchResponse | null>(
@@ -30,6 +31,26 @@ const MarketPricePage = () => {
   );
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const handleSearch = (
+    e:
+      | React.KeyboardEvent<HTMLInputElement>
+      | React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    const inputElement =
+      e.type === 'keydown'
+        ? (e as React.KeyboardEvent<HTMLInputElement>).currentTarget
+        : (document.querySelector('input[type="text"]') as HTMLInputElement);
+
+    if (e.type === 'keydown' && (e as React.KeyboardEvent).key !== 'Enter') {
+      return;
+    }
+
+    const keyword = inputElement.value;
+    if (keyword.trim()) {
+      setSearchParams({ keyword: keyword });
+    }
+  };
 
   const handlePeriodChange = (newStartDate: Date, newEndDate: Date) => {
     setStartDate(newStartDate);
@@ -50,7 +71,7 @@ const MarketPricePage = () => {
 
   const fetchMarketPriceSearch = async (params: MarketPriceProps) => {
     try {
-      const response = await testAxios.get<MarketPriceSearchResponse>(
+      const response = await ducku.get<MarketPriceSearchResponse>(
         '/api/market-price/search',
         { params },
       );
@@ -72,8 +93,9 @@ const MarketPricePage = () => {
 
   useEffect(() => {
     const fetchInitialData = async () => {
-      const searchParams: MarketPriceProps = {
-        keyword: '원피스',
+      const keyword = searchParams.get('keyword') || '원피스';
+      const params: MarketPriceProps = {
+        keyword: keyword,
         startDate: startDate.toISOString().split('T')[0],
         endDate: endDate.toISOString().split('T')[0],
         displayOption: 'ALL',
@@ -84,7 +106,7 @@ const MarketPricePage = () => {
 
       try {
         setIsLoading(true);
-        const result = await fetchMarketPriceSearch(searchParams);
+        const result = await fetchMarketPriceSearch(params);
         setPriceData(result);
       } catch (error) {
         if (error instanceof Error) {
@@ -99,7 +121,7 @@ const MarketPricePage = () => {
     };
 
     fetchInitialData();
-  }, [startDate, endDate]);
+  }, [startDate, endDate, searchParams]);
 
   if (isLoading) return <div>로딩 중...</div>;
   if (error) return <div>에러: {error}</div>;
@@ -116,6 +138,21 @@ const MarketPricePage = () => {
 
   return (
     <div className="flex flex-col space-y-8">
+      {/* Search Bar */}
+      <div className="relative mx-auto my-[80px] w-full max-w-[560px]">
+        <Input
+          placeholder="검색하기..."
+          className="rounded-full pl-5"
+          defaultValue={searchParams.get('keyword') || ''}
+          onKeyDown={handleSearch}
+        />
+        <button
+          onClick={handleSearch}
+          className="absolute right-5 top-1/2 -translate-y-1/2 transform"
+        >
+          <Search className="h-4 w-4 text-muted-foreground" />
+        </button>
+      </div>
       <PriceList
         startDate={startDate}
         endDate={endDate}
@@ -134,7 +171,6 @@ const MarketPricePage = () => {
               selectsStart
               startDate={startDate}
               endDate={endDate}
-              minDate={oneYearAgo}
               maxDate={endDate}
               dateFormat="yyyy-MM-dd"
               locale={ko}
