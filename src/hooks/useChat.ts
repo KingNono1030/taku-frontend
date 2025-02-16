@@ -2,17 +2,29 @@ import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { testAxios } from '@/lib/axiosInstance';
+import { duckuWithAuth } from '@/lib/axiosInstance';
+import useUserStore from '@/store/userStore';
 import type { CommonChatRoomResponse } from '@/types/chat-type/chat.types';
 
 export const useChat = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  // 채팅방 목록 조회 쿼리
+  const user = useUserStore((state) => state.user);
+
+  if (!user) {
+    return {
+      chatRooms: null,
+      isChatRoomsLoading: false,
+      handleChat: () => {
+        console.error('User not logged in');
+      },
+    };
+  }
+
   const { data: chatRooms, isLoading: isChatRoomsLoading } = useQuery({
-    queryKey: ['chatRooms', 10], // 10은 현재 고정된 userId
+    queryKey: ['chatRooms', 10],
     queryFn: async () => {
-      const response = await testAxios.get<CommonChatRoomResponse>(
+      const response = await duckuWithAuth.get<CommonChatRoomResponse>(
         '/api/chat/rooms',
         {
           params: {
@@ -27,7 +39,7 @@ export const useChat = () => {
   const handleChat = async (productId: number, sellerId: number) => {
     if (sellerId) {
       try {
-        await testAxios.post('/api/chat/rooms', {
+        await duckuWithAuth.post('/api/chat/rooms', {
           articleId: productId,
           buyerId: 10,
           sellerId: sellerId,
