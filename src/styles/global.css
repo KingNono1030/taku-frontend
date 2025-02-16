@@ -1,3 +1,9 @@
+/* DatePicker Popper 위치 조정 */
+.react-datepicker-popper {
+  transform: translate3d(0, 40px, 0) !important;
+  z-index: 9999 !important;
+}
+
 /* DatePicker 기본 스타일 */
 .react-datepicker {
   font-family: inherit !important;
@@ -5,6 +11,10 @@
   border-radius: 0.5rem !important;
   background-color: white !important;
   padding: 0.5rem !important;
+  margin-top: 5px;
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
 }
 
 /* 달력 컨테이너 크기 */
