@@ -15,10 +15,13 @@ import {
 } from '@/components/ui/carousel';
 import { testAxios } from '@/lib/axiosInstance';
 import { getShortsDetail } from '@/services/shorts';
+import useShortsStore from '@/store/shortsStore';
 
 const ShortsPage = () => {
   const [openComments, setOpenComments] = useState(true);
   const [videos, setVideos] = useState<any[]>([]);
+
+  const watchTime = useShortsStore((state) => state.watchTime);
 
   const [api, setApi] = useState<CarouselApi>();
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -127,12 +130,16 @@ const ShortsPage = () => {
     if (!selectedVideo) {
       return;
     }
+    if (!!watchTime && watchTime > 1) {
+      console.log('동영상 시청 시간', watchTime);
+    }
 
     refetchShortsDetailData();
   }, [selectedVideo]);
 
   return (
     <div className="h-full bg-stone-900">
+      <h1 className="p-4 text-center text-4xl text-white">{watchTime}</h1>
       <div className={'flex w-full justify-center gap-20 p-4'}>
         <section className="inset-x-0 flex w-[600px] items-end gap-4 text-white">
           {/* video layout */}

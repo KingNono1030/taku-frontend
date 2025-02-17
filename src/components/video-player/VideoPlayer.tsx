@@ -1,6 +1,8 @@
-import { MutableRefObject, useEffect, useRef, useState } from 'react';
+import { MutableRefObject, useEffect, useRef } from 'react';
 
 import Hls from 'hls.js';
+
+import useShortsStore from '@/store/shortsStore';
 
 type VideoPlayerProps = {
   src: string;
@@ -10,16 +12,16 @@ type VideoPlayerProps = {
 const VideoPlayer = ({ src, type }: VideoPlayerProps) => {
   const videoRef: MutableRefObject<HTMLVideoElement | null> = useRef(null);
 
-  const [currentTime, setCurrentTime] = useState(0);
+  const { watchTime, setWatchTime, resetWatchTime } = useShortsStore();
 
   const handleTimeUpdate = () => {
     if (videoRef.current) {
-      setCurrentTime(videoRef.current.currentTime);
+      setWatchTime(videoRef.current.currentTime);
     }
   };
 
   const handleEnded = () => {
-    console.log('비디오 끝', currentTime);
+    console.log('비디오 끝', watchTime);
   };
 
   useEffect(() => {
@@ -34,6 +36,8 @@ const VideoPlayer = ({ src, type }: VideoPlayerProps) => {
     const videoElement = videoRef.current;
 
     if (!videoElement) return;
+
+    resetWatchTime();
 
     const observer = new IntersectionObserver(
       (entries) => {

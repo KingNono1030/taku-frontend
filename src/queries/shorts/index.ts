@@ -6,6 +6,7 @@ import {
   deleteShortsComment,
   deleteShortsCommentReply,
   getShortsComment,
+  recordShortsWatchTime,
   updateShortsComment,
   updateShortsCommentReply,
   uploadShorts,
@@ -281,6 +282,37 @@ export const useDeleteShortsCommentReply = ({
     },
     onError: (error) => {
       console.error('대댓글 삭제 실패:', error);
+      onErrorCb && onErrorCb();
+    },
+    onSettled: () => {
+      onSettledCb && onSettledCb();
+    },
+  });
+};
+
+/**
+ * 쇼츠 시청 시간 기록 커스텀 훅
+ * @param shortsId 쇼츠 ID
+ * @param onSuccessCb 성공 시 실행할 콜백 함수
+ * @param onErrorCb 실패 시 실행할 콜백 함수
+ * @param onSettledCb 완료 시 실행할 콜백 함수
+ */
+export const useRecordShortsWatchTime = ({
+  shortsId,
+  onSuccessCb,
+  onErrorCb,
+  onSettledCb,
+}: UseEditShortsCommentReplyProps) => {
+  return useMutation({
+    mutationFn: async (requestBody: { viewTime: number; playTime: number }) => {
+      return recordShortsWatchTime(shortsId, requestBody);
+    },
+    onSuccess: (data) => {
+      console.log('시청 시간 기록 성공:', data);
+      onSuccessCb && onSuccessCb();
+    },
+    onError: (error) => {
+      console.error('시청 시간 기록 실패:', error);
       onErrorCb && onErrorCb();
     },
     onSettled: () => {
