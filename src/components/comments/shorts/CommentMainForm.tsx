@@ -1,33 +1,39 @@
 import { useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AxiosResponse } from 'axios';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { testAxios } from '@/lib/axiosInstance';
-
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { Button } from '../ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from '../ui/form';
-import { Textarea } from '../ui/textarea';
+} from '@/components/ui/form';
+import { Textarea } from '@/components/ui/textarea';
+import { useCreateShortsComment } from '@/queries/shorts';
 
 const addCommentSchema = z.object({
   comment: z.string().nonempty('댓글을 입력해주세요.'),
 });
 
 type CommentMainFormProps = {
-  parentId?: string;
-  resetComments?: (resCommentArr: any[]) => void; //eslint-disable-line
+  parentId: string;
+  resetComments?: () => void;
 };
 
 const CommentMainForm = ({ parentId, resetComments }: CommentMainFormProps) => {
+  const { mutate: createCommentMutate } = useCreateShortsComment({
+    shortsId: parentId,
+    onSuccessCb: () => {
+      resetComments && resetComments();
+      form.reset();
+    },
+  });
+
   const [isFocused, setIsFocused] = useState(false);
 
   const form = useForm<z.infer<typeof addCommentSchema>>({
@@ -36,12 +42,6 @@ const CommentMainForm = ({ parentId, resetComments }: CommentMainFormProps) => {
       comment: '',
     },
   });
-
-  const addComment = async (data: {
-    comment: string;
-  }): Promise<AxiosResponse> => {
-    return await testAxios.post('/api/shorts/' + parentId + '/comment', data);
-  };
 
   const handleCancel = () => {
     form.reset();
@@ -52,12 +52,7 @@ const CommentMainForm = ({ parentId, resetComments }: CommentMainFormProps) => {
     if (!parentId) {
       return;
     }
-
-    addComment(data).then((res) => {
-      resetComments && resetComments(res.data.data);
-      form.reset();
-      console.log(res);
-    });
+    createCommentMutate(data);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {

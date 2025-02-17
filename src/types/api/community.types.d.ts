@@ -51,6 +51,14 @@ export type FindAllPostSuccessResponse =
  */
 
 type CreatePostQuery = operations['createPost']['parameters']['query'];
+
+export interface CreatePostQueryRequest extends CreatePostQuery {
+  categoryId: string;
+  title: string;
+  content: string;
+  imageList?: File[];
+}
+
 type CreatePostRequest = NonNullable<
   operations['createPost']['requestBody']
 >['content']['application/json'];
@@ -89,9 +97,19 @@ export type FindPostDetailSuccessResponse =
  */
 
 export type UpdatePostQuery = operations['updatePost']['parameters']['query'];
+
+export interface UpdatePostQueryRequest extends UpdatePostQuery {
+  categoryId: string;
+  title: string;
+  content: string;
+  imageList?: File[];
+  deleteImageUrl?: string[];
+}
+
 export type UpdatePostRequest = NonNullable<
   operations['updatePost']['requestBody']
 >['content']['application/json'];
+
 export type UpdatePostSuccessResponse =
   operations['updatePost']['responses'][200]['content']['*/*'];
 
@@ -116,6 +134,13 @@ export type DeletePostDetailSuccessResponse =
 export type CreateCommentsRequest = NonNullable<
   operations['createComments']['requestBody']
 >['content']['application/json'];
+
+export interface CreateCommentsRequestBody extends CreateCommentsRequest {
+  postId: string;
+  content: string;
+  parentCommentId?: string;
+}
+
 export type CreateCommentsSuccessResponse =
   operations['createComments']['responses'][201]['content']['*/*'];
 
@@ -131,6 +156,12 @@ export type CreateCommentsSuccessResponse =
 export type UpdateCommentsRequest = NonNullable<
   operations['updateComments']['requestBody']
 >['content']['application/json'];
+
+export interface UpdateCommentsRequestBody extends UpdateCommentsRequest {
+  postId: string;
+  content: string;
+}
+
 export type UpdateCommentsSuccessResponse =
   operations['updateComments']['responses'][200]['content']['*/*'];
 
