@@ -31,6 +31,8 @@ export type CreateProductSuccessResponse =
  * @description 덕후 장터 판매글 상세 조회
  */
 
+type ProductStatus = 'FOR_SALE' | 'RESERVED' | 'SOLD_OUT';
+
 type FindProductDetailSuccessResponse =
   operations['findProductDetail']['responses'][200]['content']['*/*'];
 
@@ -75,6 +77,20 @@ export type deleteProductSuccessResponse =
 export type RecommendedProduct = components['schemas']['RecommendProduct'];
 export type findRecommendedProductSuccessResponse =
   operations['recommendProduct']['responses'][200]['content']['*/*'];
+
+/**
+ * path: '/api/jangter/{productId}/status'
+ */
+
+/**
+ * 상품 상태 변경
+ * @description 상품의 상태를 변경합니다 (판매중 -> 예약중 -> 판매완료)
+ */
+
+export type UpdateProductStatusRequest =
+  operations['updateProductStatus']['requestBody']['content']['application/json'];
+export type UpdateProductStatusSuccessResponse =
+  operations['updateProductStatus']['responses'][200]['content']['*/*'];
 
 /**
  * path: '/api/itemCategory'
