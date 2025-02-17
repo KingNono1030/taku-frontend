@@ -146,10 +146,12 @@ export default function Header() {
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>{user?.nickname}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <User className="mr-2 h-6 w-6" />
-                    <span>마이페이지</span>
-                  </DropdownMenuItem>
+                  <Link to={'/mypage'}>
+                    <DropdownMenuItem>
+                      <User className="mr-2 h-6 w-6" />
+                      <span>마이페이지</span>
+                    </DropdownMenuItem>
+                  </Link>
                   <DropdownMenuItem>
                     <Settings className="mr-2 h-6 w-6" />
                     <span>설정</span>
