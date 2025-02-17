@@ -5,6 +5,10 @@ import {
   FindProductDetailSuccessResponse,
   FindProductItemsQuery,
   FindProductItemsSuccessResponse,
+  FindUserPurchaseQuery,
+  FindUserPurchaseResponse,
+  // FindUserPurchaseQuery,
+  // FindUserPurchaseResponse,
   GetJangterRankSuccessResponse,
   UpdateProductRequest,
   UpdateProductSuccessResponse,
@@ -70,5 +74,21 @@ export const getProductItems = async (
   params?: FindProductItemsQuery,
 ): Promise<FindProductItemsSuccessResponse> => {
   const { data } = await ducku.get('api/jangter/products', { params });
+  return data;
+};
+
+export const getUserPurchase = async (
+  userId: number,
+  queryParams: FindUserPurchaseQuery,
+): Promise<FindUserPurchaseResponse> => {
+  const { page, size, sort } = queryParams as {
+    page: number;
+    size: number;
+    sort: string;
+  };
+  const [sortKey, sortWay] = sort.split(',');
+  const { data } = await duckuWithAuth.get(
+    `/api/user-janger/${userId}/purchase?page=${page}&size=${size}20&sort=${sortKey}%2C${sortWay}`,
+  );
   return data;
 };
