@@ -38,7 +38,7 @@ const ShortsDetailCarouselItem = ({
 }: ShortsDetailCarouselItemProps) => {
   return (
     <CarouselItem className="w-full basis-11/12">
-      <AspectRatio ratio={9 / 13}>
+      <AspectRatio ratio={9 / 14}>
         <div className="relative h-full w-full overflow-hidden rounded-lg">
           <VideoPlayer
             src={shortsDetailData?.m3u8_url ? shortsDetailData?.m3u8_url : ''}

@@ -39,10 +39,14 @@ const addPostSchema = z.object({
     .transform((imageObjects) => {
       if (!imageObjects) return undefined;
       return imageObjects.map((imageObj) => {
+        console.log('imageObj', imageObj);
+
         const file = new File([], imageObj.name, {
           type: imageObj.type,
           lastModified: Date.now(),
         });
+        console.log('이후 :', file);
+
         return Object.assign(file, { preview: imageObj.preview });
       });
     }),
@@ -94,6 +98,8 @@ const CreateCommunityPage = () => {
   );
 
   const onSubmit = (data: z.infer<typeof addPostSchema>) => {
+    console.log('data', data);
+    return;
     mutate(data);
   };
 

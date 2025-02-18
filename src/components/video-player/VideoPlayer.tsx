@@ -12,7 +12,8 @@ type VideoPlayerProps = {
 const VideoPlayer = ({ src, type }: VideoPlayerProps) => {
   const videoRef: MutableRefObject<HTMLVideoElement | null> = useRef(null);
 
-  const { watchTime, setWatchTime, resetWatchTime } = useShortsStore();
+  const { watchTime, setWatchTime, resetWatchTime, setDurationTime } =
+    useShortsStore();
 
   const handleTimeUpdate = () => {
     if (videoRef.current) {
@@ -22,6 +23,13 @@ const VideoPlayer = ({ src, type }: VideoPlayerProps) => {
 
   const handleEnded = () => {
     console.log('비디오 끝', watchTime);
+  };
+
+  const handleLoadedMetadata = () => {
+    if (videoRef.current) {
+      console.log('비디오 메타데이터 로드', videoRef.current.duration);
+      setDurationTime(videoRef.current.duration);
+    }
   };
 
   useEffect(() => {
@@ -68,6 +76,7 @@ const VideoPlayer = ({ src, type }: VideoPlayerProps) => {
         onTimeUpdate={handleTimeUpdate}
         onEnded={handleEnded}
         ref={videoRef}
+        onLoadedMetadata={handleLoadedMetadata}
         controls
       />
     </div>
@@ -78,6 +87,7 @@ const VideoPlayer = ({ src, type }: VideoPlayerProps) => {
         onTimeUpdate={handleTimeUpdate}
         onEnded={handleEnded}
         ref={videoRef}
+        onLoadedMetadata={handleLoadedMetadata}
         src={src}
         controls
       />

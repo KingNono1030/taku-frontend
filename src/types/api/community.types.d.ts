@@ -56,7 +56,7 @@ export interface CreatePostQueryRequest extends CreatePostQuery {
   categoryId: string;
   title: string;
   content: string;
-  imageList?: File[];
+  imageList?: any;
 }
 
 type CreatePostRequest = NonNullable<

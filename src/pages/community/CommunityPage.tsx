@@ -91,7 +91,7 @@ const CategoryCard = ({ category }: { category: Category }) => {
         <h3 className="font-bold">{category.name}</h3>
         {/* 한줄로만 표현하기 나머지 ... */}
         <div className="line-clamp-1 flex flex-wrap gap-1 overflow-hidden text-muted-foreground">
-          {category.genreName.map(
+          {category.genreName?.map(
             (genre: any, i: number) =>
               i < 3 && (
                 <Badge key={i} className="text-sm" variant={'secondary'}>

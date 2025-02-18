@@ -8,6 +8,7 @@ import {
   format,
   parse,
 } from 'date-fns';
+import { formatDuration, intervalToDuration } from 'date-fns';
 import { twMerge } from 'tailwind-merge';
 
 /**
@@ -209,19 +210,6 @@ export const convertDataToFormData = (data: Record<string, any>): FormData => {
     if (Array.isArray(data[key])) {
       // 배열인 경우, 각 요소를 순회하며 FormData에 추가
       data[key].forEach((item) => {
-        // item이 객체인 경우 preview 속성을 제거하고 file 객체로 변환
-
-        if (typeof item === 'object') {
-          console.log('item', item);
-
-          delete item.preview;
-          const newItem = new File([], item.name, {
-            type: item.type,
-            lastModified: item.lastModified,
-          });
-          formData.append(`${key}`, newItem);
-          return;
-        }
         formData.append(`${key}`, item); // key[] 형태로 추가
       });
     } else {
@@ -236,3 +224,29 @@ export const convertDataToFormData = (data: Record<string, any>): FormData => {
 
   return formData;
 };
+
+/**
+ * 초 단위의 시간을 ISO 8601 지속 시간 형식(PT1M2S)으로 변환합니다.
+ * @param {number} seconds - 초 단위의 시간 (예: 62.12324)
+ * @returns {string} - ISO 8601 지속 시간 형식 (예: PT1M2S)
+ */
+export function formatSecondsToISODuration(seconds: number) {
+  // 초 단위의 시간을 밀리초로 변환
+  const milliseconds = seconds * 1000;
+
+  // intervalToDuration을 사용하여 지속 시간 객체 생성
+  const duration = intervalToDuration({
+    start: 0,
+    end: milliseconds,
+  });
+
+  // formatDuration을 사용하여 지속 시간 포맷팅
+  const formattedDuration = formatDuration(duration, {
+    format: ['hours', 'minutes', 'seconds'], // 시간, 분, 초만 사용
+    zero: false, // 0인 값은 생략
+    delimiter: '', // 구분자 없음
+  });
+
+  // ISO 8601 형식으로 변환
+  return `PT${formattedDuration}`;
+}

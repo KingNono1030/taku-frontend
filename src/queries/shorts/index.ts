@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
+import { formatSecondsToISODuration } from '@/lib/utils';
 import {
   createShortsComment,
   createShortsCommentReply,
@@ -305,7 +306,13 @@ export const useRecordShortsWatchTime = ({
 }: UseEditShortsCommentReplyProps) => {
   return useMutation({
     mutationFn: async (requestBody: { viewTime: number; playTime: number }) => {
-      return recordShortsWatchTime(shortsId, requestBody);
+      // 시청 시간을 ISO 8601 기간 형식으로 변환
+      const formatedRequestBody = {
+        viewTime: formatSecondsToISODuration(requestBody.viewTime),
+        playTime: formatSecondsToISODuration(requestBody.playTime),
+      };
+
+      return recordShortsWatchTime(shortsId, formatedRequestBody);
     },
     onSuccess: (data) => {
       console.log('시청 시간 기록 성공:', data);
