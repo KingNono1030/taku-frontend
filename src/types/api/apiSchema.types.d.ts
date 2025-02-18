@@ -996,6 +996,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/category/genres': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * 애니메이션 장르 목록 조회
+     * @description 애니메이션 장르 목록을 조회합니다.
+     */
+    get: operations['findAniGenres'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1412,11 +1432,6 @@ export interface components {
       data?: components['schemas']['ChatRoomResponseDTO'];
       error?: components['schemas']['ExceptionDto'];
     };
-    /** @description 카테고리 정보 <code>RequestCategoryCreateDTO</code> 스키마 참고 <code>Content-Type: application/json</code> */
-    RequestCategoryCreateDTO: {
-      category_name?: string;
-      ani_genre_id?: number[];
-    };
     CategoryGenreDTO: {
       /** Format: int64 */
       id?: number;
@@ -1629,7 +1644,7 @@ export interface components {
        * @example 제목
        */
       title?: string;
-      /** @description 구매가격 */
+      /** @description 등록가격 */
       price?: number;
       /**
        * @description 상품 카테고리 이름
@@ -2364,6 +2379,16 @@ export interface components {
        */
       postId?: number;
       /**
+       * @description 작성자 닉네임
+       * @example 작성자 닉네임
+       */
+      authorNickname?: string;
+      /**
+       * @description 작성자 프로필 이미지 URL
+       * @example 작성자 프로필 이미지 URL
+       */
+      authorProfileUrl?: string;
+      /**
        * @description 게시글 제목
        * @example 게시글 제목
        */
@@ -2408,6 +2433,7 @@ export interface components {
        * @description 좋아요 수
        */
       likeCount?: number;
+      liked?: boolean;
     };
     /** @description 공통 응답 */
     CommonResponseListChatRoomResponseDTO: {
@@ -2459,8 +2485,8 @@ export interface components {
       /** Format: int32 */
       number?: number;
       sort?: components['schemas']['SortObject'];
-      first?: boolean;
       pageable?: components['schemas']['PageableObject'];
+      first?: boolean;
       /** Format: int32 */
       numberOfElements?: number;
       last?: boolean;
@@ -2497,6 +2523,25 @@ export interface components {
       data?: components['schemas']['ResponseCategoryDTO'];
       error?: components['schemas']['ExceptionDto'];
     };
+    /** @description 응답 데이터 */
+    AniGenreListReqDTO: {
+      genres?: components['schemas']['AniGenreResDTO'][];
+    };
+    AniGenreResDTO: {
+      /** Format: int64 */
+      id?: number;
+      genreName?: string;
+    };
+    /** @description 공통 응답 */
+    CommonResponseAniGenreListReqDTO: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success?: boolean;
+      data?: components['schemas']['AniGenreListReqDTO'];
+      error?: components['schemas']['ExceptionDto'];
+    };
     RequestSearchProfanityDTO: {
       userName?: string;
       keyword?: string;
@@ -2524,8 +2569,8 @@ export interface components {
       /** Format: int32 */
       number?: number;
       sort?: components['schemas']['SortObject'];
-      first?: boolean;
       pageable?: components['schemas']['PageableObject'];
+      first?: boolean;
       /** Format: int32 */
       numberOfElements?: number;
       last?: boolean;
@@ -3865,7 +3910,9 @@ export interface operations {
   };
   createCategory: {
     parameters: {
-      query?: never;
+      query: {
+        ani_genre_id: number[];
+      };
       header?: never;
       path?: never;
       cookie?: never;
@@ -3873,11 +3920,8 @@ export interface operations {
     requestBody?: {
       content: {
         'multipart/form-data': {
-          category: components['schemas']['RequestCategoryCreateDTO'];
-          /**
-           * Format: binary
-           * @description 카테고리 이미지
-           */
+          category_name: string;
+          /** Format: binary */
           image: string;
         };
       };
@@ -4884,6 +4928,29 @@ export interface operations {
         };
         content: {
           '*/*': components['schemas']['CommonResponseResponseCategoryDTO'];
+        };
+      };
+    };
+  };
+  findAniGenres: {
+    parameters: {
+      query?: {
+        /** @description 검색 키워드 */
+        keyword?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseAniGenreListReqDTO'];
         };
       };
     };
