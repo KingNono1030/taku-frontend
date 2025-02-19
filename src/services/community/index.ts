@@ -3,7 +3,6 @@ import ducku, {
   duckuWithoutAuth,
   testAxios,
 } from '@/lib/axiosInstance';
-import { convertDataToFormData } from '@/lib/utils';
 import {
   CreatePostQueryRequest,
   UpdatePostQueryRequest,
@@ -31,11 +30,9 @@ export const getCommunityDetail = async (postId: string) => {
 export const createCommunityDetail = async (
   requestBody: CreatePostQueryRequest,
 ) => {
-  const requestFormData = convertDataToFormData(requestBody);
-
   const { data } = await duckuWithAuth.post(
     '/api/community/posts',
-    requestFormData,
+    requestBody,
     {
       headers: {
         'Content-Type': 'multipart/form-data',
