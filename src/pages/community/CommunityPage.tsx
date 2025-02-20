@@ -5,7 +5,7 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { Bookmark, ChevronDown, ImageOff, Star } from 'lucide-react';
+import { Bookmark, ImageOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import DeleteAlertDialog from '@/components/alert-dialog/DeleteAlertDialog';
@@ -17,10 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import SectionLayout from '@/layout/SectionLayout';
 import { testAxios } from '@/lib/axiosInstance';
-import {
-  useCommunityBookmark,
-  useDeleteCommunityBookmark,
-} from '@/queries/community';
+import { useCommunityBookmark } from '@/queries/community';
 import { deleteCommunityBookmark } from '@/services/community';
 
 import PaginationComponent from '../../components/custom-pagination/CustomPagination';
@@ -89,7 +86,7 @@ const BookmarkList = () => {
     navigate(`/community/${categoryId}`);
   };
 
-  const handleDeleteDialogOpen = (bookmarkId) => {
+  const handleDeleteDialogOpen = (bookmarkId: number) => {
     setBookmarkId(bookmarkId);
     setIsDialogOpen(true);
   };

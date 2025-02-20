@@ -179,3 +179,13 @@ export const deleteCommunityBookmark = async (categoryId: string) => {
   );
   return data;
 };
+
+/**
+ * 인기 커뮤니티 게시글 조회 서비스
+ */
+export const getPopularCommunityPosts = async (periodType: string) => {
+  const { data } = await ducku.get(
+    `/api/community/posts/popular?periodType=${periodType}`,
+  );
+  return data;
+};

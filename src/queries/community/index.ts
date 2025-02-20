@@ -10,6 +10,7 @@ import {
   getCommunityBookmark,
   getCommunityDetail,
   getCommunityGenres,
+  getPopularCommunityPosts,
   likeCommunityDetail,
   updateCommunityComment,
   updateCommunityDetail,
@@ -378,6 +379,22 @@ export const useDeleteCommunityBookmark = ({
     },
     onSettled: () => {
       onSettledCb && onSettledCb();
+    },
+  });
+};
+
+/**
+ * 인기 커뮤니티 게시글 조회 커스텀 훅
+ */
+export const usePopularCommunityPosts = ({
+  periodType,
+}: {
+  periodType: string;
+}) => {
+  return useQuery({
+    queryKey: ['popularCommunityPosts', periodType],
+    queryFn: async () => {
+      return await getPopularCommunityPosts(periodType);
     },
   });
 };

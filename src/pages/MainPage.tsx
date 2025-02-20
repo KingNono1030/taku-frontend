@@ -1,13 +1,14 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import Autoplay from 'embla-carousel-autoplay';
-import { Plus } from 'lucide-react';
+import { Eye, Heart, ImageOff, Plus, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import Banner1 from '@/assets/banner/banner1.webp';
 import Banner2 from '@/assets/banner/banner2.webp';
 import Banner3 from '@/assets/banner/banner3.webp';
 import Banner4 from '@/assets/banner/banner4.webp';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -18,6 +19,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
+import { usePopularCommunityPosts } from '@/queries/community';
 
 import { PopularCategories } from './community/CommunityPage';
 
@@ -44,12 +46,35 @@ const banners = [
   },
 ];
 
+const periodTypes = [
+  {
+    id: 'TODAY',
+    label: '오늘',
+  },
+  {
+    id: 'WEEK',
+    label: '이번주',
+  },
+  {
+    id: 'MONTH',
+    label: '이번달',
+  },
+];
+
 const MainPage = () => {
   const navigate = useNavigate();
+
+  const [selectedPopularType, setSelectedPopularType] = useState(
+    periodTypes[0].id,
+  );
 
   const plugin: any = useRef(
     Autoplay({ delay: 3500, stopOnInteraction: true }),
   );
+
+  const { data, refetch } = usePopularCommunityPosts({
+    periodType: selectedPopularType,
+  });
 
   const handleMoveToCommunity = () => {
     navigate('/community');
@@ -58,6 +83,10 @@ const MainPage = () => {
   const handleMoveToMarket = () => {
     navigate('/market');
   };
+
+  useEffect(() => {
+    refetch();
+  }, [selectedPopularType]);
 
   return (
     <div className="mb-10 flex flex-col gap-12">
@@ -105,6 +134,79 @@ const MainPage = () => {
         </div>
         <div>
           <PopularCategories />
+        </div>
+      </section>
+      <section>
+        <div className="mb-10 flex items-center justify-between align-bottom">
+          <h1 className="text-4xl font-bold">인기 게시글 TOP 10</h1>
+          <div className="flex">
+            {periodTypes.map((type) => (
+              <Button
+                key={type.id}
+                variant="ghost"
+                className={`w-fit font-bold text-muted-foreground ${
+                  selectedPopularType === type.id
+                    ? 'text-primary'
+                    : 'text-muted-foreground'
+                }`}
+                onClick={() => setSelectedPopularType(type.id)}
+              >
+                {type.label}
+              </Button>
+            ))}
+          </div>
+        </div>
+        <div className="flex flex-col gap-4">
+          {data?.data?.popularPosts?.map((post: any) => (
+            <Card
+              key={post.id}
+              className="flex cursor-pointer items-center justify-between gap-4 rounded-xl p-4 font-bold"
+            >
+              <div className="flex flex-col items-start gap-2">
+                <h3 className="text-sm text-muted-foreground">
+                  {post?.categoryName}
+                </h3>
+                <h2 className="text-lg font-bold">{post.title}</h2>
+                <div className="flex gap-4 text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <Eye color="#1A7CFF" size={18} />
+                    <p>{post?.views ?? 0}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Heart
+                      size={18}
+                      color="
+                      #d32f2f
+                      "
+                    />
+                    <p>{post?.likes ?? 0}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Avatar className="h-6 w-6">
+                    <AvatarImage src={post?.userImageUrl} alt="profile" />
+                    <AvatarFallback>
+                      <User />
+                    </AvatarFallback>
+                  </Avatar>
+                  <p>{post?.userNickname}</p>
+                </div>
+              </div>
+              <div className="flex h-24 w-40 items-center justify-center rounded-xl bg-gray-200">
+                {post?.imageUrl ? (
+                  <img
+                    src={post?.imageUrl}
+                    alt="thumbnail"
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center">
+                    <ImageOff />
+                  </div>
+                )}
+              </div>
+            </Card>
+          ))}
         </div>
       </section>
       <section>
