@@ -7,6 +7,7 @@ import {
   createCommunityDetail,
   deleteCommunityComment,
   deleteCommunityDetail,
+  getCommunityBookmark,
   getCommunityDetail,
   getCommunityGenres,
   likeCommunityDetail,
@@ -307,6 +308,16 @@ export const useCreateCommunityCategory = ({
     onSettled: () => {
       onSettledCb && onSettledCb();
     },
+  });
+};
+
+/**
+ * 커뮤니티 북마크 조회 커스텀 훅
+ */
+export const useCommunityBookmark = () => {
+  return useQuery({
+    queryKey: ['communityBookmark'],
+    queryFn: async () => await getCommunityBookmark(),
   });
 };
 

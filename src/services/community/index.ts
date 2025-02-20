@@ -155,10 +155,18 @@ export const createCommunityCategory = async (requestBody: {
 };
 
 /**
+ * 커뮤니티 카테고리 북마크 조회 서비스
+ */
+export const getCommunityBookmark = async () => {
+  const { data } = await testAxios.get('/api/category-bookmark');
+  return data;
+};
+
+/**
  * 커뮤니티 카테고리 북마크 등록 서비스
  */
 export const createCommunityBookmark = async (categoryId: string) => {
-  const { data } = await testAxios.post(`/api/category/${categoryId}/bookmark`);
+  const { data } = await testAxios.post(`/api/category-bookmark/${categoryId}`);
   return data;
 };
 
@@ -167,7 +175,7 @@ export const createCommunityBookmark = async (categoryId: string) => {
  */
 export const deleteCommunityBookmark = async (categoryId: string) => {
   const { data } = await testAxios.delete(
-    `/api/category/${categoryId}/bookmark`,
+    `/api/category-bookmark/${categoryId}`,
   );
   return data;
 };

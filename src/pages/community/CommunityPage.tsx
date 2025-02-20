@@ -5,16 +5,23 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { ChevronDown, Star } from 'lucide-react';
+import { Bookmark, ChevronDown, ImageOff, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+import DeleteAlertDialog from '@/components/alert-dialog/DeleteAlertDialog';
 import CategoryDialog from '@/components/category/CategoryDialog';
 import SearchBar from '@/components/search-bar/SearchBar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import SectionLayout from '@/layout/SectionLayout';
 import { testAxios } from '@/lib/axiosInstance';
+import {
+  useCommunityBookmark,
+  useDeleteCommunityBookmark,
+} from '@/queries/community';
+import { deleteCommunityBookmark } from '@/services/community';
 
 import PaginationComponent from '../../components/custom-pagination/CustomPagination';
 
@@ -66,6 +73,89 @@ export const PopularCategories = () => {
       {data?.data.content.map((category: Category) => (
         <CategoryCard key={category.id} category={category} />
       ))}
+    </div>
+  );
+};
+
+const BookmarkList = () => {
+  const { data, error, isPending, refetch } = useCommunityBookmark();
+
+  const navigate = useNavigate();
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [bookmarkId, setBookmarkId] = useState<number | null>(null);
+
+  const handleMoveToCategory = (categoryId: number) => {
+    navigate(`/community/${categoryId}`);
+  };
+
+  const handleDeleteDialogOpen = (bookmarkId) => {
+    setBookmarkId(bookmarkId);
+    setIsDialogOpen(true);
+  };
+
+  const handleDeleteBookmark = () => {
+    if (bookmarkId) {
+      deleteCommunityBookmark(bookmarkId.toString());
+      refetch();
+    }
+    setIsDialogOpen(false);
+  };
+
+  if (isPending) {
+    return <div>로딩중...</div>;
+  }
+
+  if (error) {
+    return <div>에러: {error.message}</div>;
+  }
+
+  return (
+    <div className="flex-col space-y-6">
+      {data.data?.categoryBookmarks?.map((item: any) => (
+        <div
+          key={item.bookmarkId}
+          className="flex w-full items-center justify-between"
+        >
+          <div
+            className="flex cursor-pointer items-center gap-2"
+            onClick={() => handleMoveToCategory(item.bookmarkId)}
+          >
+            <Avatar className="rounded-xl">
+              <AvatarImage
+                src={item.categoryImageUrl}
+                alt={item.categoryName}
+              />
+              <AvatarFallback>
+                <ImageOff />
+              </AvatarFallback>
+            </Avatar>
+            <span
+              className="cursor-pointer text-sm font-semibold transition-colors duration-100 hover:text-primary"
+              onClick={() => {
+                console.log('click');
+              }}
+            >
+              {item.categoryName}
+            </span>
+          </div>
+          <Button
+            variant={'ghost'}
+            size="icon"
+            className="[&_svg]:size-6"
+            onClick={() => handleDeleteDialogOpen(item.bookmarkId)}
+          >
+            <Bookmark fill={'#EAB308'} />
+          </Button>
+        </div>
+      ))}
+      <DeleteAlertDialog
+        title="북마크 삭제"
+        content="북마크를 삭제하시겠습니까?"
+        isDialogOpen={isDialogOpen}
+        setIsDialogOpen={setIsDialogOpen}
+        handleClickDelete={handleDeleteBookmark}
+      />
     </div>
   );
 };
@@ -160,24 +250,7 @@ const CommunityPage = () => {
                 내 커뮤니티
               </h2>
               <div className="flex-col space-y-6">
-                {['주문/배송조회', '주문/배송조회', '주문/배송조회'].map(
-                  (item, i) => (
-                    <div
-                      key={i}
-                      className="flex w-full cursor-pointer items-center justify-between"
-                    >
-                      <div className="flex items-center gap-2">
-                        <div className="h-6 w-10 bg-purple-500" />
-                        <span>{item}</span>
-                      </div>
-                      <Star className="h-6 w-6" />
-                    </div>
-                  ),
-                )}
-                <Button variant="ghost" className="w-full">
-                  <span>더보기</span>
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
+                <BookmarkList />
               </div>
             </div>
           </div>
@@ -188,11 +261,6 @@ const CommunityPage = () => {
           {/* Popular Categories */}
           <section className="mb-12">
             <h2 className="mb-6 text-2xl font-semibold">인기 카테고리</h2>
-            {/* <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {popularCategories?.data.content.map((category: Category) => (
-                <CategoryCard key={category?.id} category={category} />
-              ))}
-            </div> */}
             <PopularCategories />
           </section>
 
