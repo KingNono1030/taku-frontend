@@ -241,11 +241,16 @@ export function formatSecondsToISODuration(seconds: number) {
   });
 
   // formatDuration을 사용하여 지속 시간 포맷팅
-  const formattedDuration = formatDuration(duration, {
+  let formattedDuration = formatDuration(duration, {
     format: ['hours', 'minutes', 'seconds'], // 시간, 분, 초만 사용
     zero: false, // 0인 값은 생략
     delimiter: '', // 구분자 없음
   });
+
+  // 'seconds'를 'S'로 변환하고 공백 제거
+  formattedDuration = formattedDuration
+    .replace(/seconds/g, 'S') // 'seconds'를 'S'로 변환
+    .replace(/\s+/g, ''); // 모든 공백 제거
 
   // ISO 8601 형식으로 변환
   return `PT${formattedDuration}`;

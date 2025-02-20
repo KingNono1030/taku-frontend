@@ -303,7 +303,7 @@ export const useRecordShortsWatchTime = ({
   onSuccessCb,
   onErrorCb,
   onSettledCb,
-}: UseEditShortsCommentReplyProps) => {
+}: UseCreateShortsCommentProps) => {
   return useMutation({
     mutationFn: async (requestBody: { viewTime: number; playTime: number }) => {
       // 시청 시간을 ISO 8601 기간 형식으로 변환

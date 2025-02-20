@@ -2,18 +2,24 @@ import { MutableRefObject, useEffect, useRef } from 'react';
 
 import Hls from 'hls.js';
 
+import { useRecordShortsWatchTime } from '@/queries/shorts';
 import useShortsStore from '@/store/shortsStore';
 
 type VideoPlayerProps = {
   src: string;
   type?: 'm3u8' | 'mp4';
+  shortsId: string;
 };
 
-const VideoPlayer = ({ src, type }: VideoPlayerProps) => {
+const VideoPlayer = ({ src, type, shortsId }: VideoPlayerProps) => {
   const videoRef: MutableRefObject<HTMLVideoElement | null> = useRef(null);
 
   const { watchTime, setWatchTime, resetWatchTime, setDurationTime } =
     useShortsStore();
+
+  const { mutate: recordWatchTime } = useRecordShortsWatchTime({
+    shortsId,
+  });
 
   const handleTimeUpdate = () => {
     if (videoRef.current) {
@@ -22,7 +28,10 @@ const VideoPlayer = ({ src, type }: VideoPlayerProps) => {
   };
 
   const handleEnded = () => {
-    console.log('비디오 끝', watchTime);
+    recordWatchTime({
+      playTime: watchTime,
+      viewTime: watchTime,
+    });
   };
 
   const handleLoadedMetadata = () => {

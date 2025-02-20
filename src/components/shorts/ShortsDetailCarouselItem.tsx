@@ -41,8 +41,9 @@ const ShortsDetailCarouselItem = ({
       <AspectRatio ratio={9 / 14}>
         <div className="relative h-full w-full overflow-hidden rounded-lg">
           <VideoPlayer
-            src={shortsDetailData?.m3u8_url ? shortsDetailData?.m3u8_url : ''}
+            src={shortsDetailData?.m3u8_url ?? ''}
             type="m3u8"
+            shortsId={shortsDetailData?.shorts_id ?? ''}
           />
           <div className="absolute bottom-20 left-0 z-10 bg-[#00000000] px-4 py-1 text-white [text-shadow:_0_1px_0_rgb(0_0_0_/_40%)]">
             <div>

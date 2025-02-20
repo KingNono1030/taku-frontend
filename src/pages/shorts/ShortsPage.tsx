@@ -14,6 +14,7 @@ import {
   CarouselItem,
 } from '@/components/ui/carousel';
 import { testAxios } from '@/lib/axiosInstance';
+import { useRecordShortsWatchTime } from '@/queries/shorts';
 import { getShortsDetail } from '@/services/shorts';
 import useShortsStore from '@/store/shortsStore';
 
@@ -21,7 +22,7 @@ const ShortsPage = () => {
   const [openComments, setOpenComments] = useState(true);
   const [videos, setVideos] = useState<any[]>([]);
 
-  const watchTime = useShortsStore((state) => state.watchTime);
+  const { watchTime, durationTime } = useShortsStore();
 
   const [api, setApi] = useState<CarouselApi>();
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -40,6 +41,11 @@ const ShortsPage = () => {
       queryFn: async () => await getShortsDetail(selectedVideo?.id),
     },
   );
+
+  // 쇼츠 시청시간 보내기
+  const { mutate: recordWatchTime } = useRecordShortsWatchTime({
+    shortsId: selectedVideo?.id ?? '',
+  });
 
   const loadMoreVideos = () => {
     getVedioList().then((res) => {
@@ -132,6 +138,10 @@ const ShortsPage = () => {
     }
     if (!!watchTime && watchTime > 1) {
       console.log('동영상 시청 시간', watchTime);
+      recordWatchTime({
+        playTime: watchTime,
+        viewTime: durationTime,
+      });
     }
 
     refetchShortsDetailData();
