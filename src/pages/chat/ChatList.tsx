@@ -1,35 +1,16 @@
-import { useEffect, useState } from 'react';
-
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { useChat } from '@/hooks/useChat';
-import type {
-  ChatRoom,
-  CommonChatRoomResponse,
-} from '@/types/chat-type/chat.types';
+import type { ChatRoom } from '@/types/chat-type/chat.types';
 
 export const ChatList = () => {
-  const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
   const navigate = useNavigate();
   const { roomId } = useParams();
-  const { getChatRooms } = useChat();
+  const { chatRooms, isChatRoomsLoading } = useChat();
 
-  useEffect(() => {
-    const fetchChatRooms = async () => {
-      try {
-        const response = await getChatRooms(10);
-        const chatRoomResponse: CommonChatRoomResponse = response.data;
-
-        if (chatRoomResponse.success && Array.isArray(chatRoomResponse.data)) {
-          setChatRooms(chatRoomResponse.data);
-        }
-      } catch (error) {
-        console.error('채팅방 목록 조회 실패:', error);
-      }
-    };
-
-    fetchChatRooms();
-  }, []);
+  if (isChatRoomsLoading) {
+    return <div>로딩 중...</div>;
+  }
 
   return (
     <div className="flex min-w-[320px] flex-col border-r border-border/50 bg-card p-6">
@@ -37,7 +18,7 @@ export const ChatList = () => {
         <h2 className="text-xl font-semibold text-foreground">메시지</h2>
       </div>
       <div className="flex-1 space-y-3 overflow-y-auto">
-        {chatRooms.map((room) => (
+        {chatRooms?.data?.map((room: ChatRoom) => (
           <div
             key={room.id}
             onClick={() => navigate(`${room.roomId}`)}
