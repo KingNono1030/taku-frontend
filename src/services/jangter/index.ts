@@ -11,6 +11,8 @@ import {
   // FindUserPurchaseResponse,
   GetJangterRankSuccessResponse,
   UpdateProductRequest,
+  UpdateProductStatusRequest,
+  UpdateProductStatusSuccessResponse,
   UpdateProductSuccessResponse,
   deleteProductSuccessResponse,
   findRecommendedProductSuccessResponse,
@@ -89,6 +91,17 @@ export const getUserPurchase = async (
   const [sortKey, sortWay] = sort.split(',');
   const { data } = await duckuWithAuth.get(
     `/api/user-janger/${userId}/purchase?page=${page}&size=${size}20&sort=${sortKey}%2C${sortWay}`,
+  );
+  return data;
+};
+
+export const updateProductStatus = async (
+  productId: number,
+  requestBody: UpdateProductStatusRequest,
+): Promise<UpdateProductStatusSuccessResponse> => {
+  const { data } = await duckuWithAuth.patch(
+    `api/jangter/${productId}/status`,
+    requestBody,
   );
   return data;
 };
