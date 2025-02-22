@@ -132,3 +132,20 @@ export type JangterProduct = {
 
 export type FindProductItemsSuccessResponse =
   operations['findProductItems']['responses'][200]['content']['*/*'];
+
+/**
+ * path: '/api/user-jangter/{id}/products'
+ */
+
+/**
+ * 유저 장터 상품 구매 목록
+ * @description 유저가 장터에서 구매한 물품의 목록들을 보여줍니다.
+ */
+export type FindUserPurchaseQuery =
+  operations['findUserPurchases']['parameters']['query'];
+
+export type JangterUserPurchase =
+  components['schemas']['UserPurchaseResponseDTO'];
+
+export type FindUserPurchaseResponse =
+  operations['findUserPurchases']['responses'][200]['content']['*/*'];

@@ -8,11 +8,13 @@ import {
   getProductDetail,
   getProductItems,
   getRecommendedProductDetail,
+  getUserPurchase,
   updateProduct,
 } from '@/services/jangter';
 import type {
   CreateProductRequest,
   FindProductItemsQuery,
+  FindUserPurchaseQuery,
   JangterProduct,
   UpdateProductRequest,
 } from '@/types/api/jangter.types';
@@ -133,5 +135,17 @@ export const useProductItems = (
       }
       return lastPage[lastPage.length - 1]?.id;
     },
+  });
+};
+
+export const useUserPurchase = (
+  userId: number,
+  queryParams: FindUserPurchaseQuery,
+) => {
+  return useQuery({
+    queryKey: ['userPurchases', queryParams],
+    queryFn: () => getUserPurchase(userId, queryParams),
+    staleTime: 1000 * 60 * 5, // 5분
+    retry: 2,
   });
 };
