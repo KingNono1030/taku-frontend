@@ -1,4 +1,9 @@
-import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -8,13 +13,17 @@ import {
   getProductDetail,
   getProductItems,
   getRecommendedProductDetail,
+  getUserPurchase,
   updateProduct,
+  updateProductStatus,
 } from '@/services/jangter';
 import type {
   CreateProductRequest,
   FindProductItemsQuery,
+  FindUserPurchaseQuery,
   JangterProduct,
   UpdateProductRequest,
+  UpdateProductStatusRequest,
 } from '@/types/api/jangter.types';
 
 export const useCreateProduct = () => {
@@ -132,6 +141,41 @@ export const useProductItems = (
         return undefined;
       }
       return lastPage[lastPage.length - 1]?.id;
+    },
+  });
+};
+
+export const useUserPurchase = (
+  userId: number,
+  queryParams: FindUserPurchaseQuery,
+) => {
+  return useQuery({
+    queryKey: ['userPurchases', queryParams],
+    queryFn: () => getUserPurchase(userId, queryParams),
+    staleTime: 1000 * 60 * 5, // 5분
+    retry: 2,
+  });
+};
+
+export const useUpdateteProductStatus = (productId: number) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (requestBody: UpdateProductStatusRequest) => {
+      return updateProductStatus(productId, requestBody);
+    },
+    onSuccess: () => {
+      // 요청 성공 시 실행할 로직
+      queryClient.invalidateQueries({
+        queryKey: ['products', productId, 'detail'],
+      });
+    },
+    onError: (error) => {
+      // 요청 실패 시 실행할 로직
+      console.error('Mutation failed:', error);
+    },
+    onSettled: () => {
+      // 요청 완료 후 (성공/실패 관계없이) 실행할 로직
     },
   });
 };

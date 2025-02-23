@@ -1,3 +1,5 @@
+import { ProductStatus } from '@/types/api/jangter.types';
+
 export const CATEGORY_MAP: Record<number, string> = {
   1: '디지털 기기',
   2: '가구/인테리어',
@@ -10,4 +12,10 @@ export const CATEGORY_MAP: Record<number, string> = {
   9: '뷰티/미용',
   10: '도서',
   11: '기타 중고물품',
+};
+
+export const STATUS_MAP: Record<ProductStatus, string> = {
+  FOR_SALE: '판매중',
+  RESERVED: '예약중',
+  SOLD_OUT: '판매 완료',
 };

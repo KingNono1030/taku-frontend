@@ -31,6 +31,8 @@ export type CreateProductSuccessResponse =
  * @description 덕후 장터 판매글 상세 조회
  */
 
+type ProductStatus = 'FOR_SALE' | 'RESERVED' | 'SOLD_OUT';
+
 type FindProductDetailSuccessResponse =
   operations['findProductDetail']['responses'][200]['content']['*/*'];
 
@@ -75,6 +77,20 @@ export type deleteProductSuccessResponse =
 export type RecommendedProduct = components['schemas']['RecommendProduct'];
 export type findRecommendedProductSuccessResponse =
   operations['recommendProduct']['responses'][200]['content']['*/*'];
+
+/**
+ * path: '/api/jangter/{productId}/status'
+ */
+
+/**
+ * 상품 상태 변경
+ * @description 상품의 상태를 변경합니다 (판매중 -> 예약중 -> 판매완료)
+ */
+
+export type UpdateProductStatusRequest =
+  operations['updateProductStatus']['requestBody']['content']['application/json'];
+export type UpdateProductStatusSuccessResponse =
+  operations['updateProductStatus']['responses'][200]['content']['*/*'];
 
 /**
  * path: '/api/itemCategory'
@@ -132,3 +148,20 @@ export type JangterProduct = {
 
 export type FindProductItemsSuccessResponse =
   operations['findProductItems']['responses'][200]['content']['*/*'];
+
+/**
+ * path: '/api/user-jangter/{id}/products'
+ */
+
+/**
+ * 유저 장터 상품 구매 목록
+ * @description 유저가 장터에서 구매한 물품의 목록들을 보여줍니다.
+ */
+export type FindUserPurchaseQuery =
+  operations['findUserPurchases']['parameters']['query'];
+
+export type JangterUserPurchase =
+  components['schemas']['UserPurchaseResponseDTO'];
+
+export type FindUserPurchaseResponse =
+  operations['findUserPurchases']['responses'][200]['content']['*/*'];
