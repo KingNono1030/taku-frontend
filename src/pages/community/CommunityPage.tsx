@@ -86,8 +86,8 @@ const BookmarkList = () => {
     navigate(`/community/${categoryId}`);
   };
 
-  const handleDeleteDialogOpen = (bookmarkId: number) => {
-    setBookmarkId(bookmarkId);
+  const handleDeleteDialogOpen = (categoryId: number) => {
+    setBookmarkId(categoryId);
     setIsDialogOpen(true);
   };
 
@@ -116,7 +116,7 @@ const BookmarkList = () => {
         >
           <div
             className="flex cursor-pointer items-center gap-2"
-            onClick={() => handleMoveToCategory(item.bookmarkId)}
+            onClick={() => handleMoveToCategory(item.categoryId)}
           >
             <Avatar className="rounded-xl">
               <AvatarImage
@@ -140,7 +140,7 @@ const BookmarkList = () => {
             variant={'ghost'}
             size="icon"
             className="[&_svg]:size-6"
-            onClick={() => handleDeleteDialogOpen(item.bookmarkId)}
+            onClick={() => handleDeleteDialogOpen(item.categoryId)}
           >
             <Bookmark fill={'#EAB308'} />
           </Button>

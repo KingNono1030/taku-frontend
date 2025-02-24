@@ -5,6 +5,7 @@ import {
   createCommunityCategory,
   createCommunityComment,
   createCommunityDetail,
+  deleteCommunityBookmark,
   deleteCommunityComment,
   deleteCommunityDetail,
   getCommunityBookmark,
@@ -367,7 +368,7 @@ export const useDeleteCommunityBookmark = ({
 }: CreateBookmarkParam) => {
   return useMutation({
     mutationFn: async () => {
-      return createCommunityBookmark(categoryId);
+      return deleteCommunityBookmark(categoryId);
     },
     onSuccess: (data) => {
       console.log('북마크 삭제 성공:', data);
