@@ -75,27 +75,31 @@ export function RHFUpload({
     <Controller
       name={name}
       control={control}
-      render={({ field, fieldState: { error } }) => (
-        <Upload
-          multiple={multiple}
-          accept={{ 'image/*': [] }}
-          files={multiple ? field.value : undefined}
-          file={!multiple ? field.value : undefined}
-          error={!!error}
-          disabled={!!error}
-          helperText={
-            (!!error || helperText) && (
-              <FormMessage>{error ? error?.message : helperText}</FormMessage>
-            )
-          }
-          {...(deleteImageListName && {
-            imageUrlList: imageUrlList, // 수정 폼에서 preview로 보여줄 URL 리스트
-            onDeleteImageUrl: handleDeleteImageUrl, // 기존 이미지 삭제 요청 함수
-            deleteImageUrlList: deleteImageUrlList,
-          })}
-          {...other}
-        />
-      )}
+      render={({ field, fieldState: { error } }) => {
+        console.log('field', field);
+
+        return (
+          <Upload
+            multiple={multiple}
+            accept={{ 'image/*': [] }}
+            files={multiple ? field.value : undefined}
+            file={!multiple ? field.value : undefined}
+            error={!!error}
+            disabled={!!error}
+            helperText={
+              (!!error || helperText) && (
+                <FormMessage>{error ? error?.message : helperText}</FormMessage>
+              )
+            }
+            {...(deleteImageListName && {
+              imageUrlList: imageUrlList, // 수정 폼에서 preview로 보여줄 URL 리스트
+              onDeleteImageUrl: handleDeleteImageUrl, // 기존 이미지 삭제 요청 함수
+              deleteImageUrlList: deleteImageUrlList,
+            })}
+            {...other}
+          />
+        );
+      }}
     />
   );
 }

@@ -3,7 +3,6 @@ import ducku, {
   duckuWithoutAuth,
   testAxios,
 } from '@/lib/axiosInstance';
-import { convertDataToFormData } from '@/lib/utils';
 import {
   CreatePostQueryRequest,
   UpdatePostQueryRequest,
@@ -31,11 +30,9 @@ export const getCommunityDetail = async (postId: string) => {
 export const createCommunityDetail = async (
   requestBody: CreatePostQueryRequest,
 ) => {
-  const requestFormData = convertDataToFormData(requestBody);
-
   const { data } = await duckuWithAuth.post(
     '/api/community/posts',
-    requestFormData,
+    requestBody,
     {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -158,10 +155,18 @@ export const createCommunityCategory = async (requestBody: {
 };
 
 /**
+ * 커뮤니티 카테고리 북마크 조회 서비스
+ */
+export const getCommunityBookmark = async () => {
+  const { data } = await testAxios.get('/api/category-bookmark');
+  return data;
+};
+
+/**
  * 커뮤니티 카테고리 북마크 등록 서비스
  */
 export const createCommunityBookmark = async (categoryId: string) => {
-  const { data } = await testAxios.post(`/api/category/${categoryId}/bookmark`);
+  const { data } = await testAxios.post(`/api/category-bookmark/${categoryId}`);
   return data;
 };
 
@@ -170,7 +175,17 @@ export const createCommunityBookmark = async (categoryId: string) => {
  */
 export const deleteCommunityBookmark = async (categoryId: string) => {
   const { data } = await testAxios.delete(
-    `/api/category/${categoryId}/bookmark`,
+    `/api/category-bookmark/${categoryId}`,
+  );
+  return data;
+};
+
+/**
+ * 인기 커뮤니티 게시글 조회 서비스
+ */
+export const getPopularCommunityPosts = async (periodType: string) => {
+  const { data } = await ducku.get(
+    `/api/community/posts/popular?periodType=${periodType}`,
   );
   return data;
 };
