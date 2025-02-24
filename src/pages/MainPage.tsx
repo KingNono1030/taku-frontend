@@ -192,7 +192,7 @@ const MainPage = () => {
                   <p>{post?.userNickname}</p>
                 </div>
               </div>
-              <div className="flex h-24 w-40 items-center justify-center rounded-xl bg-gray-200">
+              <div className="flex h-[120px] w-40 items-center justify-center overflow-hidden rounded-xl bg-gray-200">
                 {post?.imageUrl ? (
                   <img
                     src={post?.imageUrl}

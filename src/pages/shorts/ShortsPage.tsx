@@ -149,7 +149,6 @@ const ShortsPage = () => {
 
   return (
     <div className="h-full bg-stone-900">
-      <h1 className="p-4 text-center text-4xl text-white">{watchTime}</h1>
       <div className={'flex w-full justify-center gap-20 p-4'}>
         <section className="inset-x-0 flex w-[600px] items-end gap-4 text-white">
           {/* video layout */}
