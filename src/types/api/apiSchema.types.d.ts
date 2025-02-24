@@ -1557,6 +1557,7 @@ export interface components {
       viewCount?: number;
       categoryImages?: components['schemas']['CategoryImageDTO'][];
       categoryGenres?: components['schemas']['CategoryGenreDTO'][];
+      bookmark?: boolean;
     };
     RequestCreateProfanityDTO: {
       keyword: string;
@@ -1737,9 +1738,9 @@ export interface components {
     PageImplUserPurchaseResponseDTO: {
       content?: components['schemas']['UserPurchaseResponseDTO'][];
       pageable?: components['schemas']['PageableObject'];
-      last?: boolean;
       /** Format: int64 */
       totalElements?: number;
+      last?: boolean;
       /** Format: int32 */
       totalPages?: number;
       /** Format: int32 */
@@ -2724,11 +2725,11 @@ export interface components {
       /** Format: int32 */
       number?: number;
       sort?: components['schemas']['SortObject'];
-      pageable?: components['schemas']['PageableObject'];
       first?: boolean;
-      last?: boolean;
+      pageable?: components['schemas']['PageableObject'];
       /** Format: int32 */
       numberOfElements?: number;
+      last?: boolean;
       empty?: boolean;
     };
     ResponseCategorySeachDTO: {
@@ -2845,11 +2846,11 @@ export interface components {
       /** Format: int32 */
       number?: number;
       sort?: components['schemas']['SortObject'];
-      pageable?: components['schemas']['PageableObject'];
       first?: boolean;
-      last?: boolean;
+      pageable?: components['schemas']['PageableObject'];
       /** Format: int32 */
       numberOfElements?: number;
+      last?: boolean;
       empty?: boolean;
     };
     ProfannityResponseDTO: {
