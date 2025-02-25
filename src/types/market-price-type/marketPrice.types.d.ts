@@ -21,6 +21,7 @@ export interface MarketPriceSearch {
   priceGraph?: PriceGraph;
   weeklyStats?: WeeklyStats;
   similarProducts?: SimilarProduct[];
+  averageSoldPrice: number;
 }
 
 // 시세 그래프 응답 타입

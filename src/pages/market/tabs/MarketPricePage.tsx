@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
-import { AxiosError } from 'axios';
 import { subMonths } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { Search } from 'lucide-react';
@@ -13,11 +12,7 @@ import { PriceList } from '@/components/market-price/PriceList';
 import { RecentlyTradedProduct } from '@/components/market-price/RecentlyTradedProduct';
 import { RelatedProduct } from '@/components/market-price/RelatedProduct';
 import { Input } from '@/components/ui/input';
-import { ducku } from '@/lib/axiosInstance';
-import {
-  MarketPriceProps,
-  MarketPriceSearchResponse,
-} from '@/types/market-price-type/marketPrice.types';
+import { useMarketPriceSearch } from '@/queries/marketprice';
 
 const MarketPricePage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -26,11 +21,12 @@ const MarketPricePage = () => {
 
   const [startDate, setStartDate] = useState<Date>(oneYearAgo);
   const [endDate, setEndDate] = useState<Date>(today);
-  const [priceData, setPriceData] = useState<MarketPriceSearchResponse | null>(
-    null,
-  );
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+
+  const {
+    data: priceData,
+    isLoading,
+    error,
+  } = useMarketPriceSearch(searchParams.get('keyword'), startDate, endDate);
 
   const handleSearch = (
     e:
@@ -69,62 +65,8 @@ const MarketPricePage = () => {
     }
   };
 
-  const fetchMarketPriceSearch = async (params: MarketPriceProps) => {
-    try {
-      const response = await ducku.get<MarketPriceSearchResponse>(
-        '/api/market-price/search',
-        { params },
-      );
-      return response.data;
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        console.error('Full error:', error.response);
-        if (error.response?.status === 404) {
-          throw new Error('API 엔드포인트를 찾을 수 없습니다.');
-        }
-        throw new Error(
-          error.response?.data?.message ||
-            '시세 정보를 불러오는데 실패했습니다.',
-        );
-      }
-      throw error;
-    }
-  };
-
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      const keyword = searchParams.get('keyword') || '원피스';
-      const params: MarketPriceProps = {
-        keyword: keyword,
-        startDate: startDate.toISOString().split('T')[0],
-        endDate: endDate.toISOString().split('T')[0],
-        displayOption: 'ALL',
-        direction: 'ASC',
-        page: 0,
-        size: 10,
-      };
-
-      try {
-        setIsLoading(true);
-        const result = await fetchMarketPriceSearch(params);
-        setPriceData(result);
-      } catch (error) {
-        if (error instanceof Error) {
-          setError(error.message);
-        } else {
-          setError('알 수 없는 에러가 발생했습니다.');
-        }
-        console.error('Error fetching market price:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchInitialData();
-  }, [startDate, endDate, searchParams]);
-
   if (isLoading) return <div>로딩 중...</div>;
-  if (error) return <div>에러: {error}</div>;
+  if (error) return <div>에러: {(error as Error).message}</div>;
   if (!priceData || !priceData.data) return null;
 
   const defaultWeeklyStats = {
