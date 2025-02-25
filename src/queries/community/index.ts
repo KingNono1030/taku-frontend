@@ -5,10 +5,13 @@ import {
   createCommunityCategory,
   createCommunityComment,
   createCommunityDetail,
+  deleteCommunityBookmark,
   deleteCommunityComment,
   deleteCommunityDetail,
+  getCommunityBookmark,
   getCommunityDetail,
   getCommunityGenres,
+  getPopularCommunityPosts,
   likeCommunityDetail,
   updateCommunityComment,
   updateCommunityDetail,
@@ -310,6 +313,16 @@ export const useCreateCommunityCategory = ({
   });
 };
 
+/**
+ * 커뮤니티 북마크 조회 커스텀 훅
+ */
+export const useCommunityBookmark = () => {
+  return useQuery({
+    queryKey: ['communityBookmark'],
+    queryFn: async () => await getCommunityBookmark(),
+  });
+};
+
 type CreateBookmarkParam = {
   categoryId: string;
   onSuccessCb?: () => void;
@@ -355,7 +368,7 @@ export const useDeleteCommunityBookmark = ({
 }: CreateBookmarkParam) => {
   return useMutation({
     mutationFn: async () => {
-      return createCommunityBookmark(categoryId);
+      return deleteCommunityBookmark(categoryId);
     },
     onSuccess: (data) => {
       console.log('북마크 삭제 성공:', data);
@@ -367,6 +380,22 @@ export const useDeleteCommunityBookmark = ({
     },
     onSettled: () => {
       onSettledCb && onSettledCb();
+    },
+  });
+};
+
+/**
+ * 인기 커뮤니티 게시글 조회 커스텀 훅
+ */
+export const usePopularCommunityPosts = ({
+  periodType,
+}: {
+  periodType: string;
+}) => {
+  return useQuery({
+    queryKey: ['popularCommunityPosts', periodType],
+    queryFn: async () => {
+      return await getPopularCommunityPosts(periodType);
     },
   });
 };
