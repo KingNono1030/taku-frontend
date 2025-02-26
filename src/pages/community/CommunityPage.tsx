@@ -93,8 +93,9 @@ const BookmarkList = () => {
 
   const handleDeleteBookmark = () => {
     if (bookmarkId) {
-      deleteCommunityBookmark(bookmarkId.toString());
-      refetch();
+      deleteCommunityBookmark(bookmarkId.toString()).then(() => {
+        refetch();
+      });
     }
     setIsDialogOpen(false);
   };
