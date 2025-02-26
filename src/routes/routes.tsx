@@ -79,6 +79,22 @@ export const routes = [
 
       // 채팅 관련 라우트
       {
+        path: '/chat',
+        element: <ChatPage />,
+        children: [
+          {
+            path: ':roomId',
+            element: (
+              <Suspense
+                fallback={<LoadingScreen message="채팅방 불러오는 중" />}
+              >
+                <ChatRoom />
+              </Suspense>
+            ),
+          },
+        ],
+      },
+      {
         path: '/market/:id/chat',
         element: <ChatPage />,
         children: [

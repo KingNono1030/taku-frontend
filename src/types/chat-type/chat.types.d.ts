@@ -31,3 +31,10 @@ export interface Message {
   timestamp: string;
   isMine: boolean;
 }
+
+// 안읽은 채팅 응답 타입
+export interface UnreadChatResponse {
+  success: boolean;
+  data: number;
+  error: ExceptionDto | null;
+}
