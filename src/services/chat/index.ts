@@ -1,5 +1,8 @@
 import { duckuWithAuth } from '@/lib/axiosInstance';
-import type { CommonChatRoomResponse } from '@/types/chat-type/chat.types';
+import type {
+  CommonChatRoomResponse,
+  UnreadChatResponse,
+} from '@/types/chat-type/chat.types';
 
 // 채팅방 목록 조회
 export const getChatRooms = async () => {
@@ -18,6 +21,14 @@ export const createChatRoom = async (articleId: number) => {
         articleId: articleId,
       },
     },
+  );
+  return response.data;
+};
+
+// 안읽은 전체 메세지 개수
+export const getUnreadTotal = async () => {
+  const response = await duckuWithAuth.get<UnreadChatResponse>(
+    '/api/chat/rooms/unread/total',
   );
   return response.data;
 };
