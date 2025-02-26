@@ -19,10 +19,6 @@ export interface ChatRoom {
   buyerId: number;
   /** Format: int64 */
   sellerId: number;
-  /** Format: int64 */
-  lastMessageId?: number;
-  /** Format: int64 */
-  unreadCount?: number;
   /** Format: date-time */
   createdAt: number[];
 }
