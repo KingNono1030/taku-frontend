@@ -24,14 +24,14 @@ export const testAxios = axios.create({
 });
 
 // TODO: 회원가입 오류 수정 시 토큰으로 변경
-// class TokenError extends Error {
-//   constructor() {
-//     super('인증 토큰이 없습니다.');
-//     this.name = 'TokenError';
-//   }
-// }
+class TokenError extends Error {
+  constructor() {
+    super('인증 토큰이 없습니다.');
+    this.name = 'TokenError';
+  }
+}
 
-// const getToken = () => useUserStore.getState().token;
+const getToken = () => useUserStore.getState().token;
 
 const duckuWithAuth = axios.create({
   baseURL: 'https://api-duckwho.xyz',
@@ -42,13 +42,13 @@ const duckuWithAuth = axios.create({
 
 duckuWithAuth.interceptors.request.use((config) => {
   // TODO: 회원가입 오류 수정 시 토큰으로 변경
-  // const token = getToken();
-  // if (!token) {
-  //   throw new TokenError();
-  // }
+  const token = getToken();
+  if (!token) {
+    throw new TokenError();
+  }
 
-  // config.headers.Authorization = `Bearer ${token}`;
-  config.headers.Authorization = `Bearer ${TEST_ACCESS_TOKEN}`;
+  config.headers.Authorization = `Bearer ${token}`;
+  // config.headers.Authorization = `Bearer ${TEST_ACCESS_TOKEN}`;
   return config;
 });
 
@@ -74,8 +74,9 @@ const duckuWithoutAuth = axios.create({
 });
 
 duckuWithoutAuth.interceptors.request.use((config) => {
-  // const token = getToken(); //TODO: test 작업 중
-  config.headers.Authorization = `Bearer ${TEST_ACCESS_TOKEN}`;
+  const token = getToken(); //TODO: test 작업 중
+  config.headers.Authorization = `Bearer ${token}`;
+  // config.headers.Authorization = `Bearer ${TEST_ACCESS_TOKEN}`;
   return config;
 });
 
