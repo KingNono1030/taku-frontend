@@ -1,59 +1,47 @@
-import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-import { duckuWithAuth } from '@/lib/axiosInstance';
+import { useChatRooms } from '@/queries/chat';
+import { createChatRoom } from '@/services/chat';
 import useUserStore from '@/store/userStore';
-import type { CommonChatRoomResponse } from '@/types/chat-type/chat.types';
 
 export const useChat = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
   const user = useUserStore((state) => state.user);
-
-  if (!user) {
-    return {
-      chatRooms: null,
-      isChatRoomsLoading: false,
-      handleChat: () => {
-        console.error('User not logged in');
-      },
-    };
-  }
-
-  const { data: chatRooms, isLoading: isChatRoomsLoading } = useQuery({
-    queryKey: ['chatRooms', 10],
-    queryFn: async () => {
-      const response = await duckuWithAuth.get<CommonChatRoomResponse>(
-        '/api/chat/rooms',
-        {
-          params: {
-            userId: 10,
-          },
-        },
-      );
-      return response.data;
-    },
-  });
+  const token = useUserStore((state) => state.token);
+  const { data: chatRooms, isLoading: isChatRoomsLoading } = useChatRooms();
 
   const handleChat = async (productId: number, sellerId: number) => {
+    if (!user || !token) {
+      console.error('로그인이 필요합니다');
+      navigate('/login');
+      return;
+    }
+
     if (sellerId) {
       try {
-        await duckuWithAuth.post('/api/chat/rooms', {
-          articleId: productId,
-          buyerId: 10,
-          sellerId: sellerId,
-        });
-        navigate(`chat/${id}`);
-      } catch (error) {
-        if (error instanceof AxiosError && error.response?.status === 409) {
-          navigate(`chat/${id}`);
-          return;
+        const response = await createChatRoom(productId);
+        if (response.success && response.data) {
+          navigate('chat');
         }
-        console.error('채팅방 생성 실패:', error);
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          if (error.response?.status === 409) {
+            navigate(`chat`);
+          } else if (error.response?.status === 401) {
+            console.error('로그인이 필요합니다');
+            navigate('/login');
+          }
+        }
+        console.error('채팅방 생성 중 오류 발생:', error);
       }
     }
   };
 
-  return { chatRooms, isChatRoomsLoading, handleChat };
+  return {
+    chatRooms,
+    isChatRoomsLoading,
+    handleChat,
+    isLoggedIn: !!user && !!token,
+  };
 };
