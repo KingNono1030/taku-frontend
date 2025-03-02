@@ -21,6 +21,13 @@ export interface ChatRoom {
   sellerId: number;
   /** Format: date-time */
   createdAt: number[];
+  buyerNickname: string;
+  buyerProfileImage: string;
+  sellerNickname: string;
+  sellerProfileImage: string;
+  lastMessage: string;
+  lastMessageTime: string;
+  lastMessageSenderId: number;
 }
 
 // 채팅 메시지 타입
