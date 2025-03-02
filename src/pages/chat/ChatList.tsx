@@ -3,6 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useChat } from '@/hooks/useChat';
 import type { ChatRoom } from '@/types/chat-type/chat.types';
 
+import { ChatRoomItem } from './ChatRoomItem';
+
 export const ChatList = () => {
   const navigate = useNavigate();
   const { roomId } = useParams();
@@ -19,32 +21,12 @@ export const ChatList = () => {
       </div>
       <div className="flex-1 space-y-3 overflow-y-auto">
         {chatRooms?.data?.map((room: ChatRoom) => (
-          <div
+          <ChatRoomItem
             key={room.id}
-            onClick={() => navigate(`${room.roomId}`)}
-            className={`cursor-pointer rounded-2xl p-4 transition-all ${
-              room.roomId === roomId ? 'bg-primary/10' : 'hover:bg-primary/5'
-            }`}
-          >
-            <div className="flex items-center space-x-3">
-              <div className="h-12 w-12 rounded-full bg-primary/20 ring-1 ring-primary/50" />
-              <div className="flex-1 overflow-hidden">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-medium text-foreground">
-                    채팅방 {room.id}
-                  </h3>
-                  <span className="text-xs text-muted-foreground">
-                    {room.createdAt[0]}/{room.createdAt[1]}/{room.createdAt[2]}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <p className="mt-1 truncate text-sm text-muted-foreground">
-                    상품 ID: {room.articleId}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+            room={room}
+            isActive={room.roomId === roomId}
+            onSelect={() => navigate(`${room.roomId}`)}
+          />
         ))}
       </div>
     </div>
