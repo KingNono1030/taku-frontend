@@ -2,7 +2,13 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-import { createChatRoom, getChatRooms, getUnreadTotal } from '@/services/chat';
+import {
+  createChatRoom,
+  getChatRoom,
+  getChatRooms,
+  getRoomUnreadCount,
+  getUnreadTotal,
+} from '@/services/chat';
 import useUserStore from '@/store/userStore';
 
 // 채팅방 목록 조회 query hook
@@ -51,5 +57,29 @@ export const useUnreadTotal = () => {
     queryKey: ['unreadTotal'],
     queryFn: getUnreadTotal,
     enabled: !!user && !!token,
+  });
+};
+
+// 채팅방 별 안읽은 메세지 수 query hook
+export const useRoomUnreadCount = (roomId: string) => {
+  const user = useUserStore((state) => state.user);
+  const token = useUserStore((state) => state.token);
+
+  return useQuery({
+    queryKey: ['roomUnread', roomId],
+    queryFn: () => getRoomUnreadCount(roomId),
+    enabled: !!user && !!token && !!roomId,
+  });
+};
+
+// 특정 채팅방 조회 query hook
+export const useChatRoom = (roomId: string) => {
+  const user = useUserStore((state) => state.user);
+  const token = useUserStore((state) => state.token);
+
+  return useQuery({
+    queryKey: ['chatRoom', roomId],
+    queryFn: () => getChatRoom(roomId),
+    enabled: !!user && !!token && !!roomId,
   });
 };

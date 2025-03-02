@@ -32,3 +32,19 @@ export const getUnreadTotal = async () => {
   );
   return response.data;
 };
+
+// 채팅방 별 안읽은 메세지 수
+export const getRoomUnreadCount = async (roomId: string) => {
+  const response = await duckuWithAuth.get<UnreadChatResponse>(
+    `/api/chat/rooms/${roomId}/unread`,
+  );
+  return response.data;
+};
+
+// 특정 채팅방 조회
+export const getChatRoom = async (roomId: string) => {
+  const response = await duckuWithAuth.get<CommonChatRoomResponse>(
+    `/api/chat/rooms/${roomId}`,
+  );
+  return response.data;
+};
