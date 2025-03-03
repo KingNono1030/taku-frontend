@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 
 import PaginationComponent from '@/components/custom-pagination/CustomPagination';
 import { RHFUploadAvatar } from '@/components/hook-form/RhfUpload';
+import { JangterBookMarkCard } from '@/components/market/JangterBookMarkCard';
 import { JangterPurchaseCard } from '@/components/market/JangterPurchaseCard';
 import {
   AlertDialog,
@@ -35,12 +36,16 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { CATEGORY_MAP } from '@/constants/jangter';
 import { cn } from '@/lib/utils';
-import { useUserPurchase } from '@/queries/jangter';
+import { useJangterBookmarks, useUserPurchase } from '@/queries/jangter';
 import { useDeleteUser, useEditUser } from '@/queries/user';
 import { checkNickname } from '@/services/user';
 import useUserStore from '@/store/userStore';
-import { FindUserPurchaseQuery } from '@/types/api/jangter.types';
+import {
+  FindUserPurchaseQuery,
+  GetBookmarkListQuery,
+} from '@/types/api/jangter.types';
 
 const MyPage = () => {
   const user = useUserStore((state) => state.user);
@@ -64,6 +69,14 @@ const MyPage = () => {
       sort: 'id,desc',
     },
   );
+  const [bookmarksPage, setBookmarksPage] = useState(0);
+  const [bookmarksQueries, setBookmarksQueries] =
+    useState<GetBookmarkListQuery>({
+      categoryId: 0,
+      page: bookmarksPage,
+      size: 20,
+      sort: ['createdAt', 'DESC'],
+    });
 
   const onFilterSubmit = (data: { sortKey: string; sortOrder: string }) => {
     const newSort = `${data.sortKey},${data.sortOrder}`;
@@ -73,6 +86,10 @@ const MyPage = () => {
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
+  const { data: jangterBookmarksData } = useJangterBookmarks(
+    bookmarksQueries as GetBookmarkListQuery,
+  );
+  const jangterBookmarks = jangterBookmarksData?.data?.content;
   const { data: userPurchasesData } = useUserPurchase(
     user!.user_id,
     purchasequeries as FindUserPurchaseQuery,
@@ -182,7 +199,7 @@ const MyPage = () => {
               {isEditing ? (
                 <RHFUploadAvatar
                   thumbnail
-                  name="profileImage"
+                  name="image"
                   maxSize={3145728}
                   onDrop={handleDropSingleFile}
                 />
@@ -239,14 +256,7 @@ const MyPage = () => {
               회원 탈퇴
             </Button>
             {isEditing && (
-              <Button
-                type="submit"
-                form="editUserForm"
-                onClick={() => {
-                  setIsEditing(false);
-                  // TODO: API 호출
-                }}
-              >
+              <Button type="submit" form="editUserForm">
                 저장하기
               </Button>
             )}
@@ -288,9 +298,10 @@ const MyPage = () => {
             </p>
           </div>
           <Tabs defaultValue="selling" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="selling">구매글</TabsTrigger>
               <TabsTrigger value="buying">판매글</TabsTrigger>
+              <TabsTrigger value="bookmark">북마크</TabsTrigger>
             </TabsList>
 
             <TabsContent value="selling" className="space-y-6">
@@ -372,6 +383,101 @@ const MyPage = () => {
               <div className="rounded-lg border p-8 text-center text-gray-500">
                 작성한 판매글이 없습니다.
               </div>
+            </TabsContent>
+
+            <TabsContent value="bookmark" className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-medium">북마크 목록</h2>
+                <form
+                  onSubmit={handleSubmit(onFilterSubmit)}
+                  className="space-y-6"
+                >
+                  <div className="flex gap-2">
+                    <Select
+                      value={String(bookmarksQueries?.categoryId)}
+                      onValueChange={(value) => {
+                        setBookmarksQueries((prev) => ({
+                          ...prev,
+                          categoryId: Number(value),
+                        }));
+                      }}
+                    >
+                      <SelectTrigger className="w-[140px]">
+                        <SelectValue placeholder="정렬" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value={'0'}>{'전체 카테고리'}</SelectItem>
+                        {Object.keys(CATEGORY_MAP).map((key) => (
+                          <SelectItem key={key} value={key}>
+                            {CATEGORY_MAP[Number(key)]}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Select
+                      value={bookmarksQueries?.sort?.[0]}
+                      onValueChange={(value) => {
+                        const newSort = bookmarksQueries?.sort as string[];
+                        newSort[0] = value;
+                        setBookmarksQueries((prev) => ({
+                          ...prev,
+                          sort: newSort,
+                        }));
+                      }}
+                    >
+                      <SelectTrigger className="w-[140px]">
+                        <SelectValue placeholder="정렬" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="createdAt">날짜순</SelectItem>
+                        <SelectItem value="title">제목순</SelectItem>
+                        <SelectItem value="category">카테고리순</SelectItem>
+                        <SelectItem value="price">가격순</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Select
+                      value={bookmarksQueries?.sort?.[1]}
+                      onValueChange={(value) => {
+                        const newSort = bookmarksQueries?.sort as string[];
+                        newSort[1] = value;
+                        setBookmarksQueries((prev) => ({
+                          ...prev,
+                          sort: newSort,
+                        }));
+                      }}
+                    >
+                      <SelectTrigger className="w-[140px]">
+                        <SelectValue placeholder="정렬 기준" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="DESC">내림차순</SelectItem>
+                        <SelectItem value="ASC">오름차순</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </form>
+              </div>
+
+              {jangterBookmarks ? (
+                <div className="flex flex-col gap-3 rounded-lg border p-8 text-center text-gray-500">
+                  {jangterBookmarks.map((purchase) => (
+                    <JangterBookMarkCard data={purchase} />
+                  ))}
+                  <div className="mt-8">
+                    <PaginationComponent
+                      totalPages={
+                        jangterBookmarksData!.data!.totalPages as number
+                      }
+                      setCurrentPage={setBookmarksPage}
+                      currentPage={bookmarksQueries!.page as number}
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="rounded-lg border p-8 text-center text-gray-500">
+                  북마크 등록된 상품이 없습니다.
+                </div>
+              )}
             </TabsContent>
           </Tabs>
         </TabsContent>

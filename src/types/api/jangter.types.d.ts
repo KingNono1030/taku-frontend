@@ -165,3 +165,17 @@ export type JangterUserPurchase =
 
 export type FindUserPurchaseResponse =
   operations['findUserPurchases']['responses'][200]['content']['*/*'];
+
+/**
+ * path: '/api/bookmarks/jangter'
+ */
+
+/**
+ * 장터 북마크 목록 조회
+ * @description 사용자의 장터 북마크 목록을 페이징하여 조회합니다. categoryId가 0인 경우 전체 목록을 조회합니다.
+ */
+export type GetBookmarkListQuery =
+  operations['getBookmarkList']['parameters']['query'];
+
+export type GetBookmarkListResponse =
+  operations['getBookmarkList']['responses'][200]['content']['*/*'];

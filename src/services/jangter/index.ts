@@ -7,6 +7,8 @@ import {
   FindProductItemsSuccessResponse,
   FindUserPurchaseQuery,
   FindUserPurchaseResponse,
+  GetBookmarkListQuery,
+  GetBookmarkListResponse,
   // FindUserPurchaseQuery,
   // FindUserPurchaseResponse,
   GetJangterRankSuccessResponse,
@@ -102,6 +104,38 @@ export const updateProductStatus = async (
   const { data } = await duckuWithAuth.patch(
     `api/jangter/${productId}/status`,
     requestBody,
+  );
+  return data;
+};
+
+export const getJangterBookmarks = async (
+  queryParams: GetBookmarkListQuery,
+): Promise<GetBookmarkListResponse> => {
+  const { categoryId, page, size, sort } = queryParams as {
+    categoryId: number;
+    page: number;
+    size: number;
+    sort: string[];
+  };
+  const [sortKey, sortWay] = sort;
+  const { data } = await duckuWithAuth.get(
+    `/api/bookmarks/jangter?categoryId=${categoryId}&page=${page}&size=${size}&sort=${sortKey}%2C${sortWay}`,
+  );
+  return data;
+};
+
+export const addJangterBookmarks = async (productId: number) => {
+  const { data } = await duckuWithAuth.post(
+    `/api/bookmarks/jangter?productId=${productId}`,
+    {
+      productId,
+    },
+  );
+  return data;
+};
+export const deleteJangterBookmarks = async (productId: number) => {
+  const { data } = await duckuWithAuth.delete(
+    `/api/bookmarks/jangter/${productId}`,
   );
   return data;
 };
