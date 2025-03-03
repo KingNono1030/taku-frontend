@@ -24,7 +24,7 @@ const decode = (data: string): string => {
 // 커스텀 스토리지
 const customStorage = {
   getItem: (name: string) => {
-    const str = localStorage.getItem(name);
+    const str = sessionStorage.getItem(name);
     if (!str) return null;
     try {
       return JSON.parse(decode(str));
@@ -33,10 +33,10 @@ const customStorage = {
     }
   },
   setItem: (name: string, value: string) => {
-    localStorage.setItem(name, encode(JSON.stringify(value)));
+    sessionStorage.setItem(name, encode(JSON.stringify(value)));
   },
   removeItem: (name: string) => {
-    localStorage.removeItem(name);
+    sessionStorage.removeItem(name);
   },
 };
 
@@ -55,7 +55,7 @@ const useUserStore = create<UserState>()(
           user: null,
           token: null,
         });
-        localStorage.removeItem('user-storage');
+        sessionStorage.removeItem('user-storage');
       },
 
       isLoggedIn: () => {
