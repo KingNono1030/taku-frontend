@@ -161,6 +161,9 @@ const MainPage = () => {
             <Card
               key={post.id}
               className="flex cursor-pointer items-center justify-between gap-4 rounded-xl p-4 font-bold"
+              onClick={() =>
+                navigate(`/community/${post.categoryId}/${post.id}`)
+              }
             >
               <div className="flex flex-col items-start gap-2">
                 <h3 className="text-sm text-muted-foreground">
