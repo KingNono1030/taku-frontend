@@ -15,6 +15,7 @@ export const RecentlyTradedProduct = ({
     { label: '최고 거래가', value: weeklyStats.highestPrice },
     { label: '최저 거래가', value: weeklyStats.lowestPrice },
   ];
+  console.log('최근 거래된 상품', weeklyStats);
 
   return (
     <div className="space-y-4">

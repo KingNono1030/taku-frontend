@@ -1,37 +1,49 @@
+import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { testAxios } from '@/lib/axiosInstance';
+import { duckuWithAuth } from '@/lib/axiosInstance';
+import useUserStore from '@/store/userStore';
+import type { CommonChatRoomResponse } from '@/types/chat-type/chat.types';
 
 export const useChat = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const user = useUserStore((state) => state.user);
 
-  // 채팅방 목록 조회
-  const getChatRooms = async (userId: number) => {
-    try {
-      const response = await testAxios.get('/api/chat/rooms', {
-        params: {
-          userId: userId,
+  if (!user) {
+    return {
+      chatRooms: null,
+      isChatRoomsLoading: false,
+      handleChat: () => {
+        console.error('User not logged in');
+      },
+    };
+  }
+
+  const { data: chatRooms, isLoading: isChatRoomsLoading } = useQuery({
+    queryKey: ['chatRooms', 10],
+    queryFn: async () => {
+      const response = await duckuWithAuth.get<CommonChatRoomResponse>(
+        '/api/chat/rooms',
+        {
+          params: {
+            userId: 10,
+          },
         },
-      });
-      return response;
-    } catch (error) {
-      console.error('채팅방 조회 실패:', error);
-      throw error;
-    }
-  };
+      );
+      return response.data;
+    },
+  });
 
   const handleChat = async (productId: number, sellerId: number) => {
     if (sellerId) {
       try {
-        // 채팅방 생성
-        await testAxios.post('/api/chat/rooms', {
+        await duckuWithAuth.post('/api/chat/rooms', {
           articleId: productId,
           buyerId: 10,
           sellerId: sellerId,
         });
-
         navigate(`chat/${id}`);
       } catch (error) {
         if (error instanceof AxiosError && error.response?.status === 409) {
@@ -43,5 +55,5 @@ export const useChat = () => {
     }
   };
 
-  return { handleChat, getChatRooms };
+  return { chatRooms, isChatRoomsLoading, handleChat };
 };

@@ -1,25 +1,44 @@
-import { MutableRefObject, useEffect, useRef, useState } from 'react';
+import { MutableRefObject, useEffect, useRef } from 'react';
 
 import Hls from 'hls.js';
+
+import { useRecordShortsWatchTime } from '@/queries/shorts';
+import useShortsStore from '@/store/shortsStore';
 
 type VideoPlayerProps = {
   src: string;
   type?: 'm3u8' | 'mp4';
+  shortsId: string;
 };
 
-const VideoPlayer = ({ src, type }: VideoPlayerProps) => {
+const VideoPlayer = ({ src, type, shortsId }: VideoPlayerProps) => {
   const videoRef: MutableRefObject<HTMLVideoElement | null> = useRef(null);
 
-  const [currentTime, setCurrentTime] = useState(0);
+  const { watchTime, setWatchTime, resetWatchTime, setDurationTime } =
+    useShortsStore();
+
+  const { mutate: recordWatchTime } = useRecordShortsWatchTime({
+    shortsId,
+  });
 
   const handleTimeUpdate = () => {
     if (videoRef.current) {
-      setCurrentTime(videoRef.current.currentTime);
+      setWatchTime(videoRef.current.currentTime);
     }
   };
 
   const handleEnded = () => {
-    console.log('비디오 끝', currentTime);
+    recordWatchTime({
+      playTime: watchTime,
+      viewTime: watchTime,
+    });
+  };
+
+  const handleLoadedMetadata = () => {
+    if (videoRef.current) {
+      console.log('비디오 메타데이터 로드', videoRef.current.duration);
+      setDurationTime(videoRef.current.duration);
+    }
   };
 
   useEffect(() => {
@@ -34,6 +53,8 @@ const VideoPlayer = ({ src, type }: VideoPlayerProps) => {
     const videoElement = videoRef.current;
 
     if (!videoElement) return;
+
+    resetWatchTime();
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -64,6 +85,7 @@ const VideoPlayer = ({ src, type }: VideoPlayerProps) => {
         onTimeUpdate={handleTimeUpdate}
         onEnded={handleEnded}
         ref={videoRef}
+        onLoadedMetadata={handleLoadedMetadata}
         controls
       />
     </div>
@@ -74,6 +96,7 @@ const VideoPlayer = ({ src, type }: VideoPlayerProps) => {
         onTimeUpdate={handleTimeUpdate}
         onEnded={handleEnded}
         ref={videoRef}
+        onLoadedMetadata={handleLoadedMetadata}
         src={src}
         controls
       />

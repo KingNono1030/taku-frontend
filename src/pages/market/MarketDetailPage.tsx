@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import {
   Bookmark,
+  Check,
   EllipsisVertical,
   Heart,
   Loader,
@@ -10,6 +11,7 @@ import {
   Plus,
   Trash2,
 } from 'lucide-react';
+import { useForm } from 'react-hook-form';
 import { Link, useParams } from 'react-router-dom';
 
 import { ProductDetailSkeleton } from '@/components/loading/jangter/ProductDetailSkeleton';
@@ -40,8 +42,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { CATEGORY_MAP } from '@/constants/jangter';
+import { CATEGORY_MAP, STATUS_MAP } from '@/constants/jangter';
 import { useChat } from '@/hooks/useChat';
 import {
   cn,
@@ -54,20 +64,15 @@ import {
   useDeleteProduct,
   useProductDetails,
   useRecommendedProducts,
+  useUpdateteProductStatus,
 } from '@/queries/jangter';
+import useUserStore from '@/store/userStore';
 import type {
-  FindProductDetailSuccessResponse,
+  ProductStatus,
   RecommendedProduct,
+  UpdateProductStatusRequest,
   findRecommendedProductSuccessResponse,
 } from '@/types/api/jangter.types';
-
-type ProductDetail = Exclude<
-  FindProductDetailSuccessResponse['data'],
-  undefined
->;
-interface ProductDetailResponse extends FindProductDetailSuccessResponse {
-  data: ProductDetail;
-}
 
 const MarketDetailPage = () => {
   const { id } = useParams();
@@ -82,17 +87,25 @@ const MarketDetailPage = () => {
     isLoading: isRecommendedProductsLoading,
     error: recommendedProductsError,
   } = useRecommendedProducts(productId);
-  const { mutate } = useDeleteProduct(productId);
+  const { mutate: updateProductState } = useUpdateteProductStatus(productId);
+  const { mutate: deleteProduct } = useDeleteProduct(productId);
   const { handleChat } = useChat();
+  const user = useUserStore((state) => state.user);
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
 
-  if (isProductDetailsLoading) return <ProductDetailSkeleton />;
-
-  if (productDetailsError) return <div>오류가 발생했습니다...</div>;
-
-  const { data: productDetailData } =
-    productDetailResponse as ProductDetailResponse;
+  const productDetailData = productDetailResponse?.data ?? {
+    title: '',
+    description: '',
+    price: 0,
+    status: 'FOR_SALE',
+    createdAt: '',
+    viewCount: 0,
+    itemCategoryId: 0,
+    userId: 0,
+    imageUrlList: [],
+  };
 
   const {
     title,
@@ -103,12 +116,24 @@ const MarketDetailPage = () => {
     imageUrlList,
     itemCategoryId,
     userId: sellerId,
+    status,
   } = productDetailData;
+
+  const { register, handleSubmit, setValue, watch } =
+    useForm<UpdateProductStatusRequest>({
+      defaultValues: {
+        status,
+        soldPrice: undefined,
+      },
+    });
 
   const handleLike = () => {
     console.log('하트');
   };
-  const isOwnPost = !((sellerId as number) % 2);
+  const isOwnPost = (sellerId as number) === user?.user_id;
+
+  if (isProductDetailsLoading) return <ProductDetailSkeleton />;
+  if (productDetailsError) return <div>오류가 발생했습니다...</div>;
 
   const getRecommendPostList = (
     isLoading: boolean,
@@ -117,7 +142,6 @@ const MarketDetailPage = () => {
   ) => {
     if (isLoading) return <Loader />;
     if (error) return <div>에러가 발생했습니다.</div>;
-
     const recommendProducts = data?.data?.recommendProducts ?? [];
 
     return (
@@ -169,7 +193,12 @@ const MarketDetailPage = () => {
         <section className="flex flex-col gap-6">
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
-              <h1 className="text-3xl font-bold">{title}</h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-3xl font-bold">{title}</h1>
+                <Badge variant={'secondary'} className="hover:bg-accent">
+                  {STATUS_MAP[status as ProductStatus]}
+                </Badge>
+              </div>
               <div className="flex gap-2">
                 {isOwnPost && (
                   <DropdownMenu>
@@ -184,6 +213,15 @@ const MarketDetailPage = () => {
                       </div>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setIsUpdateDialogOpen(true);
+                        }}
+                        className="cursor-pointer"
+                      >
+                        <Check />
+                        판매 현황
+                      </DropdownMenuItem>
                       <DropdownMenuItem className="cursor-pointer" asChild>
                         <Link to={`/market/${productId}/edit`}>
                           <Pencil />
@@ -192,7 +230,7 @@ const MarketDetailPage = () => {
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => {
-                          setIsDialogOpen(true);
+                          setIsDeleteDialogOpen(true);
                         }}
                         className="cursor-pointer"
                       >
@@ -242,6 +280,7 @@ const MarketDetailPage = () => {
             <Button
               onClick={() => handleChat(productId, sellerId as number)}
               className="w-full"
+              disabled={isOwnPost}
             >
               채팅하기
             </Button>
@@ -288,7 +327,10 @@ const MarketDetailPage = () => {
           </div>
         </Link>
       </div>
-      <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
@@ -303,12 +345,85 @@ const MarketDetailPage = () => {
           <AlertDialogFooter>
             <AlertDialogCancel>취소</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => mutate()}
+              onClick={() => deleteProduct()}
               className="bg-destructive hover:bg-destructive/90"
             >
               삭제
             </AlertDialogAction>
           </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog
+        open={isUpdateDialogOpen}
+        onOpenChange={setIsUpdateDialogOpen}
+      >
+        <AlertDialogContent>
+          {status !== 'SOLD_OUT' ? (
+            <>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  상품 판매 현황을 수정해주세요.
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  판매가 완료된 경우, 최종 판매 금액을 입력해주세요.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <form
+                id="statusUpdateForm"
+                onSubmit={handleSubmit((data) => updateProductState(data))}
+                className="space-y-6"
+              >
+                <div className="flex gap-2">
+                  <Select
+                    value={watch('status')}
+                    onValueChange={(value: ProductStatus) => {
+                      setValue('status', value);
+                      if (value !== 'SOLD_OUT') {
+                        setValue('soldPrice', undefined);
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="w-[140px]">
+                      <SelectValue placeholder="정렬" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="FOR_SALE">판매중</SelectItem>
+                      <SelectItem value="RESERVED">예약중</SelectItem>
+                      <SelectItem value="SOLD_OUT">판매완료</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {watch('status') === 'SOLD_OUT' && (
+                    <Input
+                      placeholder="판매금"
+                      step={100}
+                      type="number"
+                      {...register('soldPrice')}
+                    />
+                  )}
+                </div>
+              </form>
+              <AlertDialogFooter>
+                <AlertDialogCancel>취소</AlertDialogCancel>
+
+                <AlertDialogAction
+                  form="statusUpdateForm"
+                  type="submit"
+                  className="bg-primary hover:bg-primary/90"
+                >
+                  입력
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </>
+          ) : (
+            <>
+              <AlertDialogHeader>
+                이미 판매가 완료 처리된 경우, 판매 상태를 변경할 수 없습니다.
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>취소</AlertDialogCancel>
+              </AlertDialogFooter>
+            </>
+          )}
         </AlertDialogContent>
       </AlertDialog>
     </div>
