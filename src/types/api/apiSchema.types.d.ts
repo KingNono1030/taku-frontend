@@ -110,46 +110,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/file/upload/video': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * 비디오 업로드
-     * @description 비디오를 스토리지에 업로드합니다.
-     */
-    post: operations['uploadVideoFile'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/file/upload/image': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * 이미지 업로드
-     * @description 이미지를 스토리지에 업로드합니다.
-     */
-    post: operations['uploadImageFile'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   '/example': {
     parameters: {
       query?: never;
@@ -196,11 +156,7 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /**
-     * 테스트
-     * @description 배포 테스트용 api
-     */
-    get: operations['aaa'];
+    get?: never;
     put?: never;
     /**
      * 쇼츠 업로드
@@ -570,6 +526,30 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/bookmarks/jangter': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * 장터 북마크 목록 조회
+     * @description 사용자의 장터 북마크 목록을 페이징하여 조회합니다. categoryId가 0인 경우 전체 목록을 조회합니다.
+     */
+    get: operations['getBookmarkList'];
+    put?: never;
+    /**
+     * 장터 상품 북마크 추가
+     * @description 특정 장터 상품을 북마크에 추가합니다.
+     */
+    post: operations['addBookmark'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/auth/logout': {
     parameters: {
       query?: never;
@@ -700,46 +680,6 @@ export interface paths {
      * @description 상품의 상태를 변경합니다 (판매중 -> 예약중 -> 판매완료)
      */
     patch: operations['updateProductStatus'];
-    trace?: never;
-  };
-  '/file/download/video/{fileName}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * 비디오 다운로드
-     * @description 비디오을 스토리지에서 다운로드합니다.
-     */
-    get: operations['downloadVideoFile'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/file/download/image/{fileName}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * 이미지 다운로드
-     * @description 이미지를 스토리지에서 다운로드합니다.
-     */
-    get: operations['downloadImageFile'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
     trace?: never;
   };
   '/example/{id}': {
@@ -1133,6 +1073,26 @@ export interface paths {
     put?: never;
     post?: never;
     delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/bookmarks/jangter/{productId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * 장터 상품 북마크 삭제
+     * @description 특정 장터 상품을 북마크에서 제거합니다.
+     */
+    delete: operations['removeBookmark'];
     options?: never;
     head?: never;
     patch?: never;
@@ -1534,6 +1494,14 @@ export interface components {
       sellerId?: number;
       /** Format: date-time */
       createdAt?: string;
+      buyerNickname?: string;
+      buyerProfileImage?: string;
+      sellerNickname?: string;
+      sellerProfileImage?: string;
+      lastMessage?: string;
+      lastMessageTime?: string;
+      /** Format: int64 */
+      lastMessageSenderId?: number;
     };
     CategoryGenreDTO: {
       /** Format: int64 */
@@ -1738,9 +1706,9 @@ export interface components {
     PageImplUserPurchaseResponseDTO: {
       content?: components['schemas']['UserPurchaseResponseDTO'][];
       pageable?: components['schemas']['PageableObject'];
+      last?: boolean;
       /** Format: int64 */
       totalElements?: number;
-      last?: boolean;
       /** Format: int32 */
       totalPages?: number;
       /** Format: int32 */
@@ -2819,6 +2787,37 @@ export interface components {
       data?: components['schemas']['CategoryBookmarkReqDTO'];
       error?: components['schemas']['ExceptionDto'];
     };
+    BookmarkListResponseDTO: {
+      /** Format: int64 */
+      productId?: number;
+      title?: string;
+      price?: number;
+      /** Format: int64 */
+      viewCount?: number;
+      /** Format: int64 */
+      categoryId?: number;
+      imageUrl?: string;
+    };
+    /** @description 공통 응답 */
+    CommonResponseCustomPageResponseDTOBookmarkListResponseDTO: {
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success?: boolean;
+      data?: components['schemas']['CustomPageResponseDTOBookmarkListResponseDTO'];
+      error?: components['schemas']['ExceptionDto'];
+    };
+    /** @description 응답 데이터 */
+    CustomPageResponseDTOBookmarkListResponseDTO: {
+      content?: components['schemas']['BookmarkListResponseDTO'][];
+      /** Format: int32 */
+      totalPages?: number;
+      /** Format: int64 */
+      totalElements?: number;
+      /** Format: int32 */
+      number?: number;
+    };
     RequestSearchProfanityDTO: {
       userName?: string;
       keyword?: string;
@@ -3300,78 +3299,6 @@ export interface operations {
       };
     };
   };
-  uploadVideoFile: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        'multipart/form-data': {
-          /** Format: binary */
-          video: string;
-        };
-      };
-    };
-    responses: {
-      /** @description Video upload : SUCCESS */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          '*/*': string;
-        };
-      };
-      /** @description Bad Request: Invalid input data. */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          '*/*': string;
-        };
-      };
-    };
-  };
-  uploadImageFile: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        'multipart/form-data': {
-          /** Format: binary */
-          file: string;
-        };
-      };
-    };
-    responses: {
-      /** @description File upload : SUCCESS */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          '*/*': string;
-        };
-      };
-      /** @description Bad Request: Invalid input data. */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          '*/*': string;
-        };
-      };
-    };
-  };
   findExampleList: {
     parameters: {
       query?: never;
@@ -3495,26 +3422,6 @@ export interface operations {
       };
       /** @description 파일 업로드 실패 */
       503: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          '*/*': components['schemas']['CommonResponseString'];
-        };
-      };
-    };
-  };
-  aaa: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
         headers: {
           [name: string]: unknown;
         };
@@ -4183,6 +4090,7 @@ export interface operations {
             | 'FILE_ERROR'
             | 'FILE_NOT_FOUND'
             | 'INVALID_FILE_FORMAT'
+            | 'FILE_DELETE_FAIL'
             | 'NOT_FOUND_CATEGORY'
             | 'DUPLICATE_CATEGORY_NAME'
             | 'BLACK_USER'
@@ -4205,7 +4113,10 @@ export interface operations {
             | 'INVALID_STATUS_TRANSITION'
             | 'MISSING_SOLD_PRICE'
             | 'UNAUTHORIZED_STATUS_UPDATE'
-            | 'INVALID_PRODUCT_STATUS';
+            | 'INVALID_PRODUCT_STATUS'
+            | 'ALREADY_BOOKMARKED'
+            | 'PRODUCT_NOT_FOUND'
+            | 'NOT_FOUND_BOOKMARK';
         };
       };
       /** @description 이미 존재하는 채팅방 */
@@ -4240,6 +4151,7 @@ export interface operations {
             | 'FILE_ERROR'
             | 'FILE_NOT_FOUND'
             | 'INVALID_FILE_FORMAT'
+            | 'FILE_DELETE_FAIL'
             | 'NOT_FOUND_CATEGORY'
             | 'DUPLICATE_CATEGORY_NAME'
             | 'BLACK_USER'
@@ -4262,7 +4174,10 @@ export interface operations {
             | 'INVALID_STATUS_TRANSITION'
             | 'MISSING_SOLD_PRICE'
             | 'UNAUTHORIZED_STATUS_UPDATE'
-            | 'INVALID_PRODUCT_STATUS';
+            | 'INVALID_PRODUCT_STATUS'
+            | 'ALREADY_BOOKMARKED'
+            | 'PRODUCT_NOT_FOUND'
+            | 'NOT_FOUND_BOOKMARK';
         };
       };
     };
@@ -4448,7 +4363,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        /** @description 카테고리 ID */
+        /** @description 카테고리 Id */
         id: number;
       };
       cookie?: never;
@@ -4457,6 +4372,84 @@ export interface operations {
     responses: {
       /** @description OK */
       200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
+        };
+      };
+    };
+  };
+  getBookmarkList: {
+    parameters: {
+      query: {
+        /** @description 카테고리 ID (0: 전체 조회) */
+        categoryId: number;
+        /** @description 페이지 번호 (0부터 시작) */
+        page?: number;
+        /** @description 페이지 크기 */
+        size?: number;
+        /** @description 정렬 기준 (예: createdAt,DESC) */
+        sort?: string[];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description 북마크 목록 조회 성공 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseCustomPageResponseDTOBookmarkListResponseDTO'];
+        };
+      };
+      /** @description 존재하지 않는 카테고리 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseCustomPageResponseDTOBookmarkListResponseDTO'];
+        };
+      };
+    };
+  };
+  addBookmark: {
+    parameters: {
+      query: {
+        productId: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description 북마크 추가 성공 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
+        };
+      };
+      /** @description 상품을 찾을 수 없음 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
+        };
+      };
+      /** @description 이미 북마크된 상품 */
+      409: {
         headers: {
           [name: string]: unknown;
         };
@@ -4921,68 +4914,6 @@ export interface operations {
         };
         content: {
           '*/*': components['schemas']['CommonResponseVoid'];
-        };
-      };
-    };
-  };
-  downloadVideoFile: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        fileName: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Video download : SUCCESS */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          '*/*': string;
-        };
-      };
-      /** @description Bad Request: Invalid input data. */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          '*/*': string;
-        };
-      };
-    };
-  };
-  downloadImageFile: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        fileName: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description File download : SUCCESS */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          '*/*': string;
-        };
-      };
-      /** @description Bad Request: Invalid input data. */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          '*/*': string;
         };
       };
     };
@@ -5513,6 +5444,38 @@ export interface operations {
         };
         content: {
           '*/*': components['schemas']['CommonResponseCategoryBookmarkReqDTO'];
+        };
+      };
+    };
+  };
+  removeBookmark: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description 북마크 해제할 상품 ID */
+        productId: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description 북마크 삭제 성공 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
+        };
+      };
+      /** @description 존재하지 않는 북마크 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CommonResponseVoid'];
         };
       };
     };

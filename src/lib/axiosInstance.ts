@@ -31,7 +31,7 @@ export const testAxios = axios.create({
 //   }
 // }
 
-// const getToken = () => useUserStore.getState().token;
+const getToken = () => useUserStore.getState().token;
 
 const duckuWithAuth = axios.create({
   baseURL: 'https://api-duckwho.xyz',
@@ -42,13 +42,14 @@ const duckuWithAuth = axios.create({
 
 duckuWithAuth.interceptors.request.use((config) => {
   // TODO: 회원가입 오류 수정 시 토큰으로 변경
-  // const token = getToken();
-  // if (!token) {
-  //   throw new TokenError();
-  // }
+  const token = getToken();
+  console.log(token);
+  if (!token) {
+    // throw new TokenError();
+  }
 
-  // config.headers.Authorization = `Bearer ${token}`;
-  config.headers.Authorization = `Bearer ${TEST_ACCESS_TOKEN}`;
+  config.headers.Authorization = `Bearer ${token}`;
+  // config.headers.Authorization = `Bearer ${TEST_ACCESS_TOKEN}`;
   return config;
 });
 

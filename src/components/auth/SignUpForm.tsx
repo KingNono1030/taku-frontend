@@ -143,10 +143,10 @@ export const SignUpForm = ({
                   <Button
                     onClick={handleCheckNickname}
                     type="button"
-                    className="h-full"
+                    className="h-14"
                     disabled={!values.user.nickname}
                   >
-                    중복
+                    중복 확인
                   </Button>
                 </div>
                 <FormMessage />

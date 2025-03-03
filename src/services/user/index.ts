@@ -1,8 +1,9 @@
 import { AxiosResponse } from 'axios';
 
-import { ducku } from '@/lib/axiosInstance';
+import { ducku, duckuWithAuth } from '@/lib/axiosInstance';
 import type {
   CheckNicknameSuccessResponse,
+  EditUserSuccessResponse,
   RegisterUserRequest,
   RegisterUserSuccessResponse,
 } from '@/types/api/user.types';
@@ -25,9 +26,28 @@ export const registerUser = async (
   return data;
 };
 
+export const editUser = async (
+  formData: FormData,
+  userId: number,
+): Promise<AxiosResponse<EditUserSuccessResponse>> => {
+  const { data } = await duckuWithAuth.patch(`/api/user/${userId}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return data;
+};
+
 export const checkNickname = async (
   nickname: string,
 ): Promise<AxiosResponse<CheckNicknameSuccessResponse>> => {
   const { data } = await ducku.get(`/api/user/nickname/${nickname}`);
+  return data;
+};
+
+export const deleteUser = async (
+  userId: number,
+): Promise<AxiosResponse<CheckNicknameSuccessResponse>> => {
+  const { data } = await duckuWithAuth.delete(`/api/user/${userId}`);
   return data;
 };

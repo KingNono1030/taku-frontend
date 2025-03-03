@@ -1,13 +1,32 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import { useForm } from 'react-hook-form';
 
 import PaginationComponent from '@/components/custom-pagination/CustomPagination';
+import { RHFUploadAvatar } from '@/components/hook-form/RhfUpload';
 import { JangterPurchaseCard } from '@/components/market/JangterPurchaseCard';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
+  AlertDialogFooter,
+  AlertDialogHeader,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -16,18 +35,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
 import { useUserPurchase } from '@/queries/jangter';
+import { useDeleteUser, useEditUser } from '@/queries/user';
+import { checkNickname } from '@/services/user';
 import useUserStore from '@/store/userStore';
 import { FindUserPurchaseQuery } from '@/types/api/jangter.types';
-
-// 목데이터
-const mockUserData = {
-  name: '홍길동',
-  email: 'gildong@naver.com',
-  nickname: 'ABCDE12345',
-  introduction: '간단한 소개글을 작성해보세요!',
-};
 
 const MyPage = () => {
   const user = useUserStore((state) => state.user);
@@ -41,7 +54,8 @@ const MyPage = () => {
       sortOrder: 'desc',
     },
   });
-
+  const { mutate: deleteUser } = useDeleteUser(user?.user_id as number);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
   const [purchasePage, setPurchasePage] = useState(0);
   const [purchasequeries, setPurchaseQueries] = useState<FindUserPurchaseQuery>(
     {
@@ -51,20 +65,90 @@ const MyPage = () => {
     },
   );
 
-  const onSubmit = (data: { sortKey: string; sortOrder: string }) => {
+  const onFilterSubmit = (data: { sortKey: string; sortOrder: string }) => {
     const newSort = `${data.sortKey},${data.sortOrder}`;
 
     setPurchaseQueries((prev) => ({ ...prev, sort: newSort }));
   };
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [userData, setUserData] = useState(mockUserData);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const { data: userPurchasesData } = useUserPurchase(
     user!.user_id,
     purchasequeries as FindUserPurchaseQuery,
   );
   const userPurchases = userPurchasesData?.data?.content;
+
+  const userEditForm = useForm<{ nickname: string; image?: File }>();
+  const {
+    handleSubmit: handleEditUserSubmit,
+    control: userEditControl,
+    watch: userEditWatch,
+    setError,
+    clearErrors,
+    setValue: setEditUserValue,
+  } = userEditForm;
+  const editUserValues = userEditWatch();
+  const { mutate: editUser } = useEditUser(user?.user_id as number);
+  const onUserEditSubmit = async ({
+    nickname,
+    image,
+  }: {
+    nickname: string;
+    image?: File;
+  }) => {
+    const formData = new FormData();
+
+    const request = {
+      nickname,
+      originalFileName: '업로드된 파일명',
+      fileType: '파일 타입',
+      fileSize: 10485760,
+    };
+
+    const requestuserBlob = new Blob([JSON.stringify(request)], {
+      type: 'application/json',
+    });
+    if (image) {
+      formData.append('image', image);
+    }
+
+    formData.append('request', requestuserBlob);
+
+    editUser(formData);
+  };
+  const [nicknameAvaibleMessage, setNicknameAvaibleMessage] = useState<
+    string | null
+  >(null);
+  const handleCheckNickname = async () => {
+    const nickname = editUserValues.nickname;
+    const { data: isNicknameNotValid } = await checkNickname(nickname);
+    console.log(isNicknameNotValid);
+    isNicknameNotValid
+      ? (setError('nickname', { message: '중복된 닉네임입니다.' }),
+        setNicknameAvaibleMessage(null))
+      : (clearErrors('nickname'),
+        setNicknameAvaibleMessage('사용가능한 닉네임입니다.'));
+  };
+
+  const handleDropSingleFile = useCallback(
+    (acceptedFiles: File[]) => {
+      // 첫 번째 파일만 처리
+      const [file] = acceptedFiles;
+
+      if (file) {
+        const newFile = Object.assign(file, {
+          preview: URL.createObjectURL(file),
+        });
+
+        // 단일 파일을 profileImage 필드에 설정
+        setEditUserValue('image', newFile, {
+          shouldValidate: true,
+        });
+      }
+    },
+    [setEditUserValue, editUserValues.image],
+  );
 
   return (
     <div className="mx-auto w-full max-w-[1200px] p-6">
@@ -88,50 +172,76 @@ const MyPage = () => {
             </Button>
           </div>
 
-          <div className="space-y-6">
-            <div className="space-y-4">
+          <Form {...userEditForm}>
+            <form
+              id="editUserForm"
+              onSubmit={handleEditUserSubmit(onUserEditSubmit)}
+              className="space-y-4"
+            >
               <h2 className="font-medium">내 정보</h2>
-              <Avatar className="mx-auto">
-                <AvatarImage
-                  className="mx-auto h-40 w-40 rounded-full object-cover"
-                  src={user?.profile_image}
+              {isEditing ? (
+                <RHFUploadAvatar
+                  thumbnail
+                  name="profileImage"
+                  maxSize={3145728}
+                  onDrop={handleDropSingleFile}
                 />
-                <AvatarFallback>{user?.nickname.slice(0, 2)}</AvatarFallback>
-              </Avatar>
-              <div className="grid gap-4">
-                <div>
-                  <Label>닉네임</Label>
-                  <Input
-                    value={user?.nickname}
-                    disabled={!isEditing}
-                    onChange={(e) =>
-                      setUserData({ ...userData, nickname: e.target.value })
-                    }
+              ) : (
+                <Avatar className="mx-auto">
+                  <AvatarImage
+                    className="mx-auto h-40 w-40 rounded-full object-cover"
+                    src={user?.profile_image}
                   />
-                </div>
+                  <AvatarFallback>{user?.nickname.slice(0, 2)}</AvatarFallback>
+                </Avatar>
+              )}
 
-                <div>
-                  <Label>소개</Label>
-                  <Textarea
-                    value={userData.introduction}
-                    disabled={!isEditing}
-                    onChange={(e) =>
-                      setUserData({ ...userData, introduction: e.target.value })
-                    }
-                    placeholder="간단한 소개글을 작성해보세요!"
-                    className="h-24"
-                  />
-                  <div className="mt-1 text-right text-sm text-gray-500">
-                    0/100
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+              <FormField
+                control={userEditControl}
+                name="nickname"
+                disabled={!isEditing}
+                defaultValue={user?.nickname}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>닉네임</FormLabel>
+                    <div className="flex gap-2">
+                      <Input placeholder="닉네임을 입력해주세요" {...field} />
+                      {isEditing && (
+                        <Button
+                          onClick={handleCheckNickname}
+                          type="button"
+                          disabled={!editUserValues.nickname}
+                        >
+                          중복 확인
+                        </Button>
+                      )}
+                    </div>
+                    <FormMessage />
+                    {nicknameAvaibleMessage && (
+                      <p className={cn('text-sm font-medium text-green-500')}>
+                        {nicknameAvaibleMessage}
+                      </p>
+                    )}
+                  </FormItem>
+                )}
+              />
+            </form>
+          </Form>
 
-          {isEditing && (
-            <div className="flex justify-end">
+          <div className="flex justify-between">
+            <Button
+              type="button"
+              className="bg-destructive hover:bg-destructive/90"
+              onClick={() => {
+                setIsDeleteDialogOpen(true);
+              }}
+            >
+              회원 탈퇴
+            </Button>
+            {isEditing && (
               <Button
+                type="submit"
+                form="editUserForm"
                 onClick={() => {
                   setIsEditing(false);
                   // TODO: API 호출
@@ -139,8 +249,35 @@ const MyPage = () => {
               >
                 저장하기
               </Button>
-            </div>
-          )}
+            )}
+          </div>
+          <AlertDialog
+            open={isDeleteDialogOpen}
+            onOpenChange={setIsDeleteDialogOpen}
+          >
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  정말로 더쿠 회원 탈퇴를 희망하십니까?
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  한 번 삭제된 계정은 복구될 수 없습니다.
+                  <br />
+                  그럼에도 탈퇴를 원하신다면, 아래 탈퇴 버튼을 눌러
+                  진행해주세요.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>취소</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => deleteUser()}
+                  className="bg-destructive hover:bg-destructive/90"
+                >
+                  탈퇴
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </TabsContent>
 
         <TabsContent value="market" className="space-y-8">
@@ -159,7 +296,10 @@ const MyPage = () => {
             <TabsContent value="selling" className="space-y-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-medium">구매 목록</h2>
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                <form
+                  onSubmit={handleSubmit(onFilterSubmit)}
+                  className="space-y-6"
+                >
                   <div className="flex gap-2">
                     <Select
                       value={watch('sortKey')}
@@ -193,7 +333,7 @@ const MyPage = () => {
               </div>
 
               {userPurchases ? (
-                <div className="rounded-lg border p-8 text-center text-gray-500">
+                <div className="flex flex-col gap-3 rounded-lg border p-8 text-center text-gray-500">
                   {userPurchases.map((purchase) => (
                     <JangterPurchaseCard data={purchase} />
                   ))}
@@ -228,7 +368,7 @@ const MyPage = () => {
                 </Select>
               </div>
 
-              {/* TODO: 구매글 목록 구현 */}
+              {/* TODO: 판매글 목록 구현 */}
               <div className="rounded-lg border p-8 text-center text-gray-500">
                 작성한 판매글이 없습니다.
               </div>

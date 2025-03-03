@@ -54,7 +54,7 @@ export type DeleteUserSuccessResponse =
 
 export type EditUserRequest = NonNullable<
   operations['editUserDetail']['requestBody']
->['content']['application/json'];
+>['content']['multipart/form-data'];
 export type EditUserSuccessResponse =
   operations['editUserDetail']['responses'][200]['content']['*/*'];
 
