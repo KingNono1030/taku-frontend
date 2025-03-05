@@ -17,7 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import SectionLayout from '@/layout/SectionLayout';
-import { testAxios } from '@/lib/axiosInstance';
+import { duckuWithoutAuth } from '@/lib/axiosInstance';
 import { useCommunityBookmark } from '@/queries/community';
 import { deleteCommunityBookmark } from '@/services/community';
 
@@ -31,7 +31,7 @@ const getCategory = async (
   sort: string,
   name: string,
 ) => {
-  const response = await testAxios.get('/api/category', {
+  const response = await duckuWithoutAuth.get('/api/category', {
     params: {
       page,
       size,
