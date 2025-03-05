@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 
 import DeleteAlertDialog from '@/components/alert-dialog/DeleteAlertDialog';
 import CategoryDialog from '@/components/category/CategoryDialog';
+import LoadingSpinner from '@/components/loading/LoadingSpinner';
 import SearchBar from '@/components/search-bar/SearchBar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -58,16 +59,24 @@ type Category = {
 };
 
 export const PopularCategories = () => {
-  const { data } = useQuery({
+  const { data, error, isPending } = useQuery({
     queryKey: ['category', 'popular'],
     queryFn: () => getCategory(0, 4, 'viewCount,desc', ''),
     placeholderData: keepPreviousData,
     staleTime: 5000,
   });
 
+  if (isPending) {
+    return <LoadingSpinner />;
+  }
+
+  if (error) {
+    return <div>에러: {error.message}</div>;
+  }
+
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-      {data?.data.content.map((category: Category) => (
+      {data?.data?.content?.map((category: Category) => (
         <CategoryCard key={category.id} category={category} />
       ))}
     </div>
@@ -101,7 +110,7 @@ const BookmarkList = () => {
   };
 
   if (isPending) {
-    return <div>로딩중...</div>;
+    return <LoadingSpinner />;
   }
 
   if (error) {
@@ -271,7 +280,7 @@ const CommunityPage = () => {
               개의 커뮤니티가 검색됐덕!
             </h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {data.data.content.map((category: Category) => (
+              {data?.data?.content?.map((category: Category) => (
                 <CategoryCard key={category.id} category={category} />
               ))}
             </div>
