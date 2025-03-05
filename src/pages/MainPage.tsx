@@ -67,7 +67,7 @@ const MainPage = () => {
   const navigate = useNavigate();
 
   const [selectedPopularType, setSelectedPopularType] = useState(
-    periodTypes[0].id,
+    periodTypes[2].id,
   );
 
   const plugin: any = useRef(
@@ -155,7 +155,7 @@ const MainPage = () => {
         <div className="mb-10 flex items-center justify-between align-bottom">
           <h1 className="text-4xl font-bold">인기 게시글 TOP 10</h1>
           <div className="flex">
-            {periodTypes.map((type) => (
+            {periodTypes?.map((type) => (
               <Button
                 key={type.id}
                 variant="ghost"

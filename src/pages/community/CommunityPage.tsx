@@ -114,48 +114,49 @@ const BookmarkList = () => {
   }
 
   if (error) {
-    return <div>에러: {error.message}</div>;
+    return <div></div>;
   }
 
   return (
     <div className="flex-col space-y-6">
-      {data.data?.categoryBookmarks?.map((item: any) => (
-        <div
-          key={item.bookmarkId}
-          className="flex w-full items-center justify-between"
-        >
+      {data.data?.categoryBookmarks?.length > 0 &&
+        data.data?.categoryBookmarks?.map((item: any) => (
           <div
-            className="flex cursor-pointer items-center gap-2"
-            onClick={() => handleMoveToCategory(item.categoryId)}
+            key={item.bookmarkId}
+            className="flex w-full items-center justify-between"
           >
-            <Avatar className="rounded-xl">
-              <AvatarImage
-                src={item.categoryImageUrl}
-                alt={item.categoryName}
-              />
-              <AvatarFallback>
-                <ImageOff />
-              </AvatarFallback>
-            </Avatar>
-            <span
-              className="cursor-pointer text-sm font-semibold transition-colors duration-100 hover:text-primary"
-              onClick={() => {
-                console.log('click');
-              }}
+            <div
+              className="flex cursor-pointer items-center gap-2"
+              onClick={() => handleMoveToCategory(item.categoryId)}
             >
-              {item.categoryName}
-            </span>
+              <Avatar className="rounded-xl">
+                <AvatarImage
+                  src={item.categoryImageUrl}
+                  alt={item.categoryName}
+                />
+                <AvatarFallback>
+                  <ImageOff />
+                </AvatarFallback>
+              </Avatar>
+              <span
+                className="cursor-pointer text-sm font-semibold transition-colors duration-100 hover:text-primary"
+                onClick={() => {
+                  console.log('click');
+                }}
+              >
+                {item.categoryName}
+              </span>
+            </div>
+            <Button
+              variant={'ghost'}
+              size="icon"
+              className="[&_svg]:size-6"
+              onClick={() => handleDeleteDialogOpen(item.categoryId)}
+            >
+              <Bookmark fill={'#EAB308'} />
+            </Button>
           </div>
-          <Button
-            variant={'ghost'}
-            size="icon"
-            className="[&_svg]:size-6"
-            onClick={() => handleDeleteDialogOpen(item.categoryId)}
-          >
-            <Bookmark fill={'#EAB308'} />
-          </Button>
-        </div>
-      ))}
+        ))}
       <DeleteAlertDialog
         title="북마크 삭제"
         content="북마크를 삭제하시겠습니까?"
