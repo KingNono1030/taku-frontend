@@ -154,7 +154,7 @@ export const createCommunityCategory = async (requestBody: {
  * 커뮤니티 카테고리 북마크 조회 서비스
  */
 export const getCommunityBookmark = async () => {
-  const { data } = await duckuWithoutAuth.get('/api/category-bookmark');
+  const { data } = await duckuWithAuth.get('/api/category-bookmark');
   return data;
 };
 
