@@ -20,8 +20,10 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import { usePopularCommunityPosts } from '@/queries/community';
+import { useProductItems } from '@/queries/jangter';
 
 import { PopularCategories } from './community/CommunityPage';
+import { ItemCard, ProductItem } from './market/tabs/MarketListPage';
 
 const banners = [
   {
@@ -75,6 +77,19 @@ const MainPage = () => {
   const { data, refetch } = usePopularCommunityPosts({
     periodType: selectedPopularType,
   });
+
+  const { data: itemList } = useProductItems({
+    size: 4,
+    sort: 'day',
+    order: 'desc',
+    minPrice: undefined,
+    maxPrice: undefined,
+    categoryId: undefined,
+    searchKeyword: undefined,
+  });
+
+  const allItems = (itemList?.pages.flatMap((page) => page.data) ??
+    []) as ProductItem[];
 
   const handleMoveToCommunity = () => {
     navigate('/community');
@@ -224,7 +239,18 @@ const MainPage = () => {
             더보기
           </Button>
         </div>
-        <div className="h-[400px] w-full bg-gray-200">덕후장터 컨텐츠 영역</div>
+        <div className="grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4">
+          {allItems.length > 0 &&
+            allItems?.map((item: ProductItem, index: number) => (
+              <ItemCard
+                key={item.id}
+                item={item}
+                index={index}
+                itemsLength={allItems.length}
+                lastItemRef={null}
+              />
+            ))}
+        </div>
       </section>
     </div>
   );
