@@ -13,7 +13,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/ui/carousel';
-import { testAxios } from '@/lib/axiosInstance';
+import { duckuWithoutAuth } from '@/lib/axiosInstance';
 import { useRecordShortsWatchTime } from '@/queries/shorts';
 import { getShortsDetail } from '@/services/shorts';
 import useShortsStore from '@/store/shortsStore';
@@ -31,7 +31,7 @@ const ShortsPage = () => {
 
   // 쇼츠 리스트 가져오기
   const getVedioList = async (): Promise<AxiosResponse> => {
-    return await testAxios.get('/api/shorts/recommend');
+    return await duckuWithoutAuth.get('/api/shorts/recommend');
   };
 
   // 선택된 쇼츠의 상세 정보 가져오기
@@ -50,7 +50,7 @@ const ShortsPage = () => {
   const loadMoreVideos = () => {
     getVedioList().then((res) => {
       // 랜덤 데이터 추가시 id 중복이 발생하여 제외하고 추가
-      const newVideos = res.data.data.filter(
+      const newVideos = res?.data?.data?.filter(
         (video: any) => !videos.some((v) => v.id === video.id),
       );
       setVideos([...videos, ...newVideos]);
@@ -162,13 +162,14 @@ const ShortsPage = () => {
               className="w-full"
             >
               <CarouselContent className="flex h-[calc(100vh-248px)] flex-col gap-4 rounded-lg">
-                {videos.map((info: any) => (
-                  <ShortsDetailCarouselItem
-                    key={info.id}
-                    title={info.title}
-                    shortsDetailData={shortsDetailData?.data}
-                  />
-                ))}
+                {videos?.length > 0 &&
+                  videos?.map((info: any) => (
+                    <ShortsDetailCarouselItem
+                      key={info.id}
+                      title={info.title}
+                      shortsDetailData={shortsDetailData?.data}
+                    />
+                  ))}
                 <CarouselItem
                   className="flex h-full w-full items-center justify-center"
                   ref={lastVideoElementRef}

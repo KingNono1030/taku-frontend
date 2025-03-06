@@ -6,14 +6,14 @@ import DataTable from '@/components/data-table/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { testAxios } from '@/lib/axiosInstance';
+import { duckuWithoutAuth } from '@/lib/axiosInstance';
 import {
   useCreateCommunityBookmark,
   useDeleteCommunityBookmark,
 } from '@/queries/community';
 
 const getDetailCategory = async (category: string) => {
-  const response = await testAxios.get(`/api/category/${category}`);
+  const response = await duckuWithoutAuth.get(`/api/category/${category}`);
   return response.data;
 };
 

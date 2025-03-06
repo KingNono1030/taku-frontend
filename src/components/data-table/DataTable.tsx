@@ -16,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { testAxios } from '@/lib/axiosInstance';
+import { duckuWithoutAuth } from '@/lib/axiosInstance';
 import { formatKoreanDateWithLimit } from '@/lib/utils';
 
 import PaginationComponent from '../custom-pagination/CustomPagination';
@@ -47,7 +47,7 @@ const getCommunityPosts = async (
   keyword: string,
   categoryId: string,
 ) => {
-  const response = await testAxios.get('/api/community/posts', {
+  const response = await duckuWithoutAuth.get('/api/community/posts', {
     params: {
       page,
       sort,
