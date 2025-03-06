@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import { useQuery } from '@tanstack/react-query';
 import { Bookmark, BookmarkCheck, ChevronLeft } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -28,8 +26,6 @@ const CommunityCategoryPage = () => {
   const { category } = useParams();
   const navigate = useNavigate();
 
-  const [bookmarkChecked, setBookmarkChecked] = useState(false);
-
   const { data, status, error, refetch } = useQuery({
     queryKey: ['category', category],
     queryFn: () => category && getDetailCategory(category),
@@ -38,7 +34,6 @@ const CommunityCategoryPage = () => {
   const { mutate: createBookmarkMutate } = useCreateCommunityBookmark({
     categoryId: category ?? '',
     onSuccessCb: () => {
-      setBookmarkChecked(true);
       refetch();
     },
   });
@@ -46,13 +41,14 @@ const CommunityCategoryPage = () => {
   const { mutate: deleteBookmarkMutate } = useDeleteCommunityBookmark({
     categoryId: category ?? '',
     onSuccessCb: () => {
-      setBookmarkChecked(false);
       refetch();
     },
   });
 
   const handleClickedBookmark = () => {
-    if (bookmarkChecked) {
+    console.log('북마크 클릭', data.data.bookmark);
+
+    if (data.data.bookmark) {
       deleteBookmarkMutate();
     } else {
       createBookmarkMutate();
@@ -99,13 +95,13 @@ const CommunityCategoryPage = () => {
             </div>
           </div>
           <Button
-            variant={bookmarkChecked ? 'default' : 'ghost'}
+            variant={data.data.bookmark ? 'default' : 'ghost'}
             size={'icon'}
             onClick={handleClickedBookmark}
             className="h-12 w-12 rounded-full [&_svg]:size-8"
           >
             {/* TODO: 북마크  */}
-            {bookmarkChecked ? (
+            {data.data.bookmark ? (
               <BookmarkCheck strokeWidth={2} />
             ) : (
               <Bookmark strokeWidth={2} />

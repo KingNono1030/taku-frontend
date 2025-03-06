@@ -26,26 +26,9 @@ const addPostSchema = z.object({
   title: z.string().nonempty('제목을 입력해주세요.'),
   content: z.string().nonempty('내용을 입력해주세요.'),
   imageList: z
-    .array(
-      z.object({
-        preview: z.string(),
-        name: z.string(),
-        size: z.number(),
-        type: z.string(),
-      }),
-    )
+    .array(z.instanceof(File))
     .max(5, '이미지는 최대 5개 까지 업로드 가능합니다.')
-    .optional()
-    .transform((imageObjects) => {
-      if (!imageObjects) return undefined;
-      return imageObjects.map((imageObj) => {
-        const file = new File([], imageObj.name, {
-          type: imageObj.type,
-          lastModified: Date.now(),
-        });
-        return Object.assign(file, { preview: imageObj.preview });
-      });
-    }),
+    .optional(),
 });
 
 const CreateCommunityPage = () => {

@@ -148,3 +148,21 @@ export const deleteShortsCommentReply = async (
   );
   return data;
 };
+
+/**
+ * 쇼츠 시청시간 기록
+ * @param shortsId 쇼츠 ID
+ */
+export const recordShortsWatchTime = async (
+  shortsId: string,
+  requestBody: {
+    viewTime: string;
+    playTime: string;
+  },
+) => {
+  const { data } = await duckuWithAuth.post(
+    `/api/shorts/${shortsId}/view`,
+    requestBody,
+  );
+  return data;
+};
