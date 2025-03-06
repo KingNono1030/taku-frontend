@@ -4,26 +4,30 @@ import { AxiosResponse } from 'axios';
 import { MessageSquareText, ThumbsDown, ThumbsUp } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { testAxios } from '@/lib/axiosInstance';
+import { duckuWithoutAuth } from '@/lib/axiosInstance';
 
 import ShortsUploadDialog from './ShortsUploadDialog';
 
 const addShortsLike = async (shortsId: string): Promise<AxiosResponse> => {
-  return await testAxios.post('/api/shorts/' + shortsId + '/likes');
+  return await duckuWithoutAuth.post('/api/shorts/' + shortsId + '/likes');
 };
 
 const cancelShortsLike = async (shortsId: string): Promise<AxiosResponse> => {
-  return await testAxios.post('/api/shorts/' + shortsId + '/likes/cancel');
+  return await duckuWithoutAuth.post(
+    '/api/shorts/' + shortsId + '/likes/cancel',
+  );
 };
 
 const addShortsDislike = async (shortsId: string): Promise<AxiosResponse> => {
-  return await testAxios.post('/api/shorts/' + shortsId + '/dislikes');
+  return await duckuWithoutAuth.post('/api/shorts/' + shortsId + '/dislikes');
 };
 
 const cancelShortsDislike = async (
   shortsId: string,
 ): Promise<AxiosResponse> => {
-  return await testAxios.post('/api/shorts/' + shortsId + '/dislikes/cancel');
+  return await duckuWithoutAuth.post(
+    '/api/shorts/' + shortsId + '/dislikes/cancel',
+  );
 };
 
 type Popularity = {
