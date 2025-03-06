@@ -1,13 +1,6 @@
 import { components, operations } from './apiSchema.types';
 
 export type OAuthProvider = 'KAKAO' | 'NAVER' | 'GOOGLE';
-export type UserDetail = {
-  user_id: number;
-  is_black: boolean;
-  user_role: 'USER' | 'ADMIN';
-  profile_image: string;
-  nickname: string;
-};
 
 /**
  * path: '/api/user'
@@ -39,6 +32,18 @@ export type RegisterUserSuccessResponse =
 export type FindUserDetailSuccessResponse =
   operations['findUserDetail']['responses'][200]['content']['*/*'];
 
+export interface UserDetail
+  extends NonNullable<FindUserDetailSuccessResponse['data']> {
+  id: number;
+  nickname: string;
+}
+export type UserDetailFromLogin = {
+  user_id: number;
+  is_black: boolean;
+  user_role: 'USER' | 'ADMIN';
+  profile_image: string;
+  nickname: string;
+};
 /**
  * 유저 삭제
  * @description 유저 삭제

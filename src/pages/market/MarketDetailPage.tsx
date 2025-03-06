@@ -132,7 +132,7 @@ const MarketDetailPage = () => {
   const handleLike = () => {
     addJangterBookmarks();
   };
-  const isOwnPost = (sellerId as number) === user?.user_id;
+  const isOwnPost = (sellerId as number) === user?.id;
 
   if (isProductDetailsLoading) return <ProductDetailSkeleton />;
   if (productDetailsError) return <div>오류가 발생했습니다...</div>;

@@ -4,6 +4,7 @@ import { ducku, duckuWithAuth } from '@/lib/axiosInstance';
 import type {
   CheckNicknameSuccessResponse,
   EditUserSuccessResponse,
+  FindUserDetailSuccessResponse,
   RegisterUserRequest,
   RegisterUserSuccessResponse,
 } from '@/types/api/user.types';
@@ -12,6 +13,18 @@ export interface RegisterUserRequestWithJSON
   extends Omit<RegisterUserRequest, 'user'> {
   user: string;
 }
+
+export const getUser = async (
+  userId: number,
+  token: string,
+): Promise<FindUserDetailSuccessResponse> => {
+  const { data } = await ducku.get(`/api/user/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return data;
+};
 
 export const registerUser = async (
   formData: FormData,

@@ -59,7 +59,7 @@ const MyPage = () => {
       sortOrder: 'desc',
     },
   });
-  const { mutate: deleteUser } = useDeleteUser(user?.user_id as number);
+  const { mutate: deleteUser } = useDeleteUser(user?.id as number);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
   const [purchasePage, setPurchasePage] = useState(0);
   const [purchasequeries, setPurchaseQueries] = useState<FindUserPurchaseQuery>(
@@ -91,7 +91,7 @@ const MyPage = () => {
   );
   const jangterBookmarks = jangterBookmarksData?.data?.content;
   const { data: userPurchasesData } = useUserPurchase(
-    user!.user_id,
+    user!.id,
     purchasequeries as FindUserPurchaseQuery,
   );
   const userPurchases = userPurchasesData?.data?.content;
@@ -106,7 +106,7 @@ const MyPage = () => {
     setValue: setEditUserValue,
   } = userEditForm;
   const editUserValues = userEditWatch();
-  const { mutate: editUser } = useEditUser(user?.user_id as number);
+  const { mutate: editUser } = useEditUser(user?.id as number);
   const onUserEditSubmit = async ({
     nickname,
     image,
@@ -207,7 +207,7 @@ const MyPage = () => {
                 <Avatar className="mx-auto">
                   <AvatarImage
                     className="mx-auto h-40 w-40 rounded-full object-cover"
-                    src={user?.profile_image}
+                    src={user?.profileImg}
                   />
                   <AvatarFallback>{user?.nickname.slice(0, 2)}</AvatarFallback>
                 </Avatar>
