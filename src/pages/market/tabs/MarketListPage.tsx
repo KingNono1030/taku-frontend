@@ -26,7 +26,7 @@ import { CATEGORY_MAP } from '@/constants/jangter';
 import { useProductItems } from '@/queries/jangter';
 import { FindProductItemsQuery } from '@/types/api/jangter.types';
 
-interface ProductItem {
+export interface ProductItem {
   id: number;
   title: string;
   price: number;
@@ -57,6 +57,45 @@ interface FilterForm {
   searchKeyword: string;
   priceRange: [number, number];
 }
+
+type ItemsProps = {
+  item: ProductItem;
+  itemsLength: number;
+  lastItemRef: React.RefObject<HTMLDivElement> | null;
+  index: number;
+};
+
+export const ItemCard = ({
+  item,
+  itemsLength,
+  lastItemRef,
+  index,
+}: ItemsProps) => {
+  return (
+    <div ref={index === itemsLength - 1 ? lastItemRef : null} key={item.id}>
+      <Link to={`/market/${item.id}`}>
+        <Card>
+          <div className="relative aspect-square w-full overflow-hidden">
+            <img
+              className="w-full object-cover transition-transform duration-300 hover:scale-110"
+              src={item.imageUrl}
+              alt={item.title}
+            />
+          </div>
+          <CardHeader className="p-4">
+            <CardDescription>{item.title}</CardDescription>
+          </CardHeader>
+          <CardContent className="px-4 pb-4">
+            <CardTitle className="">{item.price.toLocaleString()}원</CardTitle>
+          </CardContent>
+          <CardFooter className="px-4 pb-4">
+            <span className="text-gray-400">{item.userNickname}</span>
+          </CardFooter>
+        </Card>
+      </Link>
+    </div>
+  );
+};
 
 const MarketListPage = () => {
   const { register, handleSubmit, setValue, watch } = useForm<FilterForm>({
