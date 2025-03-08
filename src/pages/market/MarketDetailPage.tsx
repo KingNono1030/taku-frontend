@@ -5,6 +5,7 @@ import {
   Check,
   EllipsisVertical,
   Heart,
+  ImageOff,
   Loader,
   LucideShare,
   Pencil,
@@ -14,6 +15,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { Link, useParams } from 'react-router-dom';
 
+import FallbackImage from '@/components/avatar/FallbackImage';
 import { ProductDetailSkeleton } from '@/components/loading/jangter/ProductDetailSkeleton';
 import { RecommendProductCard } from '@/components/market/RecommendProductCard';
 import {
@@ -167,10 +169,10 @@ const MarketDetailPage = () => {
                       key={imageUrl}
                       className="relative aspect-square w-full"
                     >
-                      <img
-                        className="absolute inset-0 h-full w-full object-cover"
+                      <FallbackImage
                         src={imageUrl}
                         alt={`${index}번째 상품 이미지`}
+                        className="h-full w-full object-cover"
                       />
                     </CarouselItem>
                   ))}
@@ -185,7 +187,7 @@ const MarketDetailPage = () => {
             )}
             {(imageUrlList && !!imageUrlList.length) || (
               <div className="flex aspect-square w-full items-center justify-center bg-gray-200">
-                등록된 상품 이미지가 없습니다...
+                <ImageOff size={64} />
               </div>
             )}
           </div>

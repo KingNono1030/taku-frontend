@@ -13,6 +13,7 @@ import {
 import { useNavigate, useParams } from 'react-router-dom';
 
 import DeleteAlertDialog from '@/components/alert-dialog/DeleteAlertDialog';
+import FallbackImage from '@/components/avatar/FallbackImage';
 import CommuCommentList from '@/components/comments/community/CommuCommentList';
 import CommuCommentMainForm from '@/components/comments/community/CommuCommentMainForm';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -197,7 +198,11 @@ const CommunityDetailPage = () => {
                       <div className="p-1">
                         <Card>
                           <CardContent className="flex aspect-square items-center justify-center p-6">
-                            <img src={imageUrl} alt="" />
+                            <FallbackImage
+                              src={imageUrl}
+                              alt="image"
+                              className="w-full object-cover"
+                            />
                           </CardContent>
                         </Card>
                       </div>

@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Bookmark, BookmarkCheck, ChevronLeft } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import FallbackImage from '@/components/avatar/FallbackImage';
 import DataTable from '@/components/data-table/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -110,7 +111,7 @@ const CommunityCategoryPage = () => {
         </div>
         <div className="flex items-center bg-slate-500">
           <div className="relative h-[400px] w-[600px] overflow-hidden">
-            <img
+            <FallbackImage
               src={data.data?.categoryImages[0]?.imageUrl}
               alt="아무거나"
               className="h-full w-full object-cover object-center"

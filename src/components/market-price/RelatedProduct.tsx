@@ -1,3 +1,5 @@
+import FallbackImage from '../avatar/FallbackImage';
+
 interface SimilarProduct {
   productId: string | number;
   title: string;
@@ -28,10 +30,13 @@ export const RelatedProduct = ({ similarProducts }: RelatedProductProps) => {
         <div className="grid grid-cols-5 gap-4">
           {products.map((product) => (
             <div key={product.productId} className="space-y-2">
-              <div
-                className="aspect-square rounded-lg bg-cover bg-center"
-                style={{ backgroundImage: `url(${product.imageUrl})` }}
-              />
+              <div className="aspect-square">
+                <FallbackImage
+                  src={product.imageUrl}
+                  alt={product.title}
+                  className="object-cover transition-transform duration-300 hover:scale-110"
+                />
+              </div>
               <div className="line-clamp-2 text-sm">{product.title}</div>
               <div className="text-sm font-semibold">
                 {(product.price ?? 0).toLocaleString()} 원

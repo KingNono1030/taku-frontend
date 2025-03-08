@@ -1,9 +1,11 @@
+import { ImageOff } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import { CATEGORY_MAP } from '@/constants/jangter';
 import { formatCurrency, formatKoreanDate } from '@/lib/utils';
 import { RecommendedProduct } from '@/types/api/jangter.types';
 
+import FallbackImage from '../avatar/FallbackImage';
 import {
   Card,
   CardContent,
@@ -32,15 +34,15 @@ export const RecommendProductCard = ({
       <Card>
         <div className="relative aspect-square w-full overflow-hidden">
           {thumbnail_url && (
-            <img
-              className="absolute inset-0 w-full object-cover transition-transform duration-300 hover:scale-110"
+            <FallbackImage
               src={thumbnail_url}
               alt={`${title} 상품 썸네일`}
+              className="w-full object-cover transition-transform duration-300 hover:scale-110"
             />
           )}
           {!thumbnail_url && (
             <div className="flex aspect-square w-full items-center justify-center bg-gray-200">
-              등록된 상품 이미지가 없습니다...
+              <ImageOff size={64} />
             </div>
           )}
         </div>

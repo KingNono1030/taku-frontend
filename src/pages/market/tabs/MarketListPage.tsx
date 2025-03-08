@@ -4,6 +4,7 @@ import { Plus } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 
+import FallbackImage from '@/components/avatar/FallbackImage';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -76,10 +77,10 @@ export const ItemCard = ({
       <Link to={`/market/${item.id}`}>
         <Card>
           <div className="relative aspect-square w-full overflow-hidden">
-            <img
-              className="w-full object-cover transition-transform duration-300 hover:scale-110"
+            <FallbackImage
               src={item.imageUrl}
               alt={item.title}
+              className="w-full object-cover transition-transform duration-300 hover:scale-110"
             />
           </div>
           <CardHeader className="p-4">
@@ -266,10 +267,10 @@ const MarketListPage = () => {
               <Link to={`/market/${item.id}`}>
                 <Card>
                   <div className="relative aspect-square w-full overflow-hidden">
-                    <img
-                      className="w-full object-cover transition-transform duration-300 hover:scale-110"
+                    <FallbackImage
                       src={item.imageUrl}
                       alt={item.title}
+                      className="w-full object-cover transition-transform duration-300 hover:scale-110"
                     />
                   </div>
                   <CardHeader className="p-4">

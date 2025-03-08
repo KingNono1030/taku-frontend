@@ -8,6 +8,7 @@ import Banner1 from '@/assets/banner/banner1.webp';
 import Banner2 from '@/assets/banner/banner2.webp';
 import Banner3 from '@/assets/banner/banner3.webp';
 import Banner4 from '@/assets/banner/banner4.webp';
+import FallbackImage from '@/components/avatar/FallbackImage';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -120,7 +121,7 @@ const MainPage = () => {
             <CarouselItem key={index}>
               <Card className="h-full w-full">
                 <CardContent className="flex h-[740px] items-center justify-center p-0">
-                  <img
+                  <FallbackImage
                     src={banners[index].src}
                     alt={banners[index].alt}
                     className="h-full w-full object-cover object-bottom"
@@ -212,13 +213,13 @@ const MainPage = () => {
               </div>
               <div className="flex h-[120px] w-40 items-center justify-center overflow-hidden rounded-xl bg-gray-200">
                 {post?.imageUrl ? (
-                  <img
+                  <FallbackImage
                     src={post?.imageUrl}
                     alt="thumbnail"
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center">
+                  <div className="flex h-full w-full items-center justify-center [&_svg]:size-10">
                     <ImageOff />
                   </div>
                 )}

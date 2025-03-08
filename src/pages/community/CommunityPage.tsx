@@ -9,6 +9,7 @@ import { Bookmark, ImageOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import DeleteAlertDialog from '@/components/alert-dialog/DeleteAlertDialog';
+import FallbackImage from '@/components/avatar/FallbackImage';
 import CategoryDialog from '@/components/category/CategoryDialog';
 import LoadingSpinner from '@/components/loading/LoadingSpinner';
 import SearchBar from '@/components/search-bar/SearchBar';
@@ -179,11 +180,7 @@ const CategoryCard = ({ category }: { category: Category }) => {
       }}
     >
       <Card className="aspect-video cursor-pointer overflow-hidden rounded bg-[#d3d3d3] transition-opacity hover:opacity-90">
-        <img
-          src={category.imageUrl}
-          alt={category.name}
-          className="h-full w-full object-cover"
-        />
+        <FallbackImage src={category.imageUrl} alt={category.name} />
       </Card>
       <div className="space-y-1">
         <h3 className="font-bold">{category.name}</h3>
