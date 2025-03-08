@@ -4,7 +4,6 @@ import {
   Bookmark,
   Check,
   EllipsisVertical,
-  Heart,
   ImageOff,
   Loader,
   LucideShare,
@@ -63,6 +62,7 @@ import {
   shareCurrentURL,
 } from '@/lib/utils';
 import {
+  useAddBookmark,
   useDeleteProduct,
   useProductDetails,
   useRecommendedProducts,
@@ -129,10 +129,12 @@ const MarketDetailPage = () => {
       },
     });
 
+  const { mutate: addJangterBookmarks } = useAddBookmark(productId);
+
   const handleLike = () => {
-    console.log('하트');
+    addJangterBookmarks();
   };
-  const isOwnPost = (sellerId as number) === user?.user_id;
+  const isOwnPost = (sellerId as number) === user?.id;
 
   if (isProductDetailsLoading) return <ProductDetailSkeleton />;
   if (productDetailsError) return <div>오류가 발생했습니다...</div>;
@@ -242,13 +244,6 @@ const MarketDetailPage = () => {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 )}
-                <Button
-                  variant={'ghost'}
-                  onClick={handleLike}
-                  className="h-10 w-10 rounded-full"
-                >
-                  <Bookmark fill="#facc15" className="text-yellow-400" />
-                </Button>
               </div>
             </div>
             <h2 className="text-gray-400">
@@ -277,7 +272,7 @@ const MarketDetailPage = () => {
               onClick={handleLike}
               className="h-10 w-10 rounded-full"
             >
-              <Heart fill="#ef4444" className="text-red-500" />
+              <Bookmark fill="#facc15" className="text-yellow-400" />
             </Button>
             <Button
               onClick={() => handleChat(productId, sellerId as number)}
