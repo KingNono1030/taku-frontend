@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -16,7 +16,9 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 import { useRegisterUser } from '@/queries/user';
+import { checkNickname } from '@/services/user';
 import { OAuthProvider } from '@/types/api/user.types';
 
 const signupSchema = z.object({
@@ -51,7 +53,9 @@ export const SignUpForm = ({
   token: string;
   provider: OAuthProvider;
 }) => {
-  // const navigate = useNavigate();
+  const [nicknameAvaibleMessage, setNicknameAvaibleMessage] = useState<
+    string | null
+  >(null);
   const { mutate } = useRegisterUser();
 
   const form = useForm<z.infer<typeof signupSchema>>({
@@ -65,7 +69,8 @@ export const SignUpForm = ({
     },
   });
 
-  const { handleSubmit, control, watch, setValue } = form;
+  const { handleSubmit, control, watch, setValue, setError, clearErrors } =
+    form;
   const values = watch();
 
   const onSubmit = async (values: z.infer<typeof signupSchema>) => {
@@ -83,6 +88,17 @@ export const SignUpForm = ({
     }
 
     mutate({ formData, token });
+  };
+
+  const handleCheckNickname = async () => {
+    const nickname = values.user.nickname;
+    const { data: isNicknameNotValid } = await checkNickname(nickname);
+    console.log(isNicknameNotValid);
+    isNicknameNotValid
+      ? (setError('user.nickname', { message: '중복된 닉네임입니다.' }),
+        setNicknameAvaibleMessage(null))
+      : (clearErrors('user.nickname'),
+        setNicknameAvaibleMessage('사용가능한 닉네임입니다.'));
   };
 
   const handleDropSingleFile = useCallback(
@@ -120,10 +136,25 @@ export const SignUpForm = ({
                 <FormLabel className="text-base text-[#767676]">
                   닉네임
                 </FormLabel>
-                <FormControl className="h-14 p-4 text-[#767676] md:text-base">
-                  <Input placeholder="닉네임을 입력해주세요" {...field} />
-                </FormControl>
+                <div className="flex items-center gap-2">
+                  <FormControl className="h-14 p-4 text-[#767676] md:text-base">
+                    <Input placeholder="닉네임을 입력해주세요" {...field} />
+                  </FormControl>
+                  <Button
+                    onClick={handleCheckNickname}
+                    type="button"
+                    className="h-14"
+                    disabled={!values.user.nickname}
+                  >
+                    중복 확인
+                  </Button>
+                </div>
                 <FormMessage />
+                {nicknameAvaibleMessage && (
+                  <p className={cn('text-sm font-medium text-green-500')}>
+                    {nicknameAvaibleMessage}
+                  </p>
+                )}
               </FormItem>
             )}
           />

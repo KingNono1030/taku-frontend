@@ -40,6 +40,7 @@ const navLists = [
 export default function Header() {
   const isLoggedIn = useUserStore((state) => state.isLoggedIn);
   const user = useUserStore((state) => state.user);
+
   const { mutate: logout } = useLogout();
   return (
     // 가운데 정렬을 위해 container 클래스 추가
@@ -136,10 +137,7 @@ export default function Header() {
               <DropdownMenu>
                 <DropdownMenuTrigger>
                   <Avatar>
-                    <AvatarImage
-                      src={user?.profile_image}
-                      alt={user?.nickname}
-                    />
+                    <AvatarImage src={user?.profileImg} alt={user?.nickname} />
                     <AvatarFallback>CN</AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
