@@ -29,6 +29,7 @@ import {
   useCommunityGenres,
   useCreateCommunityCategory,
 } from '@/queries/community';
+import useUserStore from '@/store/userStore';
 
 import { MultiSelect } from '../multi-select/MultiSelect';
 import { Label } from '../ui/label';
@@ -47,6 +48,8 @@ type Genre = {
 
 const CategoryDialog = () => {
   const navigate = useNavigate();
+
+  const user = useUserStore((state) => state.user);
 
   // 장르 목록 조회
   const { data: genreList, isPending, error } = useCommunityGenres();
@@ -116,7 +119,7 @@ const CategoryDialog = () => {
   return (
     <Dialog modal={false} open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" onClick={() => form.reset()}>
+        <Button variant="outline" onClick={() => form.reset()} disabled={!user}>
           카테고리 만들기
         </Button>
       </DialogTrigger>

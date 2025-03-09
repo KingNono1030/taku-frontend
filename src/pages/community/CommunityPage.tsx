@@ -21,6 +21,7 @@ import SectionLayout from '@/layout/SectionLayout';
 import { duckuWithoutAuth } from '@/lib/axiosInstance';
 import { useCommunityBookmark } from '@/queries/community';
 import { deleteCommunityBookmark } from '@/services/community';
+import useUserStore from '@/store/userStore';
 
 import PaginationComponent from '../../components/custom-pagination/CustomPagination';
 
@@ -203,6 +204,8 @@ const CategoryCard = ({ category }: { category: Category }) => {
 const CommunityPage = () => {
   const quiryClient = useQueryClient();
 
+  const user = useUserStore((state) => state.user);
+
   const [page, setPage] = useState(0);
   const sort = 'name,asc';
   const [search, setSearch] = useState('');
@@ -255,7 +258,7 @@ const CommunityPage = () => {
                 내 커뮤니티
               </h2>
               <div className="flex-col space-y-6">
-                <BookmarkList />
+                {user ? <BookmarkList /> : <div>로그인이 필요합니다.</div>}
               </div>
             </div>
           </div>

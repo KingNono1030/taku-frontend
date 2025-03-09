@@ -47,8 +47,6 @@ const CommunityCategoryPage = () => {
   });
 
   const handleClickedBookmark = () => {
-    console.log('북마크 클릭', data.data.bookmark);
-
     if (data.data.bookmark) {
       deleteBookmarkMutate();
     } else {
