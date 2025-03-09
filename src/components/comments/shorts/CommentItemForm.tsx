@@ -20,6 +20,7 @@ import {
   useEditShortsCommentReply,
   useShortsComment,
 } from '@/queries/shorts';
+import useUserStore from '@/store/userStore';
 
 const addCommentSchema = z.object({
   comment: z.string().nonempty('댓글을 입력해주세요.'),
@@ -51,6 +52,8 @@ const CommentItemForm = ({
       comment: '',
     },
   });
+
+  const user = useUserStore((state) => state.user);
 
   //댓글 리스트 리프레시
   const { refetch: resetComments } = useShortsComment(parentId);
@@ -130,7 +133,7 @@ const CommentItemForm = ({
           <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
-        <div className="flex w-full flex-col items-end gap-2 bg-transparent">
+        <div className="bg-tFransparent flex w-full flex-col items-end gap-2">
           <FormField
             name="comment"
             control={form.control}
@@ -138,7 +141,9 @@ const CommentItemForm = ({
               <FormItem className="w-full">
                 <FormControl>
                   <Textarea
-                    placeholder="댓글 추가..."
+                    placeholder={
+                      user ? '댓글 추가...' : '로그인 후 이용해주세요.'
+                    }
                     className={'min-h-10 border-stone-700 bg-transparent'}
                     rows={
                       form.watch('comment').split('\n').length > 2
@@ -148,6 +153,7 @@ const CommentItemForm = ({
                     {...field}
                     onKeyDown={handleKeyDown}
                     autoFocus
+                    disabled={!user}
                   />
                 </FormControl>
                 <FormMessage />

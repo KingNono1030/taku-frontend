@@ -5,8 +5,9 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { ImageOff, SquarePen, User } from 'lucide-react';
+import { SquarePen, User } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import {
   Table,
@@ -18,6 +19,7 @@ import {
 } from '@/components/ui/table';
 import { duckuWithoutAuth } from '@/lib/axiosInstance';
 import { formatKoreanDateWithLimit } from '@/lib/utils';
+import useUserStore from '@/store/userStore';
 
 import PaginationComponent from '../custom-pagination/CustomPagination';
 import DropdownFilter from '../dropdown-filter/DropdownFilter';
@@ -62,6 +64,8 @@ const getCommunityPosts = async (
 const DataTable = () => {
   const { category } = useParams();
 
+  const user = useUserStore((state) => state.user);
+
   const quiryClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -97,6 +101,9 @@ const DataTable = () => {
   };
 
   const handleMoveCreatePost = () => {
+    if (!user) {
+      return toast.error('로그인이 필요한 서비스입니다.');
+    }
     navigate(`/community/${category}/add`);
   };
 
@@ -189,9 +196,7 @@ const DataTable = () => {
                 <div className="flex items-center gap-4">
                   <Avatar className="h-16 w-16 rounded-lg">
                     <AvatarImage src={post.imageUrl} alt="@shadcn" />
-                    <AvatarFallback className="rounded-lg">
-                      <ImageOff />
-                    </AvatarFallback>
+                    <AvatarFallback className="rounded-lg bg-inherit"></AvatarFallback>
                   </Avatar>
                   {post.title}
                 </div>

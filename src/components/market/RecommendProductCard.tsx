@@ -42,7 +42,7 @@ export const RecommendProductCard = ({
           )}
           {!thumbnail_url && (
             <div className="flex aspect-square w-full items-center justify-center bg-gray-200">
-              <ImageOff size={64} />
+              <ImageOff size={64} color="#b1b1b1" />
             </div>
           )}
         </div>

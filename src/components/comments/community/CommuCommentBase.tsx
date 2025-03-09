@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { MessageCircle, User } from 'lucide-react';
+import { toast } from 'sonner';
 
 import DeleteAlertDialog from '@/components/alert-dialog/DeleteAlertDialog';
 import ReportButton from '@/components/report/ReportButton';
@@ -11,11 +12,10 @@ import {
   useCommunityDetail,
   useDeleteCommunityComment,
 } from '@/queries/community';
+import useUserStore from '@/store/userStore';
 
 import CommentButton from '../CommentButton';
 import CommuCommentItemForm from './CommuCommentItemForm';
-
-const SAME_USER = true;
 
 type CommuCommentBaseProps = {
   postId: string;
@@ -24,6 +24,7 @@ type CommuCommentBaseProps = {
   avatarUrl: string;
   postedAt: string;
   comment: string;
+  isOwner: boolean;
   hasReply?: boolean;
 };
 
@@ -34,6 +35,7 @@ const CommuCommentBase = ({
   avatarUrl,
   postedAt,
   comment,
+  isOwner,
   hasReply,
 }: CommuCommentBaseProps) => {
   const [openCommentForm, setOpenCommentForm] = useState(false);
@@ -41,6 +43,8 @@ const CommuCommentBase = ({
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   const [isEditing, setIsEditing] = useState(false);
+
+  const user = useUserStore((state) => state.user);
 
   const { refetch: resetComments } = useCommunityDetail(postId);
 
@@ -106,7 +110,7 @@ const CommuCommentBase = ({
                   </div>
                 </div>
               </div>
-              {SAME_USER ? (
+              {isOwner ? (
                 <CommentButton
                   onClickEdit={handleClickEdit}
                   onClickDelete={handleOpenDeleteDialog}
@@ -124,7 +128,12 @@ const CommuCommentBase = ({
               {!hasReply && (
                 <Button
                   variant="outline"
-                  onClick={() => setOpenCommentForm(!openCommentForm)}
+                  onClick={() => {
+                    if (!user) {
+                      return toast.error('로그인 후 이용해주세요.');
+                    }
+                    setOpenCommentForm(!openCommentForm);
+                  }}
                   className="w-fit font-bold"
                 >
                   <MessageCircle />

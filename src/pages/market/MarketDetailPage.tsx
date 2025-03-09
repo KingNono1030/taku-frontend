@@ -160,7 +160,7 @@ const MarketDetailPage = () => {
 
   return (
     <div className="mx-auto w-full max-w-[1240px]">
-      <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
+      <div className="mt-10 grid grid-cols-1 gap-10 md:grid-cols-2">
         <section>
           <div>
             {imageUrlList && !!imageUrlList.length && (
@@ -189,7 +189,7 @@ const MarketDetailPage = () => {
             )}
             {(imageUrlList && !!imageUrlList.length) || (
               <div className="flex aspect-square w-full items-center justify-center bg-gray-200">
-                <ImageOff size={64} />
+                <ImageOff size={64} color="#b1b1b1" />
               </div>
             )}
           </div>
@@ -310,20 +310,22 @@ const MarketDetailPage = () => {
           )}
         </div>
       </section>
-      <div className="group fixed bottom-10 right-10">
-        <Link to={'/market/add'}>
-          <Button
-            asChild
-            className="relative z-20 rounded-full shadow-lg shadow-slate-400 transition-transform duration-300 group-hover:translate-x-8"
-            size={'icon'}
-          >
-            <Plus />
-          </Button>
-          <div className="absolute -right-2 bottom-1/2 z-10 w-[140px] translate-y-1/2 rounded bg-gray-100/50 px-3 py-2 font-semibold text-black opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100">
-            장터 게시글 추가
-          </div>
-        </Link>
-      </div>
+      {user && (
+        <div className="group fixed bottom-10 right-10">
+          <Link to={'/market/add'}>
+            <Button
+              asChild
+              className="relative z-20 rounded-full shadow-lg shadow-slate-400 transition-transform duration-300 group-hover:translate-x-8"
+              size={'icon'}
+            >
+              <Plus />
+            </Button>
+            <div className="absolute -right-2 bottom-1/2 z-10 w-[140px] translate-y-1/2 rounded bg-gray-100/50 px-3 py-2 font-semibold text-black opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100">
+              장터 게시글 추가
+            </div>
+          </Link>
+        </div>
+      )}
       <AlertDialog
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}

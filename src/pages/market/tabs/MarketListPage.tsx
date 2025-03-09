@@ -25,6 +25,7 @@ import {
 import { Slider } from '@/components/ui/slider';
 import { CATEGORY_MAP } from '@/constants/jangter';
 import { useProductItems } from '@/queries/jangter';
+import useUserStore from '@/store/userStore';
 import { FindProductItemsQuery } from '@/types/api/jangter.types';
 
 export interface ProductItem {
@@ -120,6 +121,8 @@ const MarketListPage = () => {
     categoryId: undefined,
     searchKeyword: undefined,
   });
+
+  const user = useUserStore((state) => state.user);
 
   const { data, fetchNextPage, isFetchingNextPage } =
     useProductItems(queryParams);
@@ -296,20 +299,22 @@ const MarketListPage = () => {
       </section>
 
       {/* 글쓰기 버튼 */}
-      <div className="group fixed bottom-10 right-10">
-        <Link to={'/market/add'}>
-          <Button
-            asChild
-            className="relative z-20 rounded-full shadow-lg shadow-slate-400 transition-transform duration-300 group-hover:translate-x-8"
-            size={'icon'}
-          >
-            <Plus />
-          </Button>
-          <div className="absolute -right-2 bottom-1/2 z-10 w-[140px] translate-y-1/2 rounded bg-gray-100/50 px-3 py-2 font-semibold text-black opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100">
-            장터 게시글 추가
-          </div>
-        </Link>
-      </div>
+      {user && (
+        <div className="group fixed bottom-10 right-10">
+          <Link to={'/market/add'}>
+            <Button
+              asChild
+              className="relative z-20 rounded-full shadow-lg shadow-slate-400 transition-transform duration-300 group-hover:translate-x-8"
+              size={'icon'}
+            >
+              <Plus />
+            </Button>
+            <div className="absolute -right-2 bottom-1/2 z-10 w-[140px] translate-y-1/2 rounded bg-gray-100/50 px-3 py-2 font-semibold text-black opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100">
+              장터 게시글 추가
+            </div>
+          </Link>
+        </div>
+      )}
     </div>
   );
 };

@@ -17,7 +17,7 @@ const FallbackImage = ({ src, alt, className }: FallbackImageProps) => {
         className="h-full w-full object-cover"
       />
       <AvatarFallback className="rounded-none [&_svg]:size-10">
-        <ImageOff />
+        <ImageOff color="#b1b1b1" />
       </AvatarFallback>
     </Avatar>
   );

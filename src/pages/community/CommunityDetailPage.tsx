@@ -11,11 +11,13 @@ import {
   User,
 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import DeleteAlertDialog from '@/components/alert-dialog/DeleteAlertDialog';
 import FallbackImage from '@/components/avatar/FallbackImage';
 import CommuCommentList from '@/components/comments/community/CommuCommentList';
 import CommuCommentMainForm from '@/components/comments/community/CommuCommentMainForm';
+import ReportDialog from '@/components/report/ReportDialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -39,11 +41,14 @@ import {
   useDeleteCommunityDetail,
   useLikeCommunityDetail,
 } from '@/queries/community';
+import useUserStore from '@/store/userStore';
 
 const CommunityDetailPage = () => {
   const { category, id } = useParams();
 
   const navigate = useNavigate();
+
+  const user = useUserStore((state) => state.user);
 
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
@@ -69,6 +74,9 @@ const CommunityDetailPage = () => {
   });
 
   const handleClickedLike = () => {
+    if (!user) {
+      return toast.error('로그인이 필요한 서비스입니다.');
+    }
     likeCommunityDetail();
   };
 
@@ -122,32 +130,39 @@ const CommunityDetailPage = () => {
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end" className="w-fit px-2 py-0">
-              <ul className="flex flex-col">
-                <li>
-                  <Button variant="ghost" onClick={onClickEdit}>
-                    <Pencil />
-                    수정
-                  </Button>
-                </li>
-                <li>
-                  <Button variant="ghost" onClick={onClickDelete}>
-                    <Trash2 />
-                    삭제
-                  </Button>
-                </li>
-              </ul>
+              {communityDetailInfo.data?.owner ? (
+                <ul className="flex flex-col">
+                  <li>
+                    <Button variant="ghost" onClick={onClickEdit}>
+                      <Pencil />
+                      수정
+                    </Button>
+                  </li>
+                  <li>
+                    <Button variant="ghost" onClick={onClickDelete}>
+                      <Trash2 />
+                      삭제
+                    </Button>
+                  </li>
+                </ul>
+              ) : (
+                <ReportDialog />
+              )}
             </PopoverContent>
           </Popover>
         </div>
         <div className="flex justify-between gap-4">
           <div className="flex items-center gap-2 font-bold">
             <Avatar>
-              <AvatarImage src={'https://github.com/shadcn.png'} alt={'aa'} />
+              <AvatarImage
+                src={communityDetailInfo.data?.authorProfileUrl}
+                alt={'aa'}
+              />
               <AvatarFallback>
                 <User />
               </AvatarFallback>
             </Avatar>
-            <p>홍길동</p>
+            <p>{communityDetailInfo.data?.authorNickname}</p>
             <p className="text-stone-500">
               {formatKoreanDateWithLimit(communityDetailInfo.data?.updateAt)}
             </p>
@@ -228,12 +243,7 @@ const CommunityDetailPage = () => {
             />
             좋아요
           </Button>
-          <div
-            className="cursor-pointer font-bold text-stone-500 hover:text-stone-700"
-            onClick={() => console.log('신고')}
-          >
-            신고
-          </div>
+          {!communityDetailInfo.data?.owner && <ReportDialog />}
         </div>
       </div>
       <Separator className="my-8" />

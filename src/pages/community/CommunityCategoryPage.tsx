@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Bookmark, BookmarkCheck, ChevronLeft } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import FallbackImage from '@/components/avatar/FallbackImage';
 import DataTable from '@/components/data-table/DataTable';
@@ -12,6 +13,7 @@ import {
   useCreateCommunityBookmark,
   useDeleteCommunityBookmark,
 } from '@/queries/community';
+import useUserStore from '@/store/userStore';
 
 const getDetailCategory = async (category: string) => {
   const response = await duckuWithoutAuth.get(`/api/category/${category}`);
@@ -26,6 +28,8 @@ type Gerne = {
 const CommunityCategoryPage = () => {
   const { category } = useParams();
   const navigate = useNavigate();
+
+  const user = useUserStore((state) => state.user);
 
   const { data, status, error, refetch } = useQuery({
     queryKey: ['category', category],
@@ -47,6 +51,10 @@ const CommunityCategoryPage = () => {
   });
 
   const handleClickedBookmark = () => {
+    if (!user) {
+      return toast.error('로그인이 필요한 서비스입니다.');
+    }
+
     if (data.data.bookmark) {
       deleteBookmarkMutate();
     } else {

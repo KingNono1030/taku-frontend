@@ -137,7 +137,7 @@ const BookmarkList = () => {
                   alt={item.categoryName}
                 />
                 <AvatarFallback>
-                  <ImageOff />
+                  <ImageOff color="#b1b1b1" />
                 </AvatarFallback>
               </Avatar>
               <span

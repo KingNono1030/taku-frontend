@@ -220,7 +220,7 @@ const MainPage = () => {
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center [&_svg]:size-10">
-                    <ImageOff />
+                    <ImageOff color="#b1b1b1" />
                   </div>
                 )}
               </div>
