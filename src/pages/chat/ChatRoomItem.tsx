@@ -1,9 +1,9 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useRoomUnreadCount } from '@/queries/chat';
-import type { ChatRoom } from '@/types/chat-type/chat.types';
+import type { ChatRoomInfo } from '@/types/chat-type/chat.types';
 
 interface ChatRoomItemProps {
-  room: ChatRoom;
+  room: ChatRoomInfo;
   isActive: boolean;
   onSelect: () => void;
 }

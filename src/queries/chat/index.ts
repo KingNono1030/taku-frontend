@@ -16,11 +16,17 @@ export const useChatRooms = () => {
   const user = useUserStore((state) => state.user);
   const token = useUserStore((state) => state.token);
 
-  return useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ['chatRooms'],
     queryFn: getChatRooms,
     enabled: !!user && !!token, // 로그인된 상태에서만 실행
   });
+
+  return {
+    data,
+    isLoading,
+    refetch,
+  };
 };
 
 // 채팅방 생성 mutation hook

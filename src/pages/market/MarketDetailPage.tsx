@@ -52,7 +52,7 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { CATEGORY_MAP, STATUS_MAP } from '@/constants/jangter';
-import { useChat } from '@/hooks/useChat';
+import { useChat } from '@/hooks/chat/useChat';
 import {
   cn,
   formatCurrency,
@@ -278,7 +278,7 @@ const MarketDetailPage = () => {
               <Heart fill="#ef4444" className="text-red-500" />
             </Button>
             <Button
-              onClick={() => handleChat(productId, sellerId as number)}
+              onClick={() => handleChat(productId)}
               className="w-full"
               disabled={isOwnPost}
             >
