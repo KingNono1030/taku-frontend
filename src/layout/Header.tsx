@@ -29,6 +29,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useLogout } from '@/queries/auth';
+import { useUser } from '@/queries/user';
 import useUserStore from '@/store/userStore';
 
 const navLists = [
@@ -38,8 +39,8 @@ const navLists = [
 ];
 
 export default function Header() {
-  const isLoggedIn = useUserStore((state) => state.isLoggedIn);
   const user = useUserStore((state) => state.user);
+  const { data: userDataResponse } = useUser(user?.id as number);
 
   const { mutate: logout } = useLogout();
   return (
@@ -133,16 +134,21 @@ export default function Header() {
           </Drawer>
 
           <div className="hidden md:inline-flex">
-            {isLoggedIn() ? (
+            {userDataResponse?.data ? (
               <DropdownMenu>
                 <DropdownMenuTrigger>
                   <Avatar>
-                    <AvatarImage src={user?.profileImg} alt={user?.nickname} />
+                    <AvatarImage
+                      src={userDataResponse?.data?.profileImg}
+                      alt={userDataResponse?.data?.nickname}
+                    />
                     <AvatarFallback>CN</AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>{user?.nickname}</DropdownMenuLabel>
+                  <DropdownMenuLabel>
+                    {userDataResponse?.data?.nickname}
+                  </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <Link to={'/mypage'}>
                     <DropdownMenuItem>
