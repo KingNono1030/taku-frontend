@@ -74,17 +74,17 @@ export const useDeleteUser = (userId: number) => {
   });
 };
 
-export const useUser = (userId: number, token: string) => {
+export const useUser = (userId: number) => {
   const queryClient = useQueryClient();
 
   return useQuery({
     queryKey: ['user', userId],
     queryFn: async () => {
-      return await getUser(userId, token);
+      return await getUser(userId);
     },
     staleTime: 300000,
     initialData: () => {
-      return queryClient.getQueryData(['user', userId]) ?? [];
+      return queryClient.getQueryData(['user', userId]);
     },
   });
 };

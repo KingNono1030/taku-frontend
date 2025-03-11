@@ -346,7 +346,7 @@ const MyPage = () => {
               {userPurchases ? (
                 <div className="flex flex-col gap-3 rounded-lg border p-8 text-center text-gray-500">
                   {userPurchases.map((purchase) => (
-                    <JangterPurchaseCard data={purchase} />
+                    <JangterPurchaseCard key={purchase.id} data={purchase} />
                   ))}
                   <div className="mt-8">
                     <PaginationComponent

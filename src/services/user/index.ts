@@ -16,13 +16,8 @@ export interface RegisterUserRequestWithJSON
 
 export const getUser = async (
   userId: number,
-  token: string,
 ): Promise<FindUserDetailSuccessResponse> => {
-  const { data } = await ducku.get(`/api/user/${userId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const { data } = await duckuWithAuth.get(`/api/user/${userId}`);
   return data;
 };
 
