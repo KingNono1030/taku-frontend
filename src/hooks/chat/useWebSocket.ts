@@ -130,7 +130,6 @@ export const useWebSocket = ({ roomId, token, userId }: UseWebSocketProps) => {
           roomId,
           senderId: userId,
           content,
-          type: 'TEXT',
         }),
       });
 
