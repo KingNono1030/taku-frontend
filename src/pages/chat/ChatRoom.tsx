@@ -18,7 +18,7 @@ const ChatRoom = () => {
     useWebSocket({
       roomId: roomId ? roomId : undefined,
       token: token ? token : undefined,
-      userId: user?.user_id ? user.user_id : undefined,
+      userId: user?.id ? user.id : undefined,
     });
 
   // 채팅방 정보 로드
@@ -86,12 +86,12 @@ const ChatRoom = () => {
           <div
             key={message.id}
             className={`flex items-end space-x-3 ${
-              message.senderId === user?.user_id
+              message.senderId === user?.id
                 ? 'flex-row-reverse space-x-reverse'
                 : 'flex-row'
             }`}
           >
-            {message.senderId !== user?.user_id && (
+            {message.senderId !== user?.id && (
               <div className="h-9 w-9 rounded-full bg-primary/20 ring-1 ring-primary/50">
                 <img
                   src={roomInfo?.sellerProfileImage || '/default-avatar.png'}
@@ -103,7 +103,7 @@ const ChatRoom = () => {
             <div className="flex flex-col items-end">
               <div
                 className={`w-fit max-w-[400px] rounded-2xl px-4 py-3 ${
-                  message.senderId === user?.user_id
+                  message.senderId === user?.id
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-white text-foreground shadow-sm'
                 }`}
@@ -111,7 +111,7 @@ const ChatRoom = () => {
                 <p className="break-words text-sm">{message.content}</p>
                 <div
                   className={`mt-1 text-[10px] ${
-                    message.senderId === user?.user_id
+                    message.senderId === user?.id
                       ? 'text-primary-foreground/70'
                       : 'text-muted-foreground'
                   }`}
@@ -122,7 +122,7 @@ const ChatRoom = () => {
                   })}
                 </div>
               </div>
-              {message.senderId === user?.user_id && (
+              {message.senderId === user?.id && (
                 <span className="mt-1 text-[10px] text-muted-foreground">
                   {Object.keys(readStatus).length > 1 ? '읽음' : '안읽음'}
                 </span>
