@@ -2,9 +2,11 @@ import React from 'react';
 
 import { AxiosResponse } from 'axios';
 import { MessageSquareText, ThumbsDown, ThumbsUp } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { duckuWithoutAuth } from '@/lib/axiosInstance';
+import useUserStore from '@/store/userStore';
 
 import ShortsUploadDialog from './ShortsUploadDialog';
 
@@ -62,7 +64,13 @@ const ShortsButtonLayout = ({
   setOpenComments,
   resetVideoInfo,
 }: ShortsButtonLayoutProps) => {
+  const user = useUserStore((state) => state.user);
+
   const handleClickThumbsUp = async () => {
+    if (!user) {
+      return toast.error('로그인이 필요한 서비스입니다.');
+    }
+
     if (selectedVideoInfo.user_like_interaction?.userLike) {
       await cancelShortsLike(selectedVideoInfo.shorts_id).then(() => {
         resetVideoInfo && resetVideoInfo();
@@ -75,6 +83,10 @@ const ShortsButtonLayout = ({
   };
 
   const handleClickThumbsDown = async () => {
+    if (!user) {
+      return toast.error('로그인이 필요한 서비스입니다.');
+    }
+
     if (selectedVideoInfo.user_like_interaction?.userDislike) {
       await cancelShortsDislike(selectedVideoInfo.shorts_id).then(() => {
         resetVideoInfo && resetVideoInfo();
@@ -88,10 +100,12 @@ const ShortsButtonLayout = ({
   return (
     <div className="flex flex-col items-center justify-center gap-4 text-center text-sm">
       {/* 업로드 버튼 */}
-      <div>
-        <ShortsUploadDialog />
-        <p>업로드</p>
-      </div>
+      {user && (
+        <div>
+          <ShortsUploadDialog />
+          <p>업로드</p>
+        </div>
+      )}
       {/* 좋아요 버튼 */}
       <div>
         <Button

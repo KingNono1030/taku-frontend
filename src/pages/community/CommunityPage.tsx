@@ -9,6 +9,7 @@ import { Bookmark, ImageOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import DeleteAlertDialog from '@/components/alert-dialog/DeleteAlertDialog';
+import FallbackImage from '@/components/avatar/FallbackImage';
 import CategoryDialog from '@/components/category/CategoryDialog';
 import LoadingSpinner from '@/components/loading/LoadingSpinner';
 import SearchBar from '@/components/search-bar/SearchBar';
@@ -20,6 +21,7 @@ import SectionLayout from '@/layout/SectionLayout';
 import { duckuWithoutAuth } from '@/lib/axiosInstance';
 import { useCommunityBookmark } from '@/queries/community';
 import { deleteCommunityBookmark } from '@/services/community';
+import useUserStore from '@/store/userStore';
 
 import PaginationComponent from '../../components/custom-pagination/CustomPagination';
 
@@ -135,7 +137,7 @@ const BookmarkList = () => {
                   alt={item.categoryName}
                 />
                 <AvatarFallback>
-                  <ImageOff />
+                  <ImageOff color="#b1b1b1" />
                 </AvatarFallback>
               </Avatar>
               <span
@@ -179,11 +181,7 @@ const CategoryCard = ({ category }: { category: Category }) => {
       }}
     >
       <Card className="aspect-video cursor-pointer overflow-hidden rounded bg-[#d3d3d3] transition-opacity hover:opacity-90">
-        <img
-          src={category.imageUrl}
-          alt={category.name}
-          className="h-full w-full object-cover"
-        />
+        <FallbackImage src={category.imageUrl} alt={category.name} />
       </Card>
       <div className="space-y-1">
         <h3 className="font-bold">{category.name}</h3>
@@ -205,6 +203,8 @@ const CategoryCard = ({ category }: { category: Category }) => {
 
 const CommunityPage = () => {
   const quiryClient = useQueryClient();
+
+  const user = useUserStore((state) => state.user);
 
   const [page, setPage] = useState(0);
   const sort = 'name,asc';
@@ -258,7 +258,7 @@ const CommunityPage = () => {
                 내 커뮤니티
               </h2>
               <div className="flex-col space-y-6">
-                <BookmarkList />
+                {user ? <BookmarkList /> : <div>로그인이 필요합니다.</div>}
               </div>
             </div>
           </div>

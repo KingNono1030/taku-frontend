@@ -1,9 +1,10 @@
-import { Eye } from 'lucide-react';
+import { Eye, ImageOff } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import { formatCurrency } from '@/lib/utils';
 import { JangterProduct } from '@/types/api/jangter.types';
 
+import FallbackImage from '../avatar/FallbackImage';
 import {
   Card,
   CardContent,
@@ -20,15 +21,15 @@ export const ProductListCard = ({ data }: { data: JangterProduct }) => {
       <Card className="overflow-hidden">
         <div className="relative aspect-square w-full overflow-hidden">
           {imageUrl && (
-            <img
-              className="absolute inset-0 w-full object-cover transition-transform duration-300 hover:scale-110"
+            <FallbackImage
               src={imageUrl}
               alt={`${title} 상품 썸네일`}
+              className="w-full object-cover transition-transform duration-300 hover:scale-110"
             />
           )}
           {!imageUrl && (
             <div className="flex aspect-square w-full items-center justify-center bg-gray-200">
-              등록된 상품 이미지가 없습니다...
+              <ImageOff size={64} color="#b1b1b1" />
             </div>
           )}
         </div>
