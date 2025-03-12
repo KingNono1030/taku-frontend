@@ -9,16 +9,19 @@ import { Bookmark, ImageOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import DeleteAlertDialog from '@/components/alert-dialog/DeleteAlertDialog';
+import FallbackImage from '@/components/avatar/FallbackImage';
 import CategoryDialog from '@/components/category/CategoryDialog';
+import LoadingSpinner from '@/components/loading/LoadingSpinner';
 import SearchBar from '@/components/search-bar/SearchBar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import SectionLayout from '@/layout/SectionLayout';
-import { testAxios } from '@/lib/axiosInstance';
+import { duckuWithoutAuth } from '@/lib/axiosInstance';
 import { useCommunityBookmark } from '@/queries/community';
 import { deleteCommunityBookmark } from '@/services/community';
+import useUserStore from '@/store/userStore';
 
 import PaginationComponent from '../../components/custom-pagination/CustomPagination';
 
@@ -30,7 +33,7 @@ const getCategory = async (
   sort: string,
   name: string,
 ) => {
-  const response = await testAxios.get('/api/category', {
+  const response = await duckuWithoutAuth.get('/api/category', {
     params: {
       page,
       size,
@@ -58,16 +61,24 @@ type Category = {
 };
 
 export const PopularCategories = () => {
-  const { data } = useQuery({
+  const { data, error, isPending } = useQuery({
     queryKey: ['category', 'popular'],
     queryFn: () => getCategory(0, 4, 'viewCount,desc', ''),
     placeholderData: keepPreviousData,
     staleTime: 5000,
   });
 
+  if (isPending) {
+    return <LoadingSpinner />;
+  }
+
+  if (error) {
+    return <div>에러: {error.message}</div>;
+  }
+
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-      {data?.data.content.map((category: Category) => (
+      {data?.data?.content?.map((category: Category) => (
         <CategoryCard key={category.id} category={category} />
       ))}
     </div>
@@ -93,59 +104,61 @@ const BookmarkList = () => {
 
   const handleDeleteBookmark = () => {
     if (bookmarkId) {
-      deleteCommunityBookmark(bookmarkId.toString());
-      refetch();
+      deleteCommunityBookmark(bookmarkId.toString()).then(() => {
+        refetch();
+      });
     }
     setIsDialogOpen(false);
   };
 
   if (isPending) {
-    return <div>로딩중...</div>;
+    return <LoadingSpinner />;
   }
 
   if (error) {
-    return <div>에러: {error.message}</div>;
+    return <div></div>;
   }
 
   return (
     <div className="flex-col space-y-6">
-      {data.data?.categoryBookmarks?.map((item: any) => (
-        <div
-          key={item.bookmarkId}
-          className="flex w-full items-center justify-between"
-        >
+      {data.data?.categoryBookmarks?.length > 0 &&
+        data.data?.categoryBookmarks?.map((item: any) => (
           <div
-            className="flex cursor-pointer items-center gap-2"
-            onClick={() => handleMoveToCategory(item.categoryId)}
+            key={item.bookmarkId}
+            className="flex w-full items-center justify-between"
           >
-            <Avatar className="rounded-xl">
-              <AvatarImage
-                src={item.categoryImageUrl}
-                alt={item.categoryName}
-              />
-              <AvatarFallback>
-                <ImageOff />
-              </AvatarFallback>
-            </Avatar>
-            <span
-              className="cursor-pointer text-sm font-semibold transition-colors duration-100 hover:text-primary"
-              onClick={() => {
-                console.log('click');
-              }}
+            <div
+              className="flex cursor-pointer items-center gap-2"
+              onClick={() => handleMoveToCategory(item.categoryId)}
             >
-              {item.categoryName}
-            </span>
+              <Avatar className="rounded-xl">
+                <AvatarImage
+                  src={item.categoryImageUrl}
+                  alt={item.categoryName}
+                />
+                <AvatarFallback>
+                  <ImageOff color="#b1b1b1" />
+                </AvatarFallback>
+              </Avatar>
+              <span
+                className="cursor-pointer text-sm font-semibold transition-colors duration-100 hover:text-primary"
+                onClick={() => {
+                  console.log('click');
+                }}
+              >
+                {item.categoryName}
+              </span>
+            </div>
+            <Button
+              variant={'ghost'}
+              size="icon"
+              className="[&_svg]:size-6"
+              onClick={() => handleDeleteDialogOpen(item.categoryId)}
+            >
+              <Bookmark fill={'#EAB308'} />
+            </Button>
           </div>
-          <Button
-            variant={'ghost'}
-            size="icon"
-            className="[&_svg]:size-6"
-            onClick={() => handleDeleteDialogOpen(item.categoryId)}
-          >
-            <Bookmark fill={'#EAB308'} />
-          </Button>
-        </div>
-      ))}
+        ))}
       <DeleteAlertDialog
         title="북마크 삭제"
         content="북마크를 삭제하시겠습니까?"
@@ -168,11 +181,7 @@ const CategoryCard = ({ category }: { category: Category }) => {
       }}
     >
       <Card className="aspect-video cursor-pointer overflow-hidden rounded bg-[#d3d3d3] transition-opacity hover:opacity-90">
-        <img
-          src={category.imageUrl}
-          alt={category.name}
-          className="h-full w-full object-cover"
-        />
+        <FallbackImage src={category.imageUrl} alt={category.name} />
       </Card>
       <div className="space-y-1">
         <h3 className="font-bold">{category.name}</h3>
@@ -194,6 +203,8 @@ const CategoryCard = ({ category }: { category: Category }) => {
 
 const CommunityPage = () => {
   const quiryClient = useQueryClient();
+
+  const user = useUserStore((state) => state.user);
 
   const [page, setPage] = useState(0);
   const sort = 'name,asc';
@@ -247,7 +258,7 @@ const CommunityPage = () => {
                 내 커뮤니티
               </h2>
               <div className="flex-col space-y-6">
-                <BookmarkList />
+                {user ? <BookmarkList /> : <div>로그인이 필요합니다.</div>}
               </div>
             </div>
           </div>
@@ -270,7 +281,7 @@ const CommunityPage = () => {
               개의 커뮤니티가 검색됐덕!
             </h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {data.data.content.map((category: Category) => (
+              {data?.data?.content?.map((category: Category) => (
                 <CategoryCard key={category.id} category={category} />
               ))}
             </div>

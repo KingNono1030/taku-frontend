@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { User } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -15,6 +16,7 @@ import {
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { useCreateShortsComment } from '@/queries/shorts';
+import useUserStore from '@/store/userStore';
 
 const addCommentSchema = z.object({
   comment: z.string().nonempty('댓글을 입력해주세요.'),
@@ -35,6 +37,8 @@ const CommentMainForm = ({ parentId, resetComments }: CommentMainFormProps) => {
   });
 
   const [isFocused, setIsFocused] = useState(false);
+
+  const user = useUserStore((state) => state.user);
 
   const form = useForm<z.infer<typeof addCommentSchema>>({
     resolver: zodResolver(addCommentSchema),
@@ -69,8 +73,10 @@ const CommentMainForm = ({ parentId, resetComments }: CommentMainFormProps) => {
         className="flex w-full gap-2"
       >
         <Avatar>
-          <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-          <AvatarFallback>CN</AvatarFallback>
+          <AvatarImage src={user?.profileImg} alt="@shadcn" />
+          <AvatarFallback>
+            <User />
+          </AvatarFallback>
         </Avatar>
         <div className="flex w-full flex-col items-end gap-2 bg-transparent">
           <FormField
@@ -80,7 +86,9 @@ const CommentMainForm = ({ parentId, resetComments }: CommentMainFormProps) => {
               <FormItem className="w-full">
                 <FormControl>
                   <Textarea
-                    placeholder="댓글 추가..."
+                    placeholder={
+                      user ? '댓글 추가...' : '로그인 후 이용해주세요.'
+                    }
                     className={'min-h-10 border-stone-700 bg-transparent'}
                     rows={
                       form.watch('comment').split('\n').length > 2
@@ -90,6 +98,7 @@ const CommentMainForm = ({ parentId, resetComments }: CommentMainFormProps) => {
                     {...field}
                     onKeyDown={handleKeyDown}
                     onFocus={() => setIsFocused(true)}
+                    disabled={!user}
                   />
                 </FormControl>
                 <FormMessage />

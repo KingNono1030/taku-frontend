@@ -20,6 +20,7 @@ import {
   useCreateCommunityComment,
   useUpdateCommunityComment,
 } from '@/queries/community';
+import useUserStore from '@/store/userStore';
 
 const addCommentSchema = z.object({
   content: z.string().nonempty('댓글을 입력해주세요.'),
@@ -50,6 +51,8 @@ const CommuCommentItemForm = ({
 
   //댓글 리스트 리프레시
   const { refetch: resetComments } = useCommunityDetail(parentId);
+
+  const user = useUserStore((state) => state.user);
 
   //댓글 수정
   const { mutate: editCommentMutate } = useUpdateCommunityComment({
@@ -114,10 +117,10 @@ const CommuCommentItemForm = ({
         <div className="flex w-full flex-col gap-2">
           <div className="flex w-full flex-row items-center gap-2">
             <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-              <AvatarFallback>CN</AvatarFallback>
+              <AvatarImage src={user?.profileImg} alt="@shadcn" />
+              <AvatarFallback>{user?.nickname}</AvatarFallback>
             </Avatar>
-            <p className="font-bold">홍길동</p>
+            <p className="font-bold">{user?.nickname}</p>
           </div>
           <div className="flex w-full flex-col items-end gap-2 bg-transparent">
             <FormField

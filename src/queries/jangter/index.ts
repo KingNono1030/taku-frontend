@@ -7,8 +7,11 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 import {
+  addJangterBookmarks,
   createProduct,
+  deleteJangterBookmarks,
   deleteProduct,
+  getJangterBookmarks,
   getJangterRank,
   getProductDetail,
   getProductItems,
@@ -21,6 +24,7 @@ import type {
   CreateProductRequest,
   FindProductItemsQuery,
   FindUserPurchaseQuery,
+  GetBookmarkListQuery,
   JangterProduct,
   UpdateProductRequest,
   UpdateProductStatusRequest,
@@ -157,6 +161,20 @@ export const useUserPurchase = (
   });
 };
 
+export const useJangterBookmarks = (queryParams: GetBookmarkListQuery) => {
+  const queryClient = useQueryClient();
+
+  return useQuery({
+    queryKey: ['jangterBookmarks', queryParams],
+    queryFn: () => getJangterBookmarks(queryParams),
+    staleTime: 1000 * 60 * 5, // 5분
+    retry: 2,
+    initialData: () => {
+      return queryClient.getQueryData(['jangterBookmarks', queryParams]) ?? [];
+    },
+  });
+};
+
 export const useUpdateteProductStatus = (productId: number) => {
   const queryClient = useQueryClient();
 
@@ -168,6 +186,58 @@ export const useUpdateteProductStatus = (productId: number) => {
       // 요청 성공 시 실행할 로직
       queryClient.invalidateQueries({
         queryKey: ['products', productId, 'detail'],
+      });
+    },
+    onError: (error) => {
+      // 요청 실패 시 실행할 로직
+      console.error('Mutation failed:', error);
+    },
+    onSettled: () => {
+      // 요청 완료 후 (성공/실패 관계없이) 실행할 로직
+    },
+  });
+};
+
+export const useAddBookmark = (productId: number) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      await addJangterBookmarks(productId);
+    },
+    onSuccess: () => {
+      // 요청 성공 시 실행할 로직
+      console.log('Mutation succeeded:', productId);
+      queryClient.invalidateQueries({
+        predicate: (query) =>
+          Array.isArray(query.queryKey) &&
+          query.queryKey[0] === 'jangterBookmarks',
+      });
+    },
+    onError: (error) => {
+      // 요청 실패 시 실행할 로직
+      console.error('Mutation failed:', error);
+    },
+    onSettled: () => {
+      // 요청 완료 후 (성공/실패 관계없이) 실행할 로직
+    },
+  });
+};
+
+export const useDeleteBookmark = (productId: number) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      await deleteJangterBookmarks(productId);
+    },
+    onSuccess: () => {
+      // 요청 성공 시 실행할 로직
+      console.log('Mutation succeeded:', productId);
+      queryClient.invalidateQueries({
+        predicate: (query) =>
+          Array.isArray(query.queryKey) &&
+          query.queryKey[0] === 'jangterBookmarks',
       });
     },
     onError: (error) => {

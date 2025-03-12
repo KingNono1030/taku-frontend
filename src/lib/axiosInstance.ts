@@ -75,8 +75,7 @@ const duckuWithoutAuth = axios.create({
 
 duckuWithoutAuth.interceptors.request.use((config) => {
   const token = getToken(); //TODO: test 작업 중
-  config.headers.Authorization = `Bearer ${token}`;
-  // config.headers.Authorization = `Bearer ${TEST_ACCESS_TOKEN}`;
+  config.headers.Authorization = `Bearer ${token ?? ''}`;
   return config;
 });
 

@@ -8,6 +8,7 @@ import Banner1 from '@/assets/banner/banner1.webp';
 import Banner2 from '@/assets/banner/banner2.webp';
 import Banner3 from '@/assets/banner/banner3.webp';
 import Banner4 from '@/assets/banner/banner4.webp';
+import FallbackImage from '@/components/avatar/FallbackImage';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -20,8 +21,10 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import { usePopularCommunityPosts } from '@/queries/community';
+import { useProductItems } from '@/queries/jangter';
 
 import { PopularCategories } from './community/CommunityPage';
+import { ItemCard, ProductItem } from './market/tabs/MarketListPage';
 
 const banners = [
   {
@@ -65,7 +68,7 @@ const MainPage = () => {
   const navigate = useNavigate();
 
   const [selectedPopularType, setSelectedPopularType] = useState(
-    periodTypes[0].id,
+    periodTypes[2].id,
   );
 
   const plugin: any = useRef(
@@ -75,6 +78,19 @@ const MainPage = () => {
   const { data, refetch } = usePopularCommunityPosts({
     periodType: selectedPopularType,
   });
+
+  const { data: itemList } = useProductItems({
+    size: 4,
+    sort: 'day',
+    order: 'desc',
+    minPrice: undefined,
+    maxPrice: undefined,
+    categoryId: undefined,
+    searchKeyword: undefined,
+  });
+
+  const allItems = (itemList?.pages.flatMap((page) => page.data) ??
+    []) as ProductItem[];
 
   const handleMoveToCommunity = () => {
     navigate('/community');
@@ -105,7 +121,7 @@ const MainPage = () => {
             <CarouselItem key={index}>
               <Card className="h-full w-full">
                 <CardContent className="flex h-[740px] items-center justify-center p-0">
-                  <img
+                  <FallbackImage
                     src={banners[index].src}
                     alt={banners[index].alt}
                     className="h-full w-full object-cover object-bottom"
@@ -140,7 +156,7 @@ const MainPage = () => {
         <div className="mb-10 flex items-center justify-between align-bottom">
           <h1 className="text-4xl font-bold">인기 게시글 TOP 10</h1>
           <div className="flex">
-            {periodTypes.map((type) => (
+            {periodTypes?.map((type) => (
               <Button
                 key={type.id}
                 variant="ghost"
@@ -161,6 +177,9 @@ const MainPage = () => {
             <Card
               key={post.id}
               className="flex cursor-pointer items-center justify-between gap-4 rounded-xl p-4 font-bold"
+              onClick={() =>
+                navigate(`/community/${post.categoryId}/${post.id}`)
+              }
             >
               <div className="flex flex-col items-start gap-2">
                 <h3 className="text-sm text-muted-foreground">
@@ -194,14 +213,14 @@ const MainPage = () => {
               </div>
               <div className="flex h-[120px] w-40 items-center justify-center overflow-hidden rounded-xl bg-gray-200">
                 {post?.imageUrl ? (
-                  <img
+                  <FallbackImage
                     src={post?.imageUrl}
                     alt="thumbnail"
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center">
-                    <ImageOff />
+                  <div className="flex h-full w-full items-center justify-center [&_svg]:size-10">
+                    <ImageOff color="#b1b1b1" />
                   </div>
                 )}
               </div>
@@ -221,7 +240,18 @@ const MainPage = () => {
             더보기
           </Button>
         </div>
-        <div className="h-[400px] w-full bg-gray-200">덕후장터 컨텐츠 영역</div>
+        <div className="grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4">
+          {allItems.length > 0 &&
+            allItems?.map((item: ProductItem, index: number) => (
+              <ItemCard
+                key={item.id}
+                item={item}
+                index={index}
+                itemsLength={allItems.length}
+                lastItemRef={null}
+              />
+            ))}
+        </div>
       </section>
     </div>
   );

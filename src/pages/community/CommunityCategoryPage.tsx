@@ -1,19 +1,22 @@
 import { useQuery } from '@tanstack/react-query';
 import { Bookmark, BookmarkCheck, ChevronLeft } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
+import FallbackImage from '@/components/avatar/FallbackImage';
 import DataTable from '@/components/data-table/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { testAxios } from '@/lib/axiosInstance';
+import { duckuWithoutAuth } from '@/lib/axiosInstance';
 import {
   useCreateCommunityBookmark,
   useDeleteCommunityBookmark,
 } from '@/queries/community';
+import useUserStore from '@/store/userStore';
 
 const getDetailCategory = async (category: string) => {
-  const response = await testAxios.get(`/api/category/${category}`);
+  const response = await duckuWithoutAuth.get(`/api/category/${category}`);
   return response.data;
 };
 
@@ -25,6 +28,8 @@ type Gerne = {
 const CommunityCategoryPage = () => {
   const { category } = useParams();
   const navigate = useNavigate();
+
+  const user = useUserStore((state) => state.user);
 
   const { data, status, error, refetch } = useQuery({
     queryKey: ['category', category],
@@ -46,7 +51,9 @@ const CommunityCategoryPage = () => {
   });
 
   const handleClickedBookmark = () => {
-    console.log('북마크 클릭', data.data.bookmark);
+    if (!user) {
+      return toast.error('로그인이 필요한 서비스입니다.');
+    }
 
     if (data.data.bookmark) {
       deleteBookmarkMutate();
@@ -110,7 +117,7 @@ const CommunityCategoryPage = () => {
         </div>
         <div className="flex items-center bg-slate-500">
           <div className="relative h-[400px] w-[600px] overflow-hidden">
-            <img
+            <FallbackImage
               src={data.data?.categoryImages[0]?.imageUrl}
               alt="아무거나"
               className="h-full w-full object-cover object-center"

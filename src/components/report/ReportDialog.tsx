@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Flag } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -75,12 +77,15 @@ const ReportDialog = () => {
     },
   });
 
+  const [open, setOpen] = useState(false);
+
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
     console.log(data);
+    setOpen(false);
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm">
           <Flag />

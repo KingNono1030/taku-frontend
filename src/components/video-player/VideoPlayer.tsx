@@ -1,4 +1,4 @@
-import { MutableRefObject, useEffect, useRef } from 'react';
+import { MutableRefObject, useEffect, useRef, useState } from 'react';
 
 import Hls from 'hls.js';
 
@@ -13,6 +13,8 @@ type VideoPlayerProps = {
 
 const VideoPlayer = ({ src, type, shortsId }: VideoPlayerProps) => {
   const videoRef: MutableRefObject<HTMLVideoElement | null> = useRef(null);
+
+  const [isSrcLoaded, setIsSrcLoaded] = useState(false);
 
   const { watchTime, setWatchTime, resetWatchTime, setDurationTime } =
     useShortsStore();
@@ -32,6 +34,8 @@ const VideoPlayer = ({ src, type, shortsId }: VideoPlayerProps) => {
       playTime: watchTime,
       viewTime: watchTime,
     });
+    // 다시 재생
+    videoRef.current && videoRef.current.play();
   };
 
   const handleLoadedMetadata = () => {
@@ -46,6 +50,11 @@ const VideoPlayer = ({ src, type, shortsId }: VideoPlayerProps) => {
       const hls = new Hls();
       hls.loadSource(src);
       videoRef.current && hls.attachMedia(videoRef.current);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        setIsSrcLoaded(true);
+      });
+    } else {
+      setIsSrcLoaded(true);
     }
   }, [src, type]);
 
@@ -59,7 +68,7 @@ const VideoPlayer = ({ src, type, shortsId }: VideoPlayerProps) => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
+          if (entry.isIntersecting && isSrcLoaded) {
             videoElement.play();
           } else {
             videoElement.pause();
@@ -76,7 +85,7 @@ const VideoPlayer = ({ src, type, shortsId }: VideoPlayerProps) => {
     return () => {
       observer.unobserve(videoElement);
     };
-  }, []);
+  }, [isSrcLoaded]);
 
   return type === 'm3u8' ? (
     <div className="h-full w-full bg-black">

@@ -12,7 +12,7 @@ const MarketPage = () => {
   ];
 
   return (
-    <div className="flex gap-4">
+    <div className="mt-10 flex gap-4">
       <aside className="w-[260px] shrink-0 bg-background">
         <div className="space-y-6 py-4">
           <h1 className="text-2xl font-semibold tracking-tight">덕후장터</h1>
