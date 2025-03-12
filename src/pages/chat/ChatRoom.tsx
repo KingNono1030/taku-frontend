@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 import { useWebSocket } from '@/hooks/chat/useWebSocket';
 import { duckuWithAuth } from '@/lib/axiosInstance';
 import useUserStore from '@/store/userStore';
-import { ChatMessage, ChatRoomInfo } from '@/types/chat-type/chat.types';
+import { ChatRoomInfo } from '@/types/chat-type/chat.types';
 
 const ChatRoom = () => {
   const { roomId } = useParams();
@@ -46,12 +46,9 @@ const ChatRoom = () => {
         const response = await duckuWithAuth.get(
           `/api/chat/rooms/${roomId}/messages`,
         );
-        console.log('이전 메시지 로드 응답:', response.data); // 디버깅용
         if (response.data?.data) {
-          const sortedMessages = response.data.data.sort(
-            (a: ChatMessage, b: ChatMessage) =>
-              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-          );
+          // 서버에서 받은 메시지 배열을 역순으로 정렬 (오래된 메시지가 먼저 오도록)
+          const sortedMessages = response.data.data.messages.reverse();
           setMessages(sortedMessages);
         }
       } catch (error) {
@@ -72,6 +69,7 @@ const ChatRoom = () => {
       setNewMessage('');
     }
   };
+  console.log('메세지 내용', messages);
 
   return (
     <div className="flex flex-1 flex-col bg-background p-6">
