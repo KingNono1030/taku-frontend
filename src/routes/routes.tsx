@@ -1,12 +1,14 @@
 import { Suspense, lazy } from 'react';
 
 import { Outlet } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 import LoadingScreen from '@/components/loading';
 import DefaultLayout from '@/layout/DefaultLayout';
 import MarketListPage from '@/pages/market/tabs/MarketListPage';
 import MarketPricePage from '@/pages/market/tabs/MarketPricePage';
 import MarketRankingPage from '@/pages/market/tabs/MarketRankingPage';
+import useUserStore from '@/store/userStore';
 
 // Lazy imports for components
 const MainPage = lazy(() => import('@/pages/MainPage'));
@@ -37,6 +39,16 @@ const ShortsPage = lazy(() => import('@/pages/shorts/ShortsPage'));
 // 채팅 관련 컴포넌트 lazy 로딩
 const ChatPage = lazy(() => import('@/pages/chat/ChatPage'));
 const ChatRoom = lazy(() => import('@/pages/chat/ChatRoom'));
+
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const token = useUserStore.getState().token;
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+};
 
 export const routes = [
   {
@@ -75,7 +87,14 @@ export const routes = [
       { path: '/market/:id/edit', element: <UpdateMarketPage /> },
       { path: '/shorts', element: <ShortsPage /> },
       { path: '/shorts/add', element: <CreateShortsPage /> },
-      { path: '/mypage', element: <MyPage /> },
+      {
+        path: '/mypage',
+        element: (
+          <ProtectedRoute>
+            <MyPage />
+          </ProtectedRoute>
+        ),
+      },
 
       // 채팅 관련 라우트
       {
