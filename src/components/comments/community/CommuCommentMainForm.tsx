@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { useCreateCommunityComment } from '@/queries/community';
+import useUserStore from '@/store/userStore';
 
 const addCommentSchema = z.object({
   postId: z.string(),
@@ -35,7 +36,7 @@ const CommuCommentMainForm = ({
     },
   });
 
-  console.log('parentId:', parentId);
+  const user = useUserStore((state) => state.user);
 
   const form = useForm<z.infer<typeof addCommentSchema>>({
     resolver: zodResolver(addCommentSchema),
@@ -82,13 +83,18 @@ const CommuCommentMainForm = ({
               <FormItem className="w-full">
                 <FormControl>
                   <Textarea
-                    placeholder={`댓글을 입력해주세요...
+                    placeholder={
+                      user
+                        ? `댓글을 입력해주세요...
 Ctrl + Enter로 댓글을 등록할 수 있습니다.
-                      `}
+                      `
+                        : '로그인 후 이용해주세요.'
+                    }
                     className={'resize-none bg-transparent'}
                     rows={3}
                     {...field}
                     onKeyDown={handleKeyDown}
+                    disabled={!user}
                   />
                 </FormControl>
                 <FormMessage />

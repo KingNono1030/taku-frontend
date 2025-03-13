@@ -92,7 +92,7 @@ const CreateMarketPage = () => {
   };
 
   return (
-    <div className="mx-auto w-full max-w-[720px]">
+    <div className="mx-auto mt-10 w-full max-w-[720px]">
       <Form {...form}>
         <form
           id="creaetProductForm"

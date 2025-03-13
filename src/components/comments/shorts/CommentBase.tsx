@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { User } from 'lucide-react';
+import { toast } from 'sonner';
 
 import DeleteAlertDialog from '@/components/alert-dialog/DeleteAlertDialog';
 import ReportButton from '@/components/report/ReportButton';
@@ -12,11 +13,10 @@ import {
   useDeleteShortsCommentReply,
   useShortsComment,
 } from '@/queries/shorts';
+import useUserStore from '@/store/userStore';
 
 import CommentButton from '../CommentButton';
 import CommentItemForm from './CommentItemForm';
-
-const SAME_USER = true;
 
 type CommentBaseProps = {
   shortsId: string;
@@ -55,6 +55,8 @@ const CommentBase = ({
       setOpenDeleteDialog(false);
     },
   });
+
+  const user = useUserStore((state) => state.user);
 
   const { mutate: deleteReplyMutate } = useDeleteShortsCommentReply({
     shortsId,
@@ -124,7 +126,7 @@ const CommentBase = ({
                 </div>
                 <p className="whitespace-pre-wrap leading-5">{comment}</p>
               </div>
-              {SAME_USER ? (
+              {nickname == user?.nickname ? (
                 <CommentButton
                   onClickEdit={handleClickEdit}
                   onClickDelete={handleOpenDeleteDialog}
@@ -136,7 +138,12 @@ const CommentBase = ({
             {!hasReply && (
               <Button
                 variant="ghost"
-                onClick={() => setOpenCommentForm(!openCommentForm)}
+                onClick={() => {
+                  if (!user) {
+                    return toast.error('로그인 후 이용해주세요.');
+                  }
+                  setOpenCommentForm(!openCommentForm);
+                }}
                 className="h-8 w-fit px-2 py-0 text-sm"
               >
                 답글

@@ -16,6 +16,7 @@ type ReplyType = {
   };
   createdAt: string;
   content: string;
+  isOwner: boolean;
 };
 
 type CommentType = {
@@ -28,6 +29,7 @@ type CommentType = {
   };
   createdAt: string;
   content: string;
+  isOwner: boolean;
   replies: ReplyType[];
 };
 
@@ -53,6 +55,7 @@ const ReplyCommentBase = ({
             user: { nickname: replyNickname, profileImg: replyAvatarUrl },
             createdAt: replyPostedAt,
             content: replyMessage,
+            isOwner,
           } = reply;
 
           // const replyPostedAt = formatKoreanDateWithLimit(created_at);
@@ -66,6 +69,7 @@ const ReplyCommentBase = ({
               avatarUrl={replyAvatarUrl}
               postedAt={replyPostedAt}
               comment={replyMessage}
+              isOwner={isOwner}
               hasReply
             />
           );
@@ -85,6 +89,7 @@ const CommuCommentList = ({ parentId, commentsArr }: CommentProps) => {
           createdAt,
           content: message,
           replies,
+          isOwner,
         } = comment;
 
         // const postedAt = formatKoreanDateWithLimit(createdAt);
@@ -102,6 +107,7 @@ const CommuCommentList = ({ parentId, commentsArr }: CommentProps) => {
               avatarUrl={avatarUrl}
               postedAt={createdAt}
               comment={message}
+              isOwner={isOwner}
             />
             {hasReply && <Separator />}
             {hasReply && (
