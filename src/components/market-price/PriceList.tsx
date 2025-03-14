@@ -11,7 +11,7 @@ interface PriceListProps {
 }
 
 interface PriceDisplayProps {
-  label: '판매가' | '등록가';
+  label: string;
   price: number;
   priceDiff: number;
   priceChangePercent: string;
@@ -24,7 +24,6 @@ const PriceDisplay = ({
   priceChangePercent,
   colorScheme,
 }: PriceDisplayProps) => {
-  // 색상 매핑 객체 추가
   const colors = {
     blue: 'text-blue-500',
     red: 'text-red-500',
@@ -59,6 +58,8 @@ export const PriceList = ({
   priceData,
 }: PriceListProps) => {
   const dataPoints = priceData.data?.priceGraph?.dataPoints;
+  const averageSoldPrice = priceData.data?.averageSoldPrice ?? 0;
+  console.log('판매가', priceData);
 
   if (!dataPoints || dataPoints.length === 0) {
     return (
@@ -75,32 +76,15 @@ export const PriceList = ({
     return pointDate >= startDate && pointDate <= endDate;
   });
 
+  // 최신 판매가 가져오기
   const latestData = filteredDataPoints[filteredDataPoints.length - 1];
-  const previousData =
-    filteredDataPoints.length > 1
-      ? filteredDataPoints[filteredDataPoints.length - 2]
-      : latestData;
+  const latestSoldPrice = latestData.registeredPrice ?? 0;
 
-  // 가격 변동 계산
-  // 현재는 PriceList는 선택된 기간 내에서 가장 최근 데이터와 그 직전 데이터를 비교하여 가격 변동 추이
-  // TODO: 추후 변동 예정
-
-  // 판매가 관련 계산
-  const latestSellingPrice = latestData.registeredPrice ?? 0;
-  const previousSellingPrice = previousData.registeredPrice ?? 0;
-  const sellingPriceDiff = latestSellingPrice - previousSellingPrice;
-  const sellingPriceChangePercent =
-    previousSellingPrice !== 0
-      ? ((sellingPriceDiff / previousSellingPrice) * 100).toFixed(2)
-      : '0.00';
-
-  // 등록가 관련 계산
-  const latestBuyingPrice = latestData.soldPrice ?? 0;
-  const previousBuyingPrice = previousData.soldPrice ?? 0;
-  const buyingPriceDiff = latestBuyingPrice - previousBuyingPrice;
-  const buyingPriceChangePercent =
-    previousBuyingPrice !== 0
-      ? ((buyingPriceDiff / previousBuyingPrice) * 100).toFixed(2)
+  // 평균 판매가와 최신 판매가 비교
+  const priceDiff = latestSoldPrice - averageSoldPrice;
+  const priceChangePercent =
+    averageSoldPrice !== 0
+      ? ((priceDiff / averageSoldPrice) * 100).toFixed(2)
       : '0.00';
 
   return (
@@ -109,19 +93,18 @@ export const PriceList = ({
         <h2 className="text-xl font-semibold">{priceData.data?.keyword}</h2>
         <div className="flex space-x-16">
           <PriceDisplay
-            label="판매가"
-            price={latestSellingPrice}
-            priceDiff={sellingPriceDiff}
-            priceChangePercent={sellingPriceChangePercent}
-            colorScheme="blue"
+            label="현재 판매가"
+            price={latestSoldPrice}
+            priceDiff={priceDiff}
+            priceChangePercent={priceChangePercent}
+            colorScheme={priceDiff >= 0 ? 'red' : 'blue'}
           />
-          <PriceDisplay
-            label="등록가"
-            price={latestBuyingPrice}
-            priceDiff={buyingPriceDiff}
-            priceChangePercent={buyingPriceChangePercent}
-            colorScheme="red"
-          />
+          <div className="flex flex-col">
+            <span className="text-lg text-gray-600">평균 판매가</span>
+            <span className="text-2xl font-semibold">
+              {averageSoldPrice.toLocaleString()} 원
+            </span>
+          </div>
         </div>
       </div>
     </div>
