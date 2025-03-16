@@ -2,58 +2,81 @@ import { useEffect, useState } from 'react';
 
 import { useParams } from 'react-router-dom';
 
-import { Message } from '@/types/chat-type/chat.types';
+import { useWebSocket } from '@/hooks/chat/useWebSocket';
+import { duckuWithAuth } from '@/lib/axiosInstance';
+import useUserStore from '@/store/userStore';
+import { ChatRoomInfo } from '@/types/chat-type/chat.types';
 
 const ChatRoom = () => {
   const { roomId } = useParams();
-  const [messages, setMessages] = useState<Message[]>([]);
+  const user = useUserStore((state) => state.user);
+  const token = useUserStore((state) => state.token);
   const [newMessage, setNewMessage] = useState('');
+  const [roomInfo, setRoomInfo] = useState<ChatRoomInfo | null>(null);
 
-  // 임시 데이터
+  const { messages, setMessages, isConnected, sendMessage, readStatus } =
+    useWebSocket({
+      roomId: roomId ? roomId : undefined,
+      token: token ? token : undefined,
+      userId: user?.id ? user.id : undefined,
+    });
+
+  // 채팅방 정보 로드
   useEffect(() => {
-    setMessages([
-      {
-        id: '1',
-        senderId: '1',
-        content: '안녕하세요!',
-        timestamp: '14:30',
-        isMine: false,
-      },
-      {
-        id: '2',
-        senderId: '2',
-        content: '네 안녕하세요~',
-        timestamp: '14:31',
-        isMine: true,
-      },
-    ]);
-  }, []);
+    const loadRoomInfo = async () => {
+      try {
+        const response = await duckuWithAuth.get(`/api/chat/rooms/${roomId}`);
+        if (response.data?.data) {
+          setRoomInfo(response.data.data);
+        }
+      } catch (error) {
+        console.error('Failed to load room info:', error);
+      }
+    };
 
-  const handleSendMessage = (e: React.FormEvent) => {
+    if (roomId) {
+      loadRoomInfo();
+    }
+  }, [roomId]);
+
+  // 이전 메시지 로드
+  useEffect(() => {
+    const loadMessages = async () => {
+      try {
+        const response = await duckuWithAuth.get(
+          `/api/chat/rooms/${roomId}/messages`,
+        );
+        if (response.data?.data) {
+          // 서버에서 받은 메시지 배열을 역순으로 정렬 (오래된 메시지가 먼저 오도록)
+          const sortedMessages = response.data.data.messages.reverse();
+          setMessages(sortedMessages);
+        }
+      } catch (error) {
+        console.error('이전 메세지 로드 실패:', error);
+      }
+    };
+
+    if (roomId) {
+      loadMessages();
+    }
+  }, [roomId, setMessages]);
+
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
 
-    const newMsg: Message = {
-      id: Date.now().toString(),
-      senderId: '2',
-      content: newMessage,
-      timestamp: new Date().toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-      }),
-      isMine: true,
-    };
-
-    setMessages((prev) => [...prev, newMsg]);
-    setNewMessage('');
+    if (await sendMessage(newMessage)) {
+      setNewMessage('');
+    }
   };
+  console.log('메세지 내용', messages);
 
   return (
     <div className="flex flex-1 flex-col bg-background p-6">
       {/* 채팅방 헤더 */}
       <div className="mb-6 border-b border-border/50 pb-4">
         <h2 className="text-xl font-semibold text-foreground">
-          채팅방 {roomId}
+          {`채팅방 ${roomId}`}
         </h2>
       </div>
 
@@ -63,29 +86,47 @@ const ChatRoom = () => {
           <div
             key={message.id}
             className={`flex items-end space-x-3 ${
-              message.isMine ? 'flex-row-reverse space-x-reverse' : 'flex-row'
+              message.senderId === user?.id
+                ? 'flex-row-reverse space-x-reverse'
+                : 'flex-row'
             }`}
           >
-            {!message.isMine && (
-              <div className="h-9 w-9 rounded-full bg-primary/20 ring-1 ring-primary/50" />
+            {message.senderId !== user?.id && (
+              <div className="h-9 w-9 rounded-full bg-primary/20 ring-1 ring-primary/50">
+                <img
+                  src={roomInfo?.sellerProfileImage || '/default-avatar.png'}
+                  alt="Profile"
+                  className="h-full w-full rounded-full object-cover"
+                />
+              </div>
             )}
-            <div
-              className={`max-w-[70%] space-y-1 rounded-2xl px-4 py-3 ${
-                message.isMine
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-white text-foreground shadow-sm'
-              }`}
-            >
-              <p className="text-sm">{message.content}</p>
+            <div className="flex flex-col items-end">
               <div
-                className={`text-[10px] ${
-                  message.isMine
-                    ? 'text-primary-foreground/70'
-                    : 'text-muted-foreground'
+                className={`w-fit max-w-[400px] rounded-2xl px-4 py-3 ${
+                  message.senderId === user?.id
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-white text-foreground shadow-sm'
                 }`}
               >
-                {message.timestamp}
+                <p className="break-words text-sm">{message.content}</p>
+                <div
+                  className={`mt-1 text-[10px] ${
+                    message.senderId === user?.id
+                      ? 'text-primary-foreground/70'
+                      : 'text-muted-foreground'
+                  }`}
+                >
+                  {new Date(message.createdAt).toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </div>
               </div>
+              {message.senderId === user?.id && (
+                <span className="mt-1 text-[10px] text-muted-foreground">
+                  {Object.keys(readStatus).length > 1 ? '읽음' : '안읽음'}
+                </span>
+              )}
             </div>
           </div>
         ))}
@@ -104,6 +145,7 @@ const ChatRoom = () => {
           <button
             type="submit"
             className="rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus:outline-none focus:ring-1 focus:ring-primary/50"
+            disabled={!isConnected}
           >
             전송
           </button>
