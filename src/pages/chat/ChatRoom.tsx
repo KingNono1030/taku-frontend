@@ -1,14 +1,20 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
+import { User } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useWebSocket } from '@/hooks/chat/useWebSocket';
 import { duckuWithAuth } from '@/lib/axiosInstance';
+import { convertDateArrayToDateString } from '@/lib/utils';
 import useUserStore from '@/store/userStore';
 import { ChatRoomInfo } from '@/types/chat-type/chat.types';
 
 const ChatRoom = () => {
   const { roomId } = useParams();
+
+  const chatRoomEnd = useRef<HTMLDivElement>(null);
+
   const user = useUserStore((state) => state.user);
   const token = useUserStore((state) => state.token);
   const [newMessage, setNewMessage] = useState('');
@@ -19,7 +25,56 @@ const ChatRoom = () => {
       roomId: roomId ? roomId : undefined,
       token: token ? token : undefined,
       userId: user?.id ? user.id : undefined,
+      onMessageReceived: () => {
+        loadMessages();
+      },
     });
+
+  const scrollToBottom = () => {
+    chatRoomEnd.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // 전체 메시지 읽음 상태 업데이트
+  const updateReadStatus = async () => {
+    try {
+      await duckuWithAuth.post(
+        `/api/chat/rooms/mark-as-read`,
+        {
+          wsRoomId: roomId,
+        },
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        },
+      );
+    } catch (error) {
+      console.error('Failed to update read status:', error);
+    }
+  };
+
+  // 이전 메시지 로드 함수
+  const loadMessages = async () => {
+    try {
+      const response = await duckuWithAuth.get(
+        `/api/chat/rooms/${roomId}/messages`,
+      );
+      if (response.data?.data) {
+        // 서버에서 받은 메시지 배열을 역순으로 정렬 (오래된 메시지가 먼저 오도록)
+        const sortedMessages = response.data.data.messages.reverse();
+
+        console.log('sortedMessages:', sortedMessages);
+
+        setMessages(sortedMessages);
+        updateReadStatus();
+        setTimeout(() => {
+          scrollToBottom();
+        }, 100);
+      }
+    } catch (error) {
+      console.error('이전 메세지 로드 실패:', error);
+    }
+  };
 
   // 채팅방 정보 로드
   useEffect(() => {
@@ -41,21 +96,6 @@ const ChatRoom = () => {
 
   // 이전 메시지 로드
   useEffect(() => {
-    const loadMessages = async () => {
-      try {
-        const response = await duckuWithAuth.get(
-          `/api/chat/rooms/${roomId}/messages`,
-        );
-        if (response.data?.data) {
-          // 서버에서 받은 메시지 배열을 역순으로 정렬 (오래된 메시지가 먼저 오도록)
-          const sortedMessages = response.data.data.messages.reverse();
-          setMessages(sortedMessages);
-        }
-      } catch (error) {
-        console.error('이전 메세지 로드 실패:', error);
-      }
-    };
-
     if (roomId) {
       loadMessages();
     }
@@ -66,10 +106,11 @@ const ChatRoom = () => {
     if (!newMessage.trim()) return;
 
     if (await sendMessage(newMessage)) {
-      setNewMessage('');
+      loadMessages().then(() => {
+        setNewMessage('');
+      });
     }
   };
-  console.log('메세지 내용', messages);
 
   return (
     <div className="flex flex-1 flex-col bg-background p-6">
@@ -92,13 +133,15 @@ const ChatRoom = () => {
             }`}
           >
             {message.senderId !== user?.id && (
-              <div className="h-9 w-9 rounded-full bg-primary/20 ring-1 ring-primary/50">
-                <img
-                  src={roomInfo?.sellerProfileImage || '/default-avatar.png'}
-                  alt="Profile"
-                  className="h-full w-full rounded-full object-cover"
+              <Avatar>
+                <AvatarImage
+                  src={roomInfo?.sellerProfileImage}
+                  alt={roomInfo?.sellerNickname}
                 />
-              </div>
+                <AvatarFallback className="bg-primary/20 ring-1 ring-primary/50">
+                  <User />
+                </AvatarFallback>
+              </Avatar>
             )}
             <div className="flex flex-col items-end">
               <div
@@ -116,20 +159,18 @@ const ChatRoom = () => {
                       : 'text-muted-foreground'
                   }`}
                 >
-                  {new Date(message.createdAt).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
+                  {convertDateArrayToDateString(message?.sentAt)}
                 </div>
               </div>
               {message.senderId === user?.id && (
                 <span className="mt-1 text-[10px] text-muted-foreground">
                   {Object.keys(readStatus).length > 1 ? '읽음' : '안읽음'}
                 </span>
-              )}
+              )}{' '}
             </div>
           </div>
         ))}
+        <div ref={chatRoomEnd} />
       </div>
 
       {/* 메시지 입력 영역 */}

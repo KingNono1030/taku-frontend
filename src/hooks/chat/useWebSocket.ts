@@ -11,9 +11,15 @@ interface UseWebSocketProps {
   roomId: string | undefined;
   token: string | undefined;
   userId: number | undefined;
+  onMessageReceived?: () => void;
 }
 
-export const useWebSocket = ({ roomId, token, userId }: UseWebSocketProps) => {
+export const useWebSocket = ({
+  roomId,
+  token,
+  userId,
+  onMessageReceived,
+}: UseWebSocketProps) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [stompClient, setStompClient] = useState<Client | null>(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -30,9 +36,9 @@ export const useWebSocket = ({ roomId, token, userId }: UseWebSocketProps) => {
         connectHeaders: {
           Authorization: `Bearer ${token}`,
         },
-        debug: (str) => {
-          console.log(`[Room ${roomId}] STOMP Debug:`, str);
-        },
+        // debug: (str) => {
+        //   console.log(`[Room ${roomId}] STOMP Debug:`, str);
+        // },
         reconnectDelay: 5000,
         heartbeatIncoming: 4000,
         heartbeatOutgoing: 4000,
@@ -43,7 +49,8 @@ export const useWebSocket = ({ roomId, token, userId }: UseWebSocketProps) => {
           // 채팅방 메시지 구독
           client?.subscribe(`/sub/chat/room/${roomId}`, (message) => {
             const receivedMessage = JSON.parse(message.body);
-            setMessages((prev) => [...prev, receivedMessage]);
+
+            onMessageReceived && onMessageReceived();
 
             if (receivedMessage.senderId !== userId) {
               updateReadStatus();
@@ -113,17 +120,6 @@ export const useWebSocket = ({ roomId, token, userId }: UseWebSocketProps) => {
     }
 
     try {
-      const tempMessage: ChatMessage = {
-        id: `temp-${Date.now()}`,
-        chatRoomId: roomId!,
-        senderId: userId,
-        senderNickname: '',
-        content,
-        type: 'TEXT',
-        createdAt: new Date().toISOString(),
-        readCount: 0,
-      };
-
       stompClient.publish({
         destination: '/pub/chat/message',
         body: JSON.stringify({
@@ -133,7 +129,6 @@ export const useWebSocket = ({ roomId, token, userId }: UseWebSocketProps) => {
         }),
       });
 
-      setMessages((prev) => [...prev, tempMessage]);
       return true;
     } catch (error) {
       console.error('Failed to send message:', error);
