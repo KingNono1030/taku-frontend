@@ -116,10 +116,10 @@ const MarketListPage = () => {
     size: 20,
     sort: 'day',
     order: 'desc',
-    minPrice: undefined,
-    maxPrice: undefined,
+    minPrice: 100,
+    maxPrice: 50000000,
     categoryId: undefined,
-    searchKeyword: undefined,
+    searchKeyword: '',
   });
 
   const user = useUserStore((state) => state.user);
