@@ -12,7 +12,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import FallbackImage from '@/components/avatar/FallbackImage';
 import { ProductDetailSkeleton } from '@/components/loading/jangter/ProductDetailSkeleton';
@@ -93,6 +93,7 @@ const MarketDetailPage = () => {
   const { mutate: deleteProduct } = useDeleteProduct(productId);
   const { handleChat } = useChat();
   const user = useUserStore((state) => state.user);
+  const navigate = useNavigate();
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
@@ -290,6 +291,13 @@ const MarketDetailPage = () => {
               공유하기
             </Button>
           </div>
+          <Button
+            variant="outline"
+            onClick={() => navigate('/market')}
+            className="w-full"
+          >
+            목록으로
+          </Button>
         </section>
       </div>
       <Separator className="my-16" />
