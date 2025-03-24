@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import { useForm } from 'react-hook-form';
@@ -74,7 +74,7 @@ const MyPage = () => {
     useState<GetBookmarkListQuery>({
       categoryId: 0,
       page: bookmarksPage,
-      size: 20,
+      size: 10,
       sort: ['createdAt', 'DESC'],
     });
 
@@ -86,9 +86,13 @@ const MyPage = () => {
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  const { data: jangterBookmarksData } = useJangterBookmarks(
-    bookmarksQueries as GetBookmarkListQuery,
-  );
+  const { data: jangterBookmarksData, isLoading: jangetBookmarkLoading } =
+    useJangterBookmarks(bookmarksQueries as GetBookmarkListQuery);
+
+  useEffect(() => {
+    console.log(1);
+  }, [bookmarksQueries]);
+
   const jangterBookmarks = jangterBookmarksData?.data?.content;
   const { data: userPurchasesData } = useUserPurchase(
     user!.id,
@@ -170,10 +174,9 @@ const MyPage = () => {
   return (
     <div className="mx-auto w-full max-w-[1200px] p-6">
       <Tabs defaultValue="profile" className="space-y-8">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="profile">프로필</TabsTrigger>
           <TabsTrigger value="market">내 장터</TabsTrigger>
-          <TabsTrigger value="comments">내 댓글</TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile" className="space-y-8">
@@ -298,9 +301,8 @@ const MyPage = () => {
             </p>
           </div>
           <Tabs defaultValue="selling" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="selling">구매글</TabsTrigger>
-              <TabsTrigger value="buying">판매글</TabsTrigger>
               <TabsTrigger value="bookmark">북마크</TabsTrigger>
             </TabsList>
 
@@ -361,28 +363,6 @@ const MyPage = () => {
                   작성한 구매글이 없습니다.
                 </div>
               )}
-            </TabsContent>
-
-            <TabsContent value="buying" className="space-y-6">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-medium">판매 목록</h2>
-                <Select defaultValue="all">
-                  <SelectTrigger className="w-[140px]">
-                    <SelectValue placeholder="상태 선택" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">전체</SelectItem>
-                    <SelectItem value="selling">판매중</SelectItem>
-                    <SelectItem value="reserved">예약중</SelectItem>
-                    <SelectItem value="completed">판매완료</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* TODO: 판매글 목록 구현 */}
-              <div className="rounded-lg border p-8 text-center text-gray-500">
-                작성한 판매글이 없습니다.
-              </div>
             </TabsContent>
 
             <TabsContent value="bookmark" className="space-y-6">
@@ -461,7 +441,11 @@ const MyPage = () => {
               {jangterBookmarks ? (
                 <div className="flex flex-col gap-3 rounded-lg border p-8 text-center text-gray-500">
                   {jangterBookmarks.map((purchase) => (
-                    <JangterBookMarkCard data={purchase} />
+                    <JangterBookMarkCard
+                      key={purchase.productId}
+                      data={purchase}
+                      bookmarksQueries={bookmarksQueries}
+                    />
                   ))}
                   <div className="mt-8">
                     <PaginationComponent
@@ -473,6 +457,8 @@ const MyPage = () => {
                     />
                   </div>
                 </div>
+              ) : jangetBookmarkLoading ? (
+                <div>로딩중...</div>
               ) : (
                 <div className="rounded-lg border p-8 text-center text-gray-500">
                   북마크 등록된 상품이 없습니다.
@@ -480,19 +466,6 @@ const MyPage = () => {
               )}
             </TabsContent>
           </Tabs>
-        </TabsContent>
-
-        <TabsContent value="comments" className="space-y-8">
-          <div>
-            <h1 className="text-2xl font-bold">내 댓글</h1>
-            <p className="text-sm text-gray-500">
-              내가 작성한 댓글을 확인할 수 있습니다.
-            </p>
-          </div>
-          {/* TODO: 내 댓글 목록 구현 */}
-          <div className="rounded-lg border p-8 text-center text-gray-500">
-            작성한 댓글이 없습니다.
-          </div>
         </TabsContent>
       </Tabs>
     </div>

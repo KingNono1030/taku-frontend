@@ -4,6 +4,7 @@ import { User } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useChat } from '@/hooks/chat/useChat';
 import { useWebSocket } from '@/hooks/chat/useWebSocket';
 import { duckuWithAuth } from '@/lib/axiosInstance';
 import { convertDateArrayToDateString } from '@/lib/utils';
@@ -19,6 +20,7 @@ const ChatRoom = () => {
   const token = useUserStore((state) => state.token);
   const [newMessage, setNewMessage] = useState('');
   const [roomInfo, setRoomInfo] = useState<ChatRoomInfo | null>(null);
+  const { refetchChatRooms } = useChat();
 
   const { messages, setMessages, isConnected, sendMessage, readStatus } =
     useWebSocket({
@@ -66,7 +68,9 @@ const ChatRoom = () => {
         console.log('sortedMessages:', sortedMessages);
 
         setMessages(sortedMessages);
-        updateReadStatus();
+        updateReadStatus().then(() => {
+          refetchChatRooms();
+        });
         setTimeout(() => {
           scrollToBottom();
         }, 100);
