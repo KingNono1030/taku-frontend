@@ -255,3 +255,19 @@ export function formatSecondsToISODuration(seconds: number) {
   // ISO 8601 형식으로 변환
   return `PT${formattedDuration}`;
 }
+
+/**
+ * date 가 [
+    2025,
+    3,
+    20,
+    7,
+    28,
+    58,
+    524000000
+] 와 같은 형태로 들어오면
+2025-03-20 07:28:58 형태로 변환
+ */
+export const convertDateArrayToDateString = (date: number[]) => {
+  return `${date[0]}-${date[1].toString().padStart(2, '0')}-${date[2].toString().padStart(2, '0')} ${date[3].toString().padStart(2, '0')}:${date[4].toString().padStart(2, '0')}:${date[5].toString().padStart(2, '0')}`;
+};

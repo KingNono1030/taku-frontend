@@ -40,6 +40,7 @@ export interface ChatMessage {
   type: 'TEXT';
   createdAt: string;
   readCount: number;
+  sentAt: any[];
 }
 
 // 메시지 전송 요청 타입
