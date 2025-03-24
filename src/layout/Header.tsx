@@ -1,25 +1,9 @@
-import {
-  Bell,
-  Bookmark,
-  LogOut,
-  Menu,
-  MessageCircle,
-  Settings,
-  User,
-  X,
-} from 'lucide-react';
+import { LogOut, Menu, MessageCircle, Settings, User } from 'lucide-react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 
 import LogoIcon from '@/assets/logo_icon.png';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from '@/components/ui/drawer';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -77,72 +61,21 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="relative hidden rounded-full md:inline-flex"
-            onClick={() => navigate('/chat')}
-          >
-            <MessageCircle className="h-10 w-10" />
-            {unreadTotal?.data && (
-              <div className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                {unreadTotal.data > 99 ? '99+' : unreadTotal.data}
-              </div>
-            )}
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hidden rounded-full md:inline-flex"
-          >
-            <Bookmark className="h-10 w-10" />
-          </Button>
-
-          <Drawer>
-            <DrawerTrigger>
-              <div className="hidden h-10 w-10 items-center justify-center rounded-full hover:bg-accent hover:text-accent-foreground md:inline-flex">
-                <Bell className="h-4 w-4" />
-              </div>
-            </DrawerTrigger>
-            <DrawerContent className="flex w-[640px] flex-col gap-10 py-10 pl-5 pr-[100px]">
-              <DrawerHeader className="flex items-end justify-between">
-                <DrawerTitle className="text-3xl font-semibold text-[#0F172A]">
-                  알림
-                </DrawerTitle>
-                <Button
-                  variant={'ghost'}
-                  className="h-auto p-0 text-sm font-medium text-[#0F172A] hover:bg-transparent"
-                >
-                  모두 읽음
-                </Button>
-              </DrawerHeader>
-              <div className="flex flex-col">
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <div key={index} className="flex justify-between gap-4 p-4">
-                    <div className="h-10 w-10 rounded-full bg-purple-500"></div>
-                    <div className="flex flex-grow flex-col gap-1">
-                      <span className="text-sm font-medium text-[#3B83F6]">
-                        중고거래
-                      </span>
-                      <span className="text-base text-[#0F172A]">알림</span>
-                      <span className="text-sm text-[#0F172A]">
-                        알림 미리보기
-                      </span>
-                      <span className="text-xs font-light text-[#64748B]">
-                        시간
-                      </span>
-                    </div>
-                    <div>
-                      <Button variant={'ghost'} className="h-6 w-6 p-0">
-                        <X className="h-6 w-6" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </DrawerContent>
-          </Drawer>
-
+          {userDataResponse?.data && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative hidden rounded-full md:inline-flex"
+              onClick={() => navigate('/chat')}
+            >
+              <MessageCircle className="h-10 w-10" />
+              {unreadTotal?.data && (
+                <div className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                  {unreadTotal.data > 99 ? '99+' : unreadTotal.data}
+                </div>
+              )}
+            </Button>
+          )}
           <div className="hidden md:inline-flex">
             {userDataResponse?.data ? (
               <DropdownMenu>
@@ -187,6 +120,7 @@ export default function Header() {
             )}
           </div>
         </div>
+
         <Button variant="ghost" size="icon" className="rounded-full md:hidden">
           <Menu className="h-10 w-10" />
         </Button>

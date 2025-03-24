@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 import {
   Bookmark,
   Check,
@@ -62,12 +64,12 @@ import {
   shareCurrentURL,
 } from '@/lib/utils';
 import {
-  useAddBookmark,
   useDeleteProduct,
   useProductDetails,
   useRecommendedProducts,
   useUpdateteProductStatus,
 } from '@/queries/jangter';
+import { addJangterBookmarks } from '@/services/jangter';
 import useUserStore from '@/store/userStore';
 import type {
   ProductStatus,
@@ -77,6 +79,7 @@ import type {
 } from '@/types/api/jangter.types';
 
 const MarketDetailPage = () => {
+  const [isBookmarkSent, setIsBookmarSent] = useState(false);
   const { id } = useParams();
   const productId = Number(id);
   const {
@@ -129,10 +132,38 @@ const MarketDetailPage = () => {
       },
     });
 
-  const { mutate: addJangterBookmarks } = useAddBookmark(productId);
+  const useAddBookmark = (productId: number) => {
+    const queryClient = useQueryClient();
 
-  const handleLike = () => {
-    addJangterBookmarks();
+    return useMutation({
+      mutationFn: async () => {
+        await addJangterBookmarks(productId);
+      },
+      onSuccess: (response) => {
+        // 요청 성공 시 실행할 로직
+        queryClient.invalidateQueries({
+          predicate: (query) =>
+            Array.isArray(query.queryKey) &&
+            query.queryKey[0] === 'jangterBookmarks',
+        });
+        return response;
+      },
+      onError: (error: AxiosError) => {
+        // 요청 실패 시 실행할 로직
+        if (error?.response?.status == 409) {
+          alert('이미 북마크한 게시글입니다.');
+        }
+      },
+      onSettled: () => {
+        // 요청 완료 후 (성공/실패 관계없이) 실행할 로직
+        setIsBookmarSent(true);
+      },
+    });
+  };
+  const { mutate: addJangterBookmarksMutate } = useAddBookmark(productId);
+
+  const handleLike = async () => {
+    await addJangterBookmarksMutate();
   };
   const isOwnPost = (sellerId as number) === user?.id;
 
@@ -272,7 +303,11 @@ const MarketDetailPage = () => {
               onClick={handleLike}
               className="h-10 w-10 rounded-full"
             >
-              <Bookmark fill="#facc15" className="text-yellow-400" />
+              <Bookmark
+                className={cn('text-yellow-400', {
+                  'fill-primary': isBookmarkSent,
+                })}
+              />
             </Button>
             <Button
               onClick={() => handleChat(productId)}
