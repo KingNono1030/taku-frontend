@@ -150,7 +150,7 @@ const ShortsPage = () => {
   return (
     <div className="h-full bg-stone-900">
       <div className={'flex w-full justify-center gap-20 p-4'}>
-        <section className="inset-x-0 flex w-[600px] items-end gap-4 text-white">
+        <section className="inset-x-0 flex items-end gap-4 text-white">
           {/* video layout */}
           <div ref={carouselRef} className="h-full w-full">
             <Carousel
@@ -159,7 +159,7 @@ const ShortsPage = () => {
                 align: 'start',
               }}
               orientation="vertical"
-              className="w-full"
+              className="w-full max-w-[400px]"
             >
               <CarouselContent className="flex h-[calc(100vh-248px)] flex-col gap-4 rounded-lg">
                 {videos?.length > 0 &&
@@ -187,7 +187,7 @@ const ShortsPage = () => {
           />
         </section>
         {openComments && (
-          <aside className="h-full w-[480px]">
+          <aside className="h-full w-full max-w-[400px]">
             {selectedVideo && (
               <ShortsCommentsCard
                 shortsId={selectedVideo?.id}
