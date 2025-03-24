@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 
 import FallbackImage from '@/components/avatar/FallbackImage';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -35,6 +36,7 @@ export interface ProductItem {
   imageUrl: string;
   userNickname: string;
   viewCount: number;
+  status: string;
 }
 
 const CATEGORY_OPTIONS = Object.entries(CATEGORY_MAP).map(([value, label]) => ({
@@ -50,6 +52,16 @@ const SORT_OPTIONS = [
 const ORDER_OPTIONS = [
   { value: 'desc', label: '내림차순' },
   { value: 'asc', label: '오름차순' },
+];
+
+const STATUS_ARR = [
+  { value: 'FOR_SALE', label: '판매중', bgColor: 'bg-green-600' },
+  {
+    value: 'SOLD_OUT',
+    label: '판매완료',
+    bgColor: 'bg-gray-500',
+  },
+  { value: 'RESERVED', label: '예약중', bgColor: '' },
 ];
 
 interface FilterForm {
@@ -116,8 +128,8 @@ const MarketListPage = () => {
     size: 20,
     sort: 'day',
     order: 'desc',
-    minPrice: undefined,
-    maxPrice: undefined,
+    minPrice: 0,
+    maxPrice: 1000000,
     categoryId: undefined,
     searchKeyword: undefined,
   });
@@ -275,6 +287,20 @@ const MarketListPage = () => {
                       alt={item.title}
                       className="w-full object-cover transition-transform duration-300 hover:scale-110"
                     />
+                    <Badge
+                      className={
+                        'absolute left-4 top-4 ' +
+                        STATUS_ARR.find(
+                          (status) => status.value === item?.status,
+                        )?.bgColor
+                      }
+                    >
+                      {
+                        STATUS_ARR.find(
+                          (status) => status.value === item?.status,
+                        )?.label
+                      }
+                    </Badge>
                   </div>
                   <CardHeader className="p-4">
                     <CardDescription>{item.title}</CardDescription>
