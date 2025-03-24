@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { CATEGORY_MAP } from '@/constants/jangter';
 import { formatCurrency } from '@/lib/utils';
-import { deleteJangterBookmarks } from '@/services/jangter';
+import { useDeleteBookmark } from '@/queries/jangter';
 
 import { Button } from '../ui/button';
 import {
@@ -17,6 +17,7 @@ import {
 
 export const JangterBookMarkCard = ({
   data,
+  bookmarksQueries,
 }: {
   data: {
     productId?: number;
@@ -26,8 +27,16 @@ export const JangterBookMarkCard = ({
     categoryId?: number;
     imageUrl?: string;
   };
+  bookmarksQueries: {
+    categoryId: number;
+    page?: number;
+    size?: number;
+    sort?: string[];
+  };
 }) => {
   const { productId, title, price, categoryId } = data;
+
+  const { mutate } = useDeleteBookmark(productId as number, bookmarksQueries);
   return (
     <div className="flex w-full items-center gap-2">
       <Link to={`/market/${productId}`} className="flex-grow">
@@ -46,10 +55,7 @@ export const JangterBookMarkCard = ({
           <CardFooter className="flex flex-col items-start px-4 pb-4"></CardFooter>
         </Card>
       </Link>
-      <Button
-        variant={'secondary'}
-        onClick={() => deleteJangterBookmarks(productId as number)}
-      >
+      <Button variant={'secondary'} onClick={() => mutate()}>
         <Trash />
       </Button>
     </div>

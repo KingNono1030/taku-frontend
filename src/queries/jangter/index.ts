@@ -169,7 +169,7 @@ export const useJangterBookmarks = (queryParams: GetBookmarkListQuery) => {
     staleTime: 1000 * 60 * 5, // 5분
     retry: 2,
     initialData: () => {
-      return queryClient.getQueryData(['jangterBookmarks', queryParams]) ?? [];
+      return queryClient.getQueryData(['jangterBookmarks', queryParams]);
     },
   });
 };
@@ -197,7 +197,10 @@ export const useUpdateteProductStatus = (productId: number) => {
   });
 };
 
-export const useDeleteBookmark = (productId: number) => {
+export const useDeleteBookmark = (
+  productId: number,
+  bookmarksQueries: GetBookmarkListQuery,
+) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -208,9 +211,7 @@ export const useDeleteBookmark = (productId: number) => {
       // 요청 성공 시 실행할 로직
       console.log('Mutation succeeded:', productId);
       queryClient.invalidateQueries({
-        predicate: (query) =>
-          Array.isArray(query.queryKey) &&
-          query.queryKey[0] === 'jangterBookmarks',
+        queryKey: ['jangterBookmarks', bookmarksQueries],
       });
     },
     onError: (error) => {
