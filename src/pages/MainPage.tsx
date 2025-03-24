@@ -83,8 +83,8 @@ const MainPage = () => {
     size: 4,
     sort: 'day',
     order: 'desc',
-    minPrice: undefined,
-    maxPrice: undefined,
+    minPrice: 0,
+    maxPrice: 1000000,
     categoryId: undefined,
     searchKeyword: undefined,
   });

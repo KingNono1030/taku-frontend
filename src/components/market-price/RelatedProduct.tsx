@@ -1,3 +1,5 @@
+import { useNavigate } from 'react-router-dom';
+
 import FallbackImage from '../avatar/FallbackImage';
 
 interface SimilarProduct {
@@ -12,6 +14,8 @@ interface RelatedProductProps {
 }
 
 export const RelatedProduct = ({ similarProducts }: RelatedProductProps) => {
+  const navigate = useNavigate();
+
   if (!similarProducts || similarProducts.length === 0) {
     return (
       <div className="flex aspect-video w-full items-center justify-center rounded-lg bg-white p-4">
@@ -29,7 +33,11 @@ export const RelatedProduct = ({ similarProducts }: RelatedProductProps) => {
         <h3 className="text-lg font-semibold">연관 상품</h3>
         <div className="grid grid-cols-5 gap-4">
           {products.map((product) => (
-            <div key={product.productId} className="space-y-2">
+            <div
+              key={product.productId}
+              className="cursor-pointer space-y-2"
+              onClick={() => navigate(`/market/${product.productId}`)}
+            >
               <div className="aspect-square">
                 <FallbackImage
                   src={product.imageUrl}
