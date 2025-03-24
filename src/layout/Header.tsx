@@ -61,7 +61,7 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
-          {user && (
+          {userDataResponse?.data && (
             <Button
               variant="ghost"
               size="icon"
@@ -76,7 +76,6 @@ export default function Header() {
               )}
             </Button>
           )}
-
           <div className="hidden md:inline-flex">
             {userDataResponse?.data ? (
               <DropdownMenu>
@@ -121,6 +120,7 @@ export default function Header() {
             )}
           </div>
         </div>
+
         <Button variant="ghost" size="icon" className="rounded-full md:hidden">
           <Menu className="h-10 w-10" />
         </Button>

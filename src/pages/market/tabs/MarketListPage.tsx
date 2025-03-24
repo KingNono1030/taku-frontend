@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 import { Plus } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -128,10 +128,10 @@ const MarketListPage = () => {
     size: 20,
     sort: 'day',
     order: 'desc',
-    minPrice: 0,
-    maxPrice: 1000000,
+    minPrice: 100,
+    maxPrice: 50000000,
     categoryId: undefined,
-    searchKeyword: undefined,
+    searchKeyword: '',
   });
 
   const user = useUserStore((state) => state.user);
@@ -139,26 +139,26 @@ const MarketListPage = () => {
   const { data, fetchNextPage, isFetchingNextPage } =
     useProductItems(queryParams);
 
-  const observerRef = useRef<IntersectionObserver>();
-  const lastItemRef = useRef<HTMLDivElement>(null);
+  const observer = useRef<IntersectionObserver>();
 
-  useEffect(() => {
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      },
-      { threshold: 0.1 },
-    );
+  const lastItemCallbackRef = useCallback(
+    (node: HTMLElement | null) => {
+      if (isFetchingNextPage) return;
+      if (observer.current) observer.current.disconnect();
 
-    if (lastItemRef.current) {
-      observerRef.current.observe(lastItemRef.current);
-    }
+      observer.current = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting) {
+            fetchNextPage();
+          }
+        },
+        { threshold: 0 },
+      );
 
-    return () => observerRef.current?.disconnect();
-  }, [fetchNextPage, isFetchingNextPage]);
-
+      if (node) observer.current.observe(node);
+    },
+    [fetchNextPage, isFetchingNextPage],
+  );
   const allItems = (data?.pages.flatMap((page) => page.data) ??
     []) as ProductItem[];
 
@@ -276,7 +276,7 @@ const MarketListPage = () => {
         <div className="grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {allItems.map((item: ProductItem, index: number) => (
             <div
-              ref={index === allItems.length - 1 ? lastItemRef : null}
+              ref={index === allItems.length - 1 ? lastItemCallbackRef : null}
               key={item.id}
             >
               <Link to={`/market/${item.id}`}>
