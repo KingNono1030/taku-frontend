@@ -64,6 +64,7 @@ export const useChat = () => {
     chatRooms,
     isChatRoomsLoading,
     handleChat,
+    refetchChatRooms,
     isLoggedIn: !!user && !!token,
   };
 };
