@@ -62,11 +62,11 @@ const ChatRoom = () => {
         `/api/chat/rooms/${roomId}/messages`,
       );
       if (response.data?.data) {
-        const sortedMessages = response.data.data.messages;
+        const messageData = response.data.data.messages;
 
-        console.log('sortedMessages:', sortedMessages);
+        console.log('messageData:', messageData);
 
-        setMessages(sortedMessages);
+        setMessages(messageData);
         updateReadStatus().then(() => {
           refetchChatRooms();
         });

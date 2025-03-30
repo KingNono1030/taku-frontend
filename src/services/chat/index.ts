@@ -6,9 +6,10 @@ import type {
 } from '@/types/chat-type/chat.types';
 
 // 채팅방 목록 조회
-export const getChatRooms = async () => {
-  const response =
-    await duckuWithAuth.get<ChatRoomListResponse>('/api/chat/rooms');
+export const getChatRooms = async (page?: number, size?: number) => {
+  const response = await duckuWithAuth.get<ChatRoomListResponse>(
+    `/api/chat/rooms?page=${page}&size=${size}`,
+  );
   return response.data;
 };
 

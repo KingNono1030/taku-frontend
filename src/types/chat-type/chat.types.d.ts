@@ -46,11 +46,11 @@ export interface ChatRoomInfo {
 
 // 채팅 메시지 타입
 export interface ChatMessage {
-  messageId: string;
-  chatRoomId: number;
-  wsRoomId: string;
+  messageId: string | null;
+  chatRoomId: number | null;
+  wsRoomId: string | null;
   senderId: string;
-  senderName: string;
+  senderName: string | null;
   content: string;
   sentAt: string;
   formattedTime: string;
@@ -117,3 +117,13 @@ export type ChatRoomListResponse = {
   data: PageableResponse<ChatRoomInfo>;
   error: null | string;
 };
+
+// 채팅 메시지 목록 응답 타입
+export interface ChatMessagesResponse {
+  success: boolean;
+  data: {
+    messages: ChatMessage[];
+    hasMore: boolean;
+  };
+  error: null | string;
+}

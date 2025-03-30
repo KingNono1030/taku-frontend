@@ -12,14 +12,14 @@ import {
 import useUserStore from '@/store/userStore';
 
 // 채팅방 목록 조회 query hook
-export const useChatRooms = () => {
+export const useChatRooms = (page?: number, size?: number) => {
   const user = useUserStore((state) => state.user);
   const token = useUserStore((state) => state.token);
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ['chatRooms'],
-    queryFn: getChatRooms,
-    enabled: !!user && !!token, // 로그인된 상태에서만 실행
+    queryKey: ['chatRooms', page, size],
+    queryFn: () => getChatRooms(page ?? 0, size ?? 100),
+    enabled: !!user && !!token,
   });
 
   return {
