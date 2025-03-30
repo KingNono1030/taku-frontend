@@ -62,8 +62,7 @@ const ChatRoom = () => {
         `/api/chat/rooms/${roomId}/messages`,
       );
       if (response.data?.data) {
-        // 서버에서 받은 메시지 배열을 역순으로 정렬 (오래된 메시지가 먼저 오도록)
-        const sortedMessages = response.data.data.messages.reverse();
+        const sortedMessages = response.data.data.messages;
 
         console.log('sortedMessages:', sortedMessages);
 
@@ -80,7 +79,7 @@ const ChatRoom = () => {
     }
   };
 
-  // 채팅방 정보 로드
+  // 특정 채팅방 정보 로드
   useEffect(() => {
     const loadRoomInfo = async () => {
       try {
@@ -119,10 +118,27 @@ const ChatRoom = () => {
   return (
     <div className="flex flex-1 flex-col bg-background p-6">
       {/* 채팅방 헤더 */}
-      <div className="mb-6 border-b border-border/50 pb-4">
-        <h2 className="text-xl font-semibold text-foreground">
-          {`채팅방 ${roomId}`}
-        </h2>
+      <div className="mb-6 flex items-center space-x-4 border-b border-border/50 pb-4">
+        <div className="flex flex-col items-center">
+          <div className="relative h-12 w-12 overflow-hidden rounded-lg ring-1 ring-border/50">
+            <img
+              src={roomInfo?.articleImageUrl}
+              alt="상품 이미지"
+              className="h-full w-full object-cover"
+            />
+          </div>
+        </div>
+        <div className="flex-1">
+          <h2 className="text-lg font-semibold text-foreground">
+            {/* {roomInfo?.articleName || '상품명'} */}
+            상품명
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {/* {roomInfo?.articlePrice?.toLocaleString()}원
+             */}
+            10000원
+          </p>
+        </div>
       </div>
 
       {/* 메시지 영역 */}

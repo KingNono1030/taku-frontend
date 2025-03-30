@@ -25,10 +25,7 @@ export const ChatRoomItem = ({
     >
       <div className="flex items-center space-x-3">
         <Avatar className="h-12 w-12">
-          <AvatarImage
-            src={room.sellerProfileImageUrl}
-            alt={room.sellerNickname}
-          />
+          <AvatarImage src={room.articleImageUrl} alt={room.sellerNickname} />
           <AvatarFallback className="bg-primary/20 ring-1 ring-primary/50">
             {room.sellerNickname?.slice(0, 2) || 'UN'}
           </AvatarFallback>
