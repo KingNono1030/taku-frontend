@@ -1,18 +1,31 @@
 import type { components } from '../api/apiSchema.types';
 
 export type ChatRoomRequest = components['schemas']['ChatRoomRequestDTO'];
-export type ChatRoomResponse = components['schemas']['ChatRoomResponseDTO'];
-export type CommonChatRoomResponse = {
+export type ChatRoomResponse = {
   success: boolean;
-  data: ChatRoom[];
+  data: ChatRoomInfo;
   error: null | string;
 };
+export type ChatMessageResponse =
+  components['schemas']['ChatMessageResponseDTO'];
+export type CommonResponse<T> = {
+  success: boolean;
+  data: T;
+  error: null | string;
+};
+
+// API 응답 타입들을 components에서 직접 가져오도록 수정
+// export type CommonChatRoomResponse = {
+//   success: boolean;
+//   data: ChatRoom[];
+//   error: null | string;
+// };
 
 // API 응답 타입
 export interface ChatRoomInfo {
   /** Format: int64 */
-  id: number;
-  roomId: string;
+  chatRoomId: number;
+  wsRoomId: string;
   /** Format: int64 */
   articleId: number;
   /** Format: int64 */
@@ -20,33 +33,34 @@ export interface ChatRoomInfo {
   /** Format: int64 */
   sellerId: number;
   /** Format: date-time */
-  createdAt: number[];
   buyerNickname: string;
-  buyerProfileImage: string;
   sellerNickname: string;
-  sellerProfileImage: string;
-  lastMessage: string;
-  lastMessageTime: string;
-  lastMessageSenderId: number;
+  lastMessage: ChatMessageResponse;
+  createdAt: string;
+  updatedAt: string;
+  articleImageUrl: string;
+  unreadMessageCount: number;
+  buyerProfileImageUrl: string;
+  sellerProfileImageUrl: string;
 }
 
 // 채팅 메시지 타입
 export interface ChatMessage {
-  id: string;
-  chatRoomId: string;
-  senderId: number;
-  senderNickname: string;
+  messageId: string;
+  chatRoomId: number;
+  wsRoomId: string;
+  senderId: string;
+  senderName: string;
   content: string;
-  type: 'TEXT';
-  createdAt: string;
-  readCount: number;
-  sentAt: any[];
+  sentAt: string;
+  formattedTime: string;
+  read: boolean;
 }
 
 // 메시지 전송 요청 타입
 export interface SendMessageRequest {
   roomId: string;
-  senderId: number;
+  senderId: string;
   content: string;
   type: 'TEXT';
 }
@@ -55,7 +69,7 @@ export interface SendMessageRequest {
 export interface ReadStatusUpdate {
   roomId: string;
   messageId: string;
-  readerId: number;
+  readerId: string;
   readAt: string;
 }
 
@@ -63,5 +77,43 @@ export interface ReadStatusUpdate {
 export interface UnreadChatResponse {
   success: boolean;
   data: number;
-  error: ExceptionDto | null;
+  error: string | null;
 }
+
+// components에서 가져오는 타입은 다른 이름으로 변경
+export type ChatRoomDTO = components['schemas']['ChatRoomResponseDTO'];
+
+// 페이지네이션 응답 타입 추가
+export interface PageableResponse<T> {
+  content: T[];
+  pageable: {
+    pageNumber: number;
+    pageSize: number;
+    sort: {
+      empty: boolean;
+      sorted: boolean;
+      unsorted: boolean;
+    };
+    offset: number;
+    paged: boolean;
+    unpaged: boolean;
+  };
+  size: number;
+  number: number;
+  sort: {
+    empty: boolean;
+    sorted: boolean;
+    unsorted: boolean;
+  };
+  first: boolean;
+  last: boolean;
+  numberOfElements: number;
+  empty: boolean;
+}
+
+// 채팅방 목록 조회 응답 타입
+export type ChatRoomListResponse = {
+  success: boolean;
+  data: PageableResponse<ChatRoomInfo>;
+  error: null | string;
+};

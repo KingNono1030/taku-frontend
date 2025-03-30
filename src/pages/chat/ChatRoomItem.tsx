@@ -13,7 +13,7 @@ export const ChatRoomItem = ({
   isActive,
   onSelect,
 }: ChatRoomItemProps) => {
-  const { data: unreadCount } = useRoomUnreadCount(room.roomId);
+  const { data: unreadCount } = useRoomUnreadCount(room.wsRoomId);
   const unreadMessageCount = unreadCount?.data ?? 0;
 
   return (
@@ -26,7 +26,7 @@ export const ChatRoomItem = ({
       <div className="flex items-center space-x-3">
         <Avatar className="h-12 w-12">
           <AvatarImage
-            src={room.sellerProfileImage}
+            src={room.sellerProfileImageUrl}
             alt={room.sellerNickname}
           />
           <AvatarFallback className="bg-primary/20 ring-1 ring-primary/50">
@@ -38,13 +38,10 @@ export const ChatRoomItem = ({
             <h3 className="font-medium text-foreground">
               {room.sellerNickname}
             </h3>
-            <span className="text-xs text-muted-foreground">
-              {room.lastMessageTime}
-            </span>
           </div>
           <div className="flex items-center justify-between">
             <p className="mt-1 truncate text-sm text-muted-foreground">
-              {room.lastMessage}
+              {room.lastMessage?.content || ''}
             </p>
             {unreadMessageCount > 0 && (
               <div className="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">

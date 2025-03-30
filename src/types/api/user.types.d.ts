@@ -1,4 +1,4 @@
-import { components, operations } from './apiSchema.types';
+import { operations } from './apiSchema.types';
 
 export type OAuthProvider = 'KAKAO' | 'NAVER' | 'GOOGLE';
 

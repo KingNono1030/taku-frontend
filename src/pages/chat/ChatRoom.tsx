@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useChat } from '@/hooks/chat/useChat';
 import { useWebSocket } from '@/hooks/chat/useWebSocket';
 import { duckuWithAuth } from '@/lib/axiosInstance';
-import { convertDateArrayToDateString } from '@/lib/utils';
+// import { convertDateArrayToDateString } from '@/lib/utils';
 import useUserStore from '@/store/userStore';
 import { ChatRoomInfo } from '@/types/chat-type/chat.types';
 
@@ -129,17 +129,17 @@ const ChatRoom = () => {
       <div className="flex-1 space-y-6 overflow-y-auto rounded-2xl border border-border/40 bg-card/50 p-6">
         {messages.map((message) => (
           <div
-            key={message.id}
+            key={message.messageId}
             className={`flex items-end space-x-3 ${
-              message.senderId === user?.id
+              message.senderId === String(user?.id)
                 ? 'flex-row-reverse space-x-reverse'
                 : 'flex-row'
             }`}
           >
-            {message.senderId !== user?.id && (
+            {message.senderId !== String(user?.id) && (
               <Avatar>
                 <AvatarImage
-                  src={roomInfo?.sellerProfileImage}
+                  src={roomInfo?.sellerProfileImageUrl}
                   alt={roomInfo?.sellerNickname}
                 />
                 <AvatarFallback className="bg-primary/20 ring-1 ring-primary/50">
@@ -150,7 +150,7 @@ const ChatRoom = () => {
             <div className="flex flex-col items-end">
               <div
                 className={`w-fit max-w-[400px] rounded-2xl px-4 py-3 ${
-                  message.senderId === user?.id
+                  message.senderId === String(user?.id)
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-white text-foreground shadow-sm'
                 }`}
@@ -158,15 +158,15 @@ const ChatRoom = () => {
                 <p className="break-words text-sm">{message.content}</p>
                 <div
                   className={`mt-1 text-[10px] ${
-                    message.senderId === user?.id
+                    message.senderId === String(user?.id)
                       ? 'text-primary-foreground/70'
                       : 'text-muted-foreground'
                   }`}
                 >
-                  {convertDateArrayToDateString(message?.sentAt)}
+                  {message?.sentAt}
                 </div>
               </div>
-              {message.senderId === user?.id && (
+              {message.senderId === String(user?.id) && (
                 <span className="mt-1 text-[10px] text-muted-foreground">
                   {Object.keys(readStatus).length > 1 ? '읽음' : '안읽음'}
                 </span>

@@ -58,6 +58,7 @@ export const useCreateChatRoom = () => {
 export const useUnreadTotal = () => {
   const user = useUserStore((state) => state.user);
   const token = useUserStore((state) => state.token);
+  console.log('token', token);
 
   return useQuery({
     queryKey: ['unreadTotal'],
