@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useChat } from '@/hooks/chat/useChat';
 import { useWebSocket } from '@/hooks/chat/useWebSocket';
 import { duckuWithAuth } from '@/lib/axiosInstance';
-import { convertDateArrayToDateString } from '@/lib/utils';
+// import { convertDateArrayToDateString } from '@/lib/utils';
 import useUserStore from '@/store/userStore';
 import { ChatRoomInfo } from '@/types/chat-type/chat.types';
 
@@ -62,12 +62,11 @@ const ChatRoom = () => {
         `/api/chat/rooms/${roomId}/messages`,
       );
       if (response.data?.data) {
-        // 서버에서 받은 메시지 배열을 역순으로 정렬 (오래된 메시지가 먼저 오도록)
-        const sortedMessages = response.data.data.messages.reverse();
+        const messageData = response.data.data.messages;
 
-        console.log('sortedMessages:', sortedMessages);
+        console.log('messageData:', messageData);
 
-        setMessages(sortedMessages);
+        setMessages(messageData);
         updateReadStatus().then(() => {
           refetchChatRooms();
         });
@@ -80,7 +79,7 @@ const ChatRoom = () => {
     }
   };
 
-  // 채팅방 정보 로드
+  // 특정 채팅방 정보 로드
   useEffect(() => {
     const loadRoomInfo = async () => {
       try {
@@ -119,27 +118,44 @@ const ChatRoom = () => {
   return (
     <div className="flex flex-1 flex-col bg-background p-6">
       {/* 채팅방 헤더 */}
-      <div className="mb-6 border-b border-border/50 pb-4">
-        <h2 className="text-xl font-semibold text-foreground">
-          {`채팅방 ${roomId}`}
-        </h2>
+      <div className="mb-6 flex items-center space-x-4 border-b border-border/50 pb-4">
+        <div className="flex flex-col items-center">
+          <div className="relative h-12 w-12 overflow-hidden rounded-lg ring-1 ring-border/50">
+            <img
+              src={roomInfo?.articleImageUrl}
+              alt="상품 이미지"
+              className="h-full w-full object-cover"
+            />
+          </div>
+        </div>
+        <div className="flex-1">
+          <h2 className="text-lg font-semibold text-foreground">
+            {/* {roomInfo?.articleName || '상품명'} */}
+            상품명
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {/* {roomInfo?.articlePrice?.toLocaleString()}원
+             */}
+            10000원
+          </p>
+        </div>
       </div>
 
       {/* 메시지 영역 */}
       <div className="flex-1 space-y-6 overflow-y-auto rounded-2xl border border-border/40 bg-card/50 p-6">
         {messages.map((message) => (
           <div
-            key={message.id}
+            key={message.messageId}
             className={`flex items-end space-x-3 ${
-              message.senderId === user?.id
+              message.senderId === String(user?.id)
                 ? 'flex-row-reverse space-x-reverse'
                 : 'flex-row'
             }`}
           >
-            {message.senderId !== user?.id && (
+            {message.senderId !== String(user?.id) && (
               <Avatar>
                 <AvatarImage
-                  src={roomInfo?.sellerProfileImage}
+                  src={roomInfo?.sellerProfileImageUrl}
                   alt={roomInfo?.sellerNickname}
                 />
                 <AvatarFallback className="bg-primary/20 ring-1 ring-primary/50">
@@ -150,7 +166,7 @@ const ChatRoom = () => {
             <div className="flex flex-col items-end">
               <div
                 className={`w-fit max-w-[400px] rounded-2xl px-4 py-3 ${
-                  message.senderId === user?.id
+                  message.senderId === String(user?.id)
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-white text-foreground shadow-sm'
                 }`}
@@ -158,15 +174,15 @@ const ChatRoom = () => {
                 <p className="break-words text-sm">{message.content}</p>
                 <div
                   className={`mt-1 text-[10px] ${
-                    message.senderId === user?.id
+                    message.senderId === String(user?.id)
                       ? 'text-primary-foreground/70'
                       : 'text-muted-foreground'
                   }`}
                 >
-                  {convertDateArrayToDateString(message?.sentAt)}
+                  {message?.sentAt}
                 </div>
               </div>
-              {message.senderId === user?.id && (
+              {message.senderId === String(user?.id) && (
                 <span className="mt-1 text-[10px] text-muted-foreground">
                   {Object.keys(readStatus).length > 1 ? '읽음' : '안읽음'}
                 </span>

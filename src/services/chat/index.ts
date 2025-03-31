@@ -1,19 +1,21 @@
 import { duckuWithAuth } from '@/lib/axiosInstance';
 import type {
-  CommonChatRoomResponse,
+  ChatRoomListResponse,
+  ChatRoomResponse,
   UnreadChatResponse,
 } from '@/types/chat-type/chat.types';
 
 // 채팅방 목록 조회
-export const getChatRooms = async () => {
-  const response =
-    await duckuWithAuth.get<CommonChatRoomResponse>('/api/chat/rooms');
+export const getChatRooms = async (page?: number, size?: number) => {
+  const response = await duckuWithAuth.get<ChatRoomListResponse>(
+    `/api/chat/rooms?page=${page}&size=${size}`,
+  );
   return response.data;
 };
 
 // 채팅방 생성
 export const createChatRoom = async (articleId: number) => {
-  const response = await duckuWithAuth.post<CommonChatRoomResponse>(
+  const response = await duckuWithAuth.post<ChatRoomResponse>(
     '/api/chat/rooms',
     null,
     {
@@ -43,7 +45,7 @@ export const getRoomUnreadCount = async (roomId: string) => {
 
 // 특정 채팅방 조회
 export const getChatRoom = async (roomId: string) => {
-  const response = await duckuWithAuth.get<CommonChatRoomResponse>(
+  const response = await duckuWithAuth.get<ChatRoomResponse>(
     `/api/chat/rooms/${roomId}`,
   );
   return response.data;
