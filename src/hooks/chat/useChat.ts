@@ -18,7 +18,7 @@ export const useChat = () => {
   const findChatRoomByProductId = (
     productId: number,
   ): ChatRoomInfo | undefined => {
-    return chatRooms?.data?.find(
+    return chatRooms?.data?.content?.find(
       (room: ChatRoomInfo) => room.articleId === productId,
     );
   };
@@ -36,7 +36,7 @@ export const useChat = () => {
     if (existingChatRoom) {
       // 기존 채팅방이 있다면 해당 채팅방으로 이동
       console.log('기존 채팅방 이동');
-      navigate(`/chat/${existingChatRoom.roomId}`);
+      navigate(`/chat/${existingChatRoom.wsRoomId}`);
     } else {
       try {
         // 새로운 채팅방 생성
@@ -44,12 +44,9 @@ export const useChat = () => {
         console.log('새로운 채팅방생성');
 
         if (response?.data) {
-          const newChatRoom = response.data as unknown as ChatRoomInfo;
-          // 생성된 채팅방 데이터로 바로 이동
-          navigate(`/chat/${newChatRoom.roomId}`);
-          console.log('새로운 채팅방 생성 응답', response.data);
-
-          // 채팅방 목록 백그라운드에서 새로고침
+          const newChatRoom = response.data;
+          navigate(`/chat/${newChatRoom.wsRoomId}`);
+          console.log('새로운 채팅방 생성 응답', newChatRoom);
           refetchChatRooms();
         } else {
           console.error('채팅방 생성 실패');
