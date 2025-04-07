@@ -292,9 +292,6 @@ const MarketDetailPage = () => {
           </div>
           <div>
             <span className="flex items-center text-sm text-[#B0B3BA]">
-              <Bookmark width={12} hanging={12} className="mr-1 inline" />
-              {`북마크 ${formatLargeNumber(viewCount as number)}`}
-              {' · '}
               {`조회 ${formatLargeNumber(viewCount as number)}`}
             </span>
           </div>
