@@ -1,3 +1,5 @@
+import type { AxiosError } from 'axios';
+
 import { duckuWithAuth } from '@/lib/axiosInstance';
 import type {
   ChatRoomListResponse,
@@ -49,4 +51,23 @@ export const getChatRoom = async (roomId: string) => {
     `/api/chat/rooms/${roomId}`,
   );
   return response.data;
+};
+
+// 채팅방 나가기
+export const leaveChatRoom = async (roomId: string) => {
+  try {
+    const response = await duckuWithAuth.post(
+      `/api/chat/rooms/leave?wsRoomId=${roomId}`,
+    );
+    return response.data;
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    if (axiosError.response?.status === 404) {
+      throw new Error('존재하지 않는 채팅방입니다');
+    }
+    if (axiosError.response?.status === 403) {
+      throw new Error('이미 나간 채팅방입니다');
+    }
+    throw error;
+  }
 };

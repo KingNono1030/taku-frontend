@@ -1,5 +1,4 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useRoomUnreadCount } from '@/queries/chat';
 import type { ChatRoomInfo } from '@/types/chat-type/chat.types';
 
 interface ChatRoomItemProps {
@@ -13,8 +12,9 @@ export const ChatRoomItem = ({
   isActive,
   onSelect,
 }: ChatRoomItemProps) => {
-  const { data: unreadCount } = useRoomUnreadCount(room.wsRoomId);
-  const unreadMessageCount = unreadCount?.data ?? 0;
+  // Todo: 채팅방 별 안읽은 메세지 개수 api 사라짐
+  // const { data: unreadCount } = useRoomUnreadCount(room.wsRoomId);
+  // const unreadMessageCount = unreadCount?.data ?? 0;
 
   return (
     <div
@@ -40,9 +40,9 @@ export const ChatRoomItem = ({
             <p className="mt-1 truncate text-sm text-muted-foreground">
               {room.lastMessage?.content || ''}
             </p>
-            {unreadMessageCount > 0 && (
+            {room.unreadMessageCount > 0 && (
               <div className="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                {unreadMessageCount > 99 ? '99+' : unreadMessageCount}
+                {room.unreadMessageCount > 99 ? '99+' : room.unreadMessageCount}
               </div>
             )}
           </div>
