@@ -1,11 +1,14 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import { useChatRooms, useCreateChatRoom } from '@/queries/chat';
+import { leaveChatRoom } from '@/services/chat';
 import useUserStore from '@/store/userStore';
 import type { ChatRoomInfo } from '@/types/chat-type/chat.types';
 
 export const useChat = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const user = useUserStore((state) => state.user);
   const token = useUserStore((state) => state.token);
   const {
@@ -14,6 +17,20 @@ export const useChat = () => {
     refetch: refetchChatRooms,
   } = useChatRooms();
   const createChatRoomMutation = useCreateChatRoom();
+
+  // 채팅방 나가기 mutation
+  const leaveChatRoomMutation = useMutation({
+    mutationFn: leaveChatRoom,
+    onSuccess: () => {
+      // 채팅방 목록 새로고침
+      queryClient.invalidateQueries({ queryKey: ['chatRooms'] });
+      // 채팅방 목록 페이지로 이동
+      navigate('/chat');
+    },
+    onError: (error: Error) => {
+      alert(error.message);
+    },
+  });
 
   const findChatRoomByProductId = (
     productId: number,
@@ -57,10 +74,26 @@ export const useChat = () => {
     }
   };
 
+  // 채팅방 나가기 핸들러
+  const handleLeaveChatRoom = async (roomId: string) => {
+    if (!user || !token) {
+      console.error('로그인이 필요합니다');
+      navigate('/login');
+      return;
+    }
+
+    try {
+      await leaveChatRoomMutation.mutateAsync(roomId);
+    } catch (error) {
+      console.error('채팅방 나가기 중 오류 발생:', error);
+    }
+  };
+
   return {
     chatRooms,
     isChatRoomsLoading,
     handleChat,
+    handleLeaveChatRoom,
     refetchChatRooms,
     isLoggedIn: !!user && !!token,
   };
