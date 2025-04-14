@@ -42,6 +42,8 @@ export interface ChatRoomInfo {
   unreadMessageCount: number;
   buyerProfileImageUrl: string;
   sellerProfileImageUrl: string;
+  articleName: string;
+  articlePrice: number;
 }
 
 // 채팅 메시지 타입
@@ -62,7 +64,6 @@ export interface SendMessageRequest {
   roomId: string;
   senderId: string;
   content: string;
-  type: 'TEXT';
 }
 
 // 읽음 상태 업데이트 타입
